@@ -46,3 +46,71 @@ void unregister_file_system(void)
     ESP_LOGE(TAG, "Failed to deinitialize LittleFS (%s)", esp_err_to_name(ret));
   }
 }
+
+esp_err_t readFileData(const char *fileName, char *data, size_t size)
+{
+  ESP_LOGI(TAG, "Reading file %s", fileName);
+
+  FILE *file = fopen(fileName, "r");
+
+  if (file == NULL)
+  {
+    ESP_LOGE(TAG, "Failed to open file %s", fileName);
+    return ESP_FAIL;
+  }
+
+  size_t bytesRead = fread(data, 1, size, file);
+
+  if (bytesRead == 0)
+  {
+    ESP_LOGE(TAG, "Failed to read file %s", fileName);
+    fclose(file);
+    return ESP_FAIL;
+  }
+
+  fclose(file);
+
+  return ESP_OK;
+}
+
+esp_err_t writeFileData(const char *fileName, const char *data, size_t size)
+{
+  ESP_LOGI(TAG, "Writing file %s", fileName);
+
+  FILE *file = fopen(fileName, "w");
+
+  if (file == NULL)
+  {
+    ESP_LOGE(TAG, "Failed to open file %s", fileName);
+    return ESP_FAIL;
+  }
+
+  size_t bytesWritten = fwrite(data, 1, size, file);
+
+  if (bytesWritten == 0)
+  {
+    ESP_LOGE(TAG, "Failed to write file %s", fileName);
+    fclose(file);
+    return ESP_FAIL;
+  }
+
+  fclose(file);
+
+  return ESP_OK;
+}
+
+esp_err_t createDirectory(const char *directoryPath)
+{
+  struct stat st;
+  if (stat(directoryPath, &st) == -1)
+  {
+    ESP_LOGI(TAG, "Creating directory %s", directoryPath);
+    if (mkdir(directoryPath, 0775) == -1)
+    {
+      ESP_LOGE(TAG, "Failed to create directory %s", directoryPath);
+      return ESP_FAIL;
+    }
+  }
+
+  return ESP_OK;
+}

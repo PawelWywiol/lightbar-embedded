@@ -25,4 +25,32 @@
 #define APP_FILE_SYSTEM_DONT_MOUNT false
 #endif
 
+// WiFi credentials defines
+
+#ifndef WIFI_CREDENTIALS_FILE
+#define WIFI_CREDENTIALS_FILE "/config/wifi_credentials"
+#endif
+
+// Common defines
+
+#ifndef SSID_MAX_LENGTH
+#define SSID_MAX_LENGTH 32
+#endif
+
+#ifndef PASSWORD_MAX_LENGTH
+#define PASSWORD_MAX_LENGTH 64
+#endif
+
+#ifndef UID_MAX_LENGTH
+#define UID_MAX_LENGTH 32
+#endif
+
+#ifndef UUID_MAX_LENGTH
+#define UUID_MAX_LENGTH 36
+#endif
+
+#define TRAILING_ZERO_LENGTH 1
+
+#define SIZE_WITH_TRAILING_ZERO(size) (size + TRAILING_ZERO_LENGTH)
+
 #endif // __APP_DEFINES_H__

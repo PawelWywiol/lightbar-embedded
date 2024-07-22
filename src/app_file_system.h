@@ -14,5 +14,8 @@
 
 bool register_file_system(void);
 void unregister_file_system(void);
+esp_err_t readFileData(const char *fileName, char *data, size_t size);
+esp_err_t writeFileData(const char *fileName, const char *data, size_t size);
+esp_err_t createDirectory(const char *directoryPath);
 
 #endif // __APP_FILE_SYSTEM_H__
