@@ -28,13 +28,8 @@ void app_main(void)
 
   if (read_wifi_credentials(&wifi_credentials) != ESP_OK)
   {
-    reset_wifi_credentials(&wifi_credentials);
-
-    if (write_wifi_credentials(&wifi_credentials) != ESP_OK)
-    {
-      restart_app();
-      return;
-    }
+    restart_app();
+    return;
   }
 
   ESP_LOGI(TAG, "Starting application");
