@@ -10,7 +10,7 @@
 // File system defines
 
 #ifndef APP_FILE_SYSTEM_BASE_PATH
-#define APP_FILE_SYSTEM_BASE_PATH "/"
+#define APP_FILE_SYSTEM_BASE_PATH "/storage"
 #endif
 
 #ifndef APP_FILE_SYSTEM_PARTITION_LABEL
@@ -23,6 +23,14 @@
 
 #ifndef APP_FILE_SYSTEM_DONT_MOUNT
 #define APP_FILE_SYSTEM_DONT_MOUNT false
+#endif
+
+#ifndef APP_FILE_SYSTEM_MAX_PATH
+#define APP_FILE_SYSTEM_MAX_PATH 256
+#endif
+
+#ifndef APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH
+#define APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH "/config"
 #endif
 
 // WiFi credentials defines

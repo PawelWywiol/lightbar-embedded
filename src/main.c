@@ -24,12 +24,17 @@ void app_main(void)
     return;
   }
 
+  createDirectory(APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH);
+
   if (read_wifi_credentials(&wifi_credentials) != ESP_OK)
   {
     reset_wifi_credentials(&wifi_credentials);
-    write_wifi_credentials(&wifi_credentials);
 
-    return;
+    if (write_wifi_credentials(&wifi_credentials) != ESP_OK)
+    {
+      restart_app();
+      return;
+    }
   }
 
   ESP_LOGI(TAG, "Starting application");

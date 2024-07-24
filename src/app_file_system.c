@@ -47,15 +47,18 @@ void unregister_file_system(void)
   }
 }
 
-esp_err_t readFileData(const char *fileName, char *data, size_t size)
+esp_err_t readFileData(const char *filePath, char *data, size_t size)
 {
-  ESP_LOGI(TAG, "Reading file %s", fileName);
+  char path[APP_FILE_SYSTEM_MAX_PATH] = {0};
+  snprintf(path, APP_FILE_SYSTEM_MAX_PATH, "%s/%s", APP_FILE_SYSTEM_BASE_PATH, filePath[0] == '/' ? filePath + 1 : filePath);
 
-  FILE *file = fopen(fileName, "r");
+  ESP_LOGI(TAG, "Reading file %s", path);
+
+  FILE *file = fopen(path, "r");
 
   if (file == NULL)
   {
-    ESP_LOGE(TAG, "Failed to open file %s", fileName);
+    ESP_LOGE(TAG, "Failed to open file %s", path);
     return ESP_FAIL;
   }
 
@@ -63,7 +66,7 @@ esp_err_t readFileData(const char *fileName, char *data, size_t size)
 
   if (bytesRead == 0)
   {
-    ESP_LOGE(TAG, "Failed to read file %s", fileName);
+    ESP_LOGE(TAG, "Failed to read file %s", path);
     fclose(file);
     return ESP_FAIL;
   }
@@ -73,15 +76,18 @@ esp_err_t readFileData(const char *fileName, char *data, size_t size)
   return ESP_OK;
 }
 
-esp_err_t writeFileData(const char *fileName, const char *data, size_t size)
+esp_err_t writeFileData(const char *filePath, const char *data, size_t size)
 {
-  ESP_LOGI(TAG, "Writing file %s", fileName);
+  char path[APP_FILE_SYSTEM_MAX_PATH] = {0};
+  snprintf(path, APP_FILE_SYSTEM_MAX_PATH, "%s/%s", APP_FILE_SYSTEM_BASE_PATH, filePath[0] == '/' ? filePath + 1 : filePath);
 
-  FILE *file = fopen(fileName, "w");
+  ESP_LOGI(TAG, "Writing file %s", path);
+
+  FILE *file = fopen(path, "w");
 
   if (file == NULL)
   {
-    ESP_LOGE(TAG, "Failed to open file %s", fileName);
+    ESP_LOGE(TAG, "Failed to open file %s", path);
     return ESP_FAIL;
   }
 
@@ -89,7 +95,7 @@ esp_err_t writeFileData(const char *fileName, const char *data, size_t size)
 
   if (bytesWritten == 0)
   {
-    ESP_LOGE(TAG, "Failed to write file %s", fileName);
+    ESP_LOGE(TAG, "Failed to write file %s", path);
     fclose(file);
     return ESP_FAIL;
   }
@@ -101,13 +107,16 @@ esp_err_t writeFileData(const char *fileName, const char *data, size_t size)
 
 esp_err_t createDirectory(const char *directoryPath)
 {
+  char path[APP_FILE_SYSTEM_MAX_PATH] = {0};
+  snprintf(path, APP_FILE_SYSTEM_MAX_PATH, "%s/%s", APP_FILE_SYSTEM_BASE_PATH, directoryPath[0] == '/' ? directoryPath + 1 : directoryPath);
+
   struct stat st;
-  if (stat(directoryPath, &st) == -1)
+  if (stat(path, &st) == -1)
   {
-    ESP_LOGI(TAG, "Creating directory %s", directoryPath);
-    if (mkdir(directoryPath, 0775) == -1)
+    ESP_LOGI(TAG, "Creating directory %s", path);
+    if (mkdir(path, 0775) == -1)
     {
-      ESP_LOGE(TAG, "Failed to create directory %s", directoryPath);
+      ESP_LOGE(TAG, "Failed to create directory %s", path);
       return ESP_FAIL;
     }
   }
