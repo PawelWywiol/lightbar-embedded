@@ -2,7 +2,6 @@
 #include "esp_log.h"
 
 #include "app_defines.h"
-#include "app_debug.h"
 #include "app_file_system.h"
 #include "app_network.h"
 
