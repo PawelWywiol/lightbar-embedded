@@ -13,8 +13,14 @@ typedef struct
   char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
 } WiFiCredentials;
 
+void uid(char *uid, size_t length);
+
 void reset_wifi_credentials(WiFiCredentials *wifi_credentials);
 esp_err_t read_wifi_credentials(WiFiCredentials *wifi_credentials);
 esp_err_t write_wifi_credentials(const WiFiCredentials *wifi_credentials);
+
+void reset_ap_credentials(WiFiCredentials *wifi_credentials);
+esp_err_t read_ap_credentials(WiFiCredentials *wifi_credentials);
+esp_err_t write_ap_credentials(const WiFiCredentials *wifi_credentials);
 
 #endif // __APP_NETWORK_H__

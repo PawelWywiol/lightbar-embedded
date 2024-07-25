@@ -6,6 +6,7 @@
 #include "app_network.h"
 
 WiFiCredentials wifi_credentials;
+WiFiCredentials ap_credentials;
 
 static const char *TAG = "APP_MAIN";
 
@@ -25,7 +26,7 @@ void app_main(void)
 
   createDirectory(APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH);
 
-  if (read_wifi_credentials(&wifi_credentials) != ESP_OK)
+  if (read_wifi_credentials(&wifi_credentials) != ESP_OK || read_ap_credentials(&ap_credentials) != ESP_OK)
   {
     restart_app();
     return;

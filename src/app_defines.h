@@ -33,10 +33,26 @@
 #define APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH "/config"
 #endif
 
-// WiFi credentials defines
+// Network defines
 
-#ifndef WIFI_CREDENTIALS_FILE
-#define WIFI_CREDENTIALS_FILE "/config/wifi_credentials"
+#ifndef APP_WIFI_CREDENTIALS_FILE
+#define APP_WIFI_CREDENTIALS_FILE "/config/wifi_credentials"
+#endif
+
+#ifndef APP_AP_CREDENTIALS_FILE
+#define APP_AP_CREDENTIALS_FILE "/config/ap_credentials"
+#endif
+
+#ifndef APP_AP_SSID_PREFIX
+#define APP_AP_SSID_PREFIX "lightbar_"
+#endif
+
+#ifndef APP_AP_SSID_LENGTH
+#define APP_AP_SSID_LENGTH 16
+#endif
+
+#ifndef APP_AP_PASSWORD
+#define APP_AP_PASSWORD "lightbar"
 #endif
 
 // Common defines
