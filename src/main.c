@@ -2,6 +2,7 @@
 #include "esp_log.h"
 
 #include "app_defines.h"
+#include "app_nvs.h"
 #include "app_file_system.h"
 #include "app_network.h"
 
@@ -10,40 +11,30 @@ WiFiCredentials ap_credentials;
 
 static const char *TAG = "APP_MAIN";
 
-void restart_app(void);
+void app_release(void);
 
 void app_main(void)
 {
-  vTaskDelay(APP_DELAY);
-
   ESP_LOGI(TAG, "Initializing application");
 
-  if (!register_file_system())
-  {
-    restart_app();
-    return;
-  }
-
-  createDirectory(APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH);
-
-  if (read_wifi_credentials(&wifi_credentials) != ESP_OK || read_ap_credentials(&ap_credentials) != ESP_OK)
-  {
-    restart_app();
-    return;
-  }
+  ESP_ERROR_CHECK(nvs_init());
+  ESP_ERROR_CHECK(register_file_system());
+  ESP_ERROR_CHECK(createDirectory(APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH));
+  ESP_ERROR_CHECK(read_wifi_credentials(&wifi_credentials));
+  ESP_ERROR_CHECK(read_ap_credentials(&ap_credentials));
 
   ESP_LOGI(TAG, "Starting application");
 
-  restart_app();
+  wifi_init_ap(&ap_credentials);
+
+  app_release();
 }
 
-void restart_app(void)
+void app_release(void)
 {
+  ESP_LOGI(TAG, "Releasing application");
+
   unregister_file_system();
 
-  ESP_LOGI(TAG, "Restarting application");
-
   fflush(stdout);
-  vTaskDelay(APP_DELAY);
-  esp_restart();
 }

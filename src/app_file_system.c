@@ -9,7 +9,7 @@ esp_vfs_littlefs_conf_t conf = {
     .dont_mount = APP_FILE_SYSTEM_DONT_MOUNT,
 };
 
-bool register_file_system(void)
+esp_err_t register_file_system(void)
 {
   ESP_LOGI(TAG, "Initializing file system");
 
@@ -32,7 +32,7 @@ bool register_file_system(void)
     return false;
   }
 
-  return true;
+  return ret;
 }
 
 void unregister_file_system(void)

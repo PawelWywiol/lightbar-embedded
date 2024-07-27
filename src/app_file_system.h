@@ -12,7 +12,7 @@
 
 #include "app_defines.h"
 
-bool register_file_system(void);
+esp_err_t register_file_system(void);
 void unregister_file_system(void);
 
 esp_err_t readFileData(const char *filePath, char *data, size_t size);

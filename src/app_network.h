@@ -1,17 +1,23 @@
 #ifndef __APP_NETWORK_H__
 #define __APP_NETWORK_H__
 
+#include <string.h>
 #include "esp_err.h"
 #include "esp_log.h"
+#include "esp_mac.h"
+#include "esp_wifi.h"
+#include "esp_event.h"
 
 #include "app_defines.h"
-#include "app_file_system.h"
+#include "app_nvs.h"
 
 typedef struct
 {
   char ssid[SIZE_WITH_TRAILING_ZERO(SSID_MAX_LENGTH)];
   char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
 } WiFiCredentials;
+
+void wifi_init_ap(const WiFiCredentials *ap_credentials);
 
 void uid(char *uid, size_t length);
 

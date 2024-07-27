@@ -33,18 +33,36 @@
 #define APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH "/config"
 #endif
 
+// NVS defines
+
+#ifndef APP_NVS_PARTITION_LABEL
+#define APP_NVS_PARTITION_LABEL "nvs"
+#endif
+
+#ifndef APP_NVS_NAMESPACE
+#define APP_NVS_NAMESPACE "storage"
+#endif
+
 // Network defines
 
 #ifndef APP_WIFI_CREDENTIALS_FILE
 #define APP_WIFI_CREDENTIALS_FILE "/config/wifi_credentials"
 #endif
 
+#ifndef APP_WIFI_CREDENTIALS_NVS_KEY
+#define APP_WIFI_CREDENTIALS_NVS_KEY "app_wifi_cred"
+#endif
+
 #ifndef APP_AP_CREDENTIALS_FILE
 #define APP_AP_CREDENTIALS_FILE "/config/ap_credentials"
 #endif
 
+#ifndef APP_AP_CREDENTIALS_NVS_KEY
+#define APP_AP_CREDENTIALS_NVS_KEY "app_ap_cred"
+#endif
+
 #ifndef APP_AP_SSID_PREFIX
-#define APP_AP_SSID_PREFIX "lightbar_"
+#define APP_AP_SSID_PREFIX "lightbar"
 #endif
 
 #ifndef APP_AP_SSID_LENGTH
@@ -53,6 +71,14 @@
 
 #ifndef APP_AP_PASSWORD
 #define APP_AP_PASSWORD "lightbar"
+#endif
+
+#ifndef APP_AP_CHANNEL
+#define APP_AP_CHANNEL 1
+#endif
+
+#ifndef APP_AP_MAX_CONNECTIONS
+#define APP_AP_MAX_CONNECTIONS 4
 #endif
 
 // Common defines

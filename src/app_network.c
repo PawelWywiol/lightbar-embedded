@@ -3,6 +3,70 @@
 static const char uid_chars[] = "0123456789abcdefghhilmnopqrstuvwxyz";
 static const char *TAG = "APP_NETWORK";
 
+static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+{
+  if (event_id == WIFI_EVENT_AP_STACONNECTED)
+  {
+    wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
+    ESP_LOGI(TAG, "station " MACSTR " join, AID=%d",
+             MAC2STR(event->mac), event->aid);
+  }
+  else if (event_id == WIFI_EVENT_AP_STADISCONNECTED)
+  {
+    wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)event_data;
+    ESP_LOGI(TAG, "station " MACSTR " leave, AID=%d, reason=%d",
+             MAC2STR(event->mac), event->aid, event->reason);
+  }
+}
+
+void wifi_init_ap(const WiFiCredentials *ap_credentials)
+{
+  ESP_ERROR_CHECK(esp_netif_init());
+  ESP_ERROR_CHECK(esp_event_loop_create_default());
+  esp_netif_create_default_wifi_ap();
+
+  wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+  ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+  ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                      ESP_EVENT_ANY_ID,
+                                                      &wifi_event_handler,
+                                                      NULL,
+                                                      NULL));
+
+  wifi_config_t wifi_config = {
+      .ap = {
+          .channel = APP_AP_CHANNEL,
+          .max_connection = APP_AP_MAX_CONNECTIONS,
+#ifdef CONFIG_ESP_WIFI_SOFTAP_SAE_SUPPORT
+          .authmode = WIFI_AUTH_WPA3_PSK,
+          .sae_pwe_h2e = WPA3_SAE_PWE_BOTH,
+#else /* CONFIG_ESP_WIFI_SOFTAP_SAE_SUPPORT */
+          .authmode = WIFI_AUTH_WPA2_PSK,
+#endif
+          .pmf_cfg = {
+              .required = true,
+          },
+      },
+  };
+
+  strncpy((char *)wifi_config.ap.ssid, ap_credentials->ssid, sizeof(wifi_config.ap.ssid));
+  strncpy((char *)wifi_config.ap.password, ap_credentials->password, sizeof(wifi_config.ap.password));
+
+  wifi_config.ap.password[sizeof(wifi_config.ap.password) - 1] = '\0';
+  wifi_config.ap.ssid[sizeof(wifi_config.ap.ssid) - 1] = '\0';
+  wifi_config.ap.ssid_len = strlen((char *)wifi_config.ap.ssid);
+
+  if (strlen(ap_credentials->password) == 0)
+  {
+    wifi_config.ap.authmode = WIFI_AUTH_OPEN;
+  }
+
+  ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
+  ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
+  ESP_ERROR_CHECK(esp_wifi_start());
+}
+
 void uid(char *uid, size_t length)
 {
   ESP_LOGI(TAG, "Generating UID");
@@ -26,14 +90,14 @@ esp_err_t write_wifi_credentials(const WiFiCredentials *wifi_credentials)
 {
   ESP_LOGI(TAG, "Writing WiFi credentials");
 
-  return writeFileData(APP_WIFI_CREDENTIALS_FILE, (const char *)wifi_credentials, sizeof(WiFiCredentials));
+  return nvs_write_data(APP_WIFI_CREDENTIALS_NVS_KEY, (void *)wifi_credentials, sizeof(WiFiCredentials));
 }
 
 esp_err_t read_wifi_credentials(WiFiCredentials *wifi_credentials)
 {
   ESP_LOGI(TAG, "Reading WiFi credentials");
 
-  if (readFileData(APP_WIFI_CREDENTIALS_FILE, (char *)wifi_credentials, sizeof(WiFiCredentials)) != ESP_OK)
+  if (nvs_read_data(APP_WIFI_CREDENTIALS_NVS_KEY, (void *)wifi_credentials, sizeof(WiFiCredentials)) != ESP_OK)
   {
     ESP_LOGE(TAG, "Failed to read WiFi credentials");
 
@@ -50,40 +114,40 @@ esp_err_t read_wifi_credentials(WiFiCredentials *wifi_credentials)
   return ESP_OK;
 }
 
-void reset_ap_credentials(WiFiCredentials *wifi_credentials)
+void reset_ap_credentials(WiFiCredentials *ap_credentials)
 {
   ESP_LOGI(TAG, "Resetting AP credentials");
 
-  memset(wifi_credentials, 0, sizeof(WiFiCredentials));
+  memset(ap_credentials, 0, sizeof(WiFiCredentials));
 
-  uid(wifi_credentials->ssid, APP_AP_SSID_LENGTH);
+  uid(ap_credentials->ssid, APP_AP_SSID_LENGTH);
 
-  strncpy(wifi_credentials->ssid, APP_AP_SSID_PREFIX, strlen(APP_AP_SSID_PREFIX));
-  wifi_credentials->ssid[strlen(APP_AP_SSID_PREFIX)] = '-';
-  wifi_credentials->ssid[APP_AP_SSID_LENGTH] = '\0';
+  strncpy(ap_credentials->ssid, APP_AP_SSID_PREFIX, strlen(APP_AP_SSID_PREFIX));
+  ap_credentials->ssid[strlen(APP_AP_SSID_PREFIX)] = '-';
+  ap_credentials->ssid[APP_AP_SSID_LENGTH] = '\0';
 
-  strncpy(wifi_credentials->password, APP_AP_PASSWORD, strlen(APP_AP_PASSWORD));
-  wifi_credentials->password[strlen(APP_AP_PASSWORD)] = '\0';
+  strncpy(ap_credentials->password, APP_AP_PASSWORD, strlen(APP_AP_PASSWORD));
+  ap_credentials->password[strlen(APP_AP_PASSWORD)] = '\0';
 }
 
-esp_err_t write_ap_credentials(const WiFiCredentials *wifi_credentials)
+esp_err_t write_ap_credentials(const WiFiCredentials *ap_credentials)
 {
   ESP_LOGI(TAG, "Writing AP credentials");
 
-  return writeFileData(APP_AP_CREDENTIALS_FILE, (const char *)wifi_credentials, sizeof(WiFiCredentials));
+  return nvs_write_data(APP_AP_CREDENTIALS_NVS_KEY, (void *)ap_credentials, sizeof(WiFiCredentials));
 }
 
-esp_err_t read_ap_credentials(WiFiCredentials *wifi_credentials)
+esp_err_t read_ap_credentials(WiFiCredentials *ap_credentials)
 {
   ESP_LOGI(TAG, "Reading AP credentials");
 
-  if (readFileData(APP_AP_CREDENTIALS_FILE, (char *)wifi_credentials, sizeof(WiFiCredentials)) != ESP_OK)
+  if (nvs_read_data(APP_AP_CREDENTIALS_NVS_KEY, (void *)ap_credentials, sizeof(WiFiCredentials)) != ESP_OK)
   {
     ESP_LOGE(TAG, "Failed to read AP credentials");
 
-    reset_ap_credentials(wifi_credentials);
+    reset_ap_credentials(ap_credentials);
 
-    if (write_wifi_credentials(wifi_credentials) != ESP_OK)
+    if (write_ap_credentials(ap_credentials) != ESP_OK)
     {
       ESP_LOGE(TAG, "Failed to write AP credentials");
 
