@@ -3,10 +3,10 @@
 static const char *TAG = "APP_FILE_SYSTEM";
 
 esp_vfs_littlefs_conf_t conf = {
-    .base_path = APP_FILE_SYSTEM_BASE_PATH,
-    .partition_label = APP_FILE_SYSTEM_PARTITION_LABEL,
-    .format_if_mount_failed = APP_FILE_SYSTEM_FORMAT_IF_MOUNT_FAILED,
-    .dont_mount = APP_FILE_SYSTEM_DONT_MOUNT,
+    .base_path = CONFIG_APP_FILE_SYSTEM_BASE_PATH,
+    .partition_label = CONFIG_APP_FILE_SYSTEM_PARTITION_LABEL,
+    .format_if_mount_failed = CONFIG_APP_FILE_SYSTEM_FORMAT_IF_MOUNT_FAILED,
+    .dont_mount = false,
 };
 
 esp_err_t register_file_system(void)
@@ -49,8 +49,8 @@ void unregister_file_system(void)
 
 esp_err_t readFileData(const char *filePath, char *data, size_t size)
 {
-  char path[APP_FILE_SYSTEM_MAX_PATH] = {0};
-  snprintf(path, APP_FILE_SYSTEM_MAX_PATH, "%s/%s", APP_FILE_SYSTEM_BASE_PATH, filePath[0] == '/' ? filePath + 1 : filePath);
+  char path[FILE_SYSTEM_MAX_PATH] = {0};
+  snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", CONFIG_APP_FILE_SYSTEM_BASE_PATH, filePath[0] == '/' ? filePath + 1 : filePath);
 
   ESP_LOGI(TAG, "Reading file %s", path);
 
@@ -78,8 +78,8 @@ esp_err_t readFileData(const char *filePath, char *data, size_t size)
 
 esp_err_t writeFileData(const char *filePath, const char *data, size_t size)
 {
-  char path[APP_FILE_SYSTEM_MAX_PATH] = {0};
-  snprintf(path, APP_FILE_SYSTEM_MAX_PATH, "%s/%s", APP_FILE_SYSTEM_BASE_PATH, filePath[0] == '/' ? filePath + 1 : filePath);
+  char path[FILE_SYSTEM_MAX_PATH] = {0};
+  snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", CONFIG_APP_FILE_SYSTEM_BASE_PATH, filePath[0] == '/' ? filePath + 1 : filePath);
 
   ESP_LOGI(TAG, "Writing file %s", path);
 
@@ -107,8 +107,8 @@ esp_err_t writeFileData(const char *filePath, const char *data, size_t size)
 
 esp_err_t createDirectory(const char *directoryPath)
 {
-  char path[APP_FILE_SYSTEM_MAX_PATH] = {0};
-  snprintf(path, APP_FILE_SYSTEM_MAX_PATH, "%s/%s", APP_FILE_SYSTEM_BASE_PATH, directoryPath[0] == '/' ? directoryPath + 1 : directoryPath);
+  char path[FILE_SYSTEM_MAX_PATH] = {0};
+  snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", CONFIG_APP_FILE_SYSTEM_BASE_PATH, directoryPath[0] == '/' ? directoryPath + 1 : directoryPath);
 
   struct stat st;
   if (stat(path, &st) == -1)

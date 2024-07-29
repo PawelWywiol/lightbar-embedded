@@ -32,7 +32,7 @@ esp_err_t nvs_read_data(const char *key, void *data, size_t length)
   ESP_LOGI(TAG, "Reading data from NVS");
 
   nvs_handle_t handle;
-  esp_err_t err = nvs_open_from_partition(APP_NVS_PARTITION_LABEL, APP_NVS_NAMESPACE, NVS_READONLY, &handle);
+  esp_err_t err = nvs_open_from_partition(CONFIG_APP_NVS_PARTITION_LABEL, CONFIG_APP_NVS_NAMESPACE, NVS_READONLY, &handle);
 
   if (err != ESP_OK)
   {
@@ -57,7 +57,7 @@ esp_err_t nvs_write_data(const char *key, void *data, size_t length)
   ESP_LOGI(TAG, "Writing data to NVS");
 
   nvs_handle_t handle;
-  esp_err_t err = nvs_open_from_partition(APP_NVS_PARTITION_LABEL, APP_NVS_NAMESPACE, NVS_READWRITE, &handle);
+  esp_err_t err = nvs_open_from_partition(CONFIG_APP_NVS_PARTITION_LABEL, CONFIG_APP_NVS_NAMESPACE, NVS_READWRITE, &handle);
 
   if (err != ESP_OK)
   {

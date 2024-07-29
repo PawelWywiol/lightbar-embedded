@@ -1,0 +1,81 @@
+menu "App Config"
+
+  config APP_FILE_SYSTEM_BASE_PATH
+    string "File System Base Path"
+    default "/storage"
+    help
+      Base path for the file system. This is the root directory for the file system.
+
+  config APP_FILE_SYSTEM_PARTITION_LABEL
+    string "File System Partition Label"
+    default "storage"
+    help
+      Label of the partition to be used for the file system.
+
+  config APP_FILE_SYSTEM_FORMAT_IF_MOUNT_FAILED
+    bool "Format File System if Mount Failed"
+    default y
+    help
+      If the file system fails to mount, should it be formatted?
+
+  config APP_FILE_SYSTEM_DONT_MOUNT
+    bool "Don't Mount File System"
+    default n
+    help
+      If set, the file system will not be mounted.
+
+  config APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH
+    string "File System Config Directory Path"
+    default "/config"
+    help
+      Path to the directory where the configuration files are stored.
+
+  config APP_NVS_PARTITION_LABEL
+    string "NVS Partition Label"
+    default "nvs"
+    help
+      Label of the partition to be used for the NVS.
+
+  config APP_NVS_NAMESPACE
+    string "NVS Namespace"
+    default "storage"
+    help
+      Namespace for the NVS.
+
+  config APP_NVS_WIFI_CREDENTIALS_KEY
+    string "NVS WiFi Credentials Key"
+    default "app_wifi_cred"
+    help
+      Key for the NVS to store the WiFi credentials.
+
+  config APP_NVS_AP_CREDENTIALS_KEY
+    string "NVS AP Credentials Key"
+    default "app_ap_cred"
+    help
+      Key for the NVS to store the AP credentials.
+
+  config APP_AP_SSID_PREFIX
+    string "AP SSID Prefix"
+    default "lightbar"
+    help
+      Prefix for the AP SSID.
+
+  config APP_AP_PASSWORD
+    string "AP Password"
+    default "lightbar"
+    help
+      Password for the AP.
+
+  config APP_AP_CHANNEL
+    int "AP Channel"
+    default 1
+    help
+      Channel for the AP.
+
+  config APP_AP_MAX_CONNECTIONS
+    int "AP Max Connections"
+    default 4
+    help
+      Maximum number of connections for the AP.
+
+endmenu

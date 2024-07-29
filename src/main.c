@@ -19,7 +19,7 @@ void app_main(void)
 
   ESP_ERROR_CHECK(nvs_init());
   ESP_ERROR_CHECK(register_file_system());
-  ESP_ERROR_CHECK(createDirectory(APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH));
+  ESP_ERROR_CHECK(createDirectory(CONFIG_APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH));
   ESP_ERROR_CHECK(read_wifi_credentials(&wifi_credentials));
   ESP_ERROR_CHECK(read_ap_credentials(&ap_credentials));
 
