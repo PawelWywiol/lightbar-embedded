@@ -426,19 +426,38 @@ CONFIG_PARTITION_TABLE_MD5=y
 #
 # App Config
 #
+
+#
+# Main Application configuration
+#
+
+#
+# File System
+#
 CONFIG_APP_FILE_SYSTEM_BASE_PATH="/storage"
 CONFIG_APP_FILE_SYSTEM_PARTITION_LABEL="storage"
 CONFIG_APP_FILE_SYSTEM_FORMAT_IF_MOUNT_FAILED=y
 # CONFIG_APP_FILE_SYSTEM_DONT_MOUNT is not set
 CONFIG_APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH="/config"
+# end of File System
+
+#
+# Non-Volatile Storage
+#
 CONFIG_APP_NVS_PARTITION_LABEL="nvs"
 CONFIG_APP_NVS_NAMESPACE="storage"
 CONFIG_APP_NVS_WIFI_CREDENTIALS_KEY="app_wifi_cred"
 CONFIG_APP_NVS_AP_CREDENTIALS_KEY="app_ap_cred"
+# end of Non-Volatile Storage
+
+#
+# Access Point
+#
 CONFIG_APP_AP_SSID_PREFIX="lightbar"
 CONFIG_APP_AP_PASSWORD="lightbar"
 CONFIG_APP_AP_CHANNEL=1
 CONFIG_APP_AP_MAX_CONNECTIONS=4
+# end of Access Point
 # end of App Config
 
 #
