@@ -47,7 +47,7 @@ void unregister_file_system(void)
   }
 }
 
-esp_err_t readFileData(const char *filePath, char *data, size_t size)
+esp_err_t read_file_data(const char *filePath, char *data, size_t size)
 {
   char path[FILE_SYSTEM_MAX_PATH] = {0};
   snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", CONFIG_APP_FILE_SYSTEM_BASE_PATH, filePath[0] == '/' ? filePath + 1 : filePath);
@@ -76,7 +76,7 @@ esp_err_t readFileData(const char *filePath, char *data, size_t size)
   return ESP_OK;
 }
 
-esp_err_t writeFileData(const char *filePath, const char *data, size_t size)
+esp_err_t write_file_data(const char *filePath, const char *data, size_t size)
 {
   char path[FILE_SYSTEM_MAX_PATH] = {0};
   snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", CONFIG_APP_FILE_SYSTEM_BASE_PATH, filePath[0] == '/' ? filePath + 1 : filePath);
@@ -105,7 +105,7 @@ esp_err_t writeFileData(const char *filePath, const char *data, size_t size)
   return ESP_OK;
 }
 
-esp_err_t createDirectory(const char *directoryPath)
+esp_err_t create_directory(const char *directoryPath)
 {
   char path[FILE_SYSTEM_MAX_PATH] = {0};
   snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", CONFIG_APP_FILE_SYSTEM_BASE_PATH, directoryPath[0] == '/' ? directoryPath + 1 : directoryPath);

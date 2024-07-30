@@ -15,9 +15,9 @@
 esp_err_t register_file_system(void);
 void unregister_file_system(void);
 
-esp_err_t readFileData(const char *filePath, char *data, size_t size);
-esp_err_t writeFileData(const char *filePath, const char *data, size_t size);
+esp_err_t read_file_data(const char *filePath, char *data, size_t size);
+esp_err_t write_file_data(const char *filePath, const char *data, size_t size);
 
-esp_err_t createDirectory(const char *directoryPath);
+esp_err_t create_directory(const char *directoryPath);
 
 #endif // __APP_FILE_SYSTEM_H__

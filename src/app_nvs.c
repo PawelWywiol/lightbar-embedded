@@ -2,7 +2,7 @@
 
 static const char *TAG = "APP_NVS";
 
-esp_err_t nvs_init(void)
+esp_err_t init_nvs(void)
 {
   ESP_LOGI(TAG, "Initializing NVS");
 
