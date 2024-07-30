@@ -19,5 +19,6 @@ esp_err_t read_file_data(const char *filePath, char *data, size_t size);
 esp_err_t write_file_data(const char *filePath, const char *data, size_t size);
 
 esp_err_t create_directory(const char *directoryPath);
+esp_err_t create_config_directory();
 
 #endif // __APP_FILE_SYSTEM_H__

@@ -17,7 +17,9 @@ typedef struct
   char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
 } WiFiCredentials;
 
-void init_wifi_ap(const WiFiCredentials *ap_credentials);
+esp_err_t init_wifi();
+esp_netif_t *init_ap(const WiFiCredentials *ap_credentials);
+esp_err_t start_wifi();
 
 void uid(char *uid, size_t length);
 

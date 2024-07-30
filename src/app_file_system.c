@@ -123,3 +123,8 @@ esp_err_t create_directory(const char *directoryPath)
 
   return ESP_OK;
 }
+
+esp_err_t create_config_directory()
+{
+  return create_directory(CONFIG_APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH);
+}
