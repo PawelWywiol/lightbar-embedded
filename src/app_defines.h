@@ -3,8 +3,16 @@
 
 // Common defines
 
+#ifndef FILE_SYSTEM_BASE_PATH
+#define FILE_SYSTEM_BASE_PATH "/storage"
+#endif
+
 #ifndef FILE_SYSTEM_MAX_PATH
 #define FILE_SYSTEM_MAX_PATH 256
+#endif
+
+#ifndef FILE_SYSTEM_CONFIG_DIRECTORY_PATH
+#define FILE_SYSTEM_CONFIG_DIRECTORY_PATH "/config"
 #endif
 
 #ifndef SSID_MAX_LENGTH

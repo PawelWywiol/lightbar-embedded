@@ -12,6 +12,8 @@
 
 #include "app_defines.h"
 
+#define TRIM_SLASHES(path) (path[0] == '/' ? path + 1 : path)
+
 esp_err_t register_file_system(void);
 void unregister_file_system(void);
 

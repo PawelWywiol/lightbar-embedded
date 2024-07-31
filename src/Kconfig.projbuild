@@ -4,29 +4,11 @@ menu "App Config"
 
   menu "File System"
 
-    config APP_FILE_SYSTEM_BASE_PATH
-      string "File System Base Path"
-      default "/storage"
-      help
-        Base path for the file system. This is the root directory for the file system.
-
     config APP_FILE_SYSTEM_PARTITION_LABEL
       string "File System Partition Label"
       default "storage"
       help
         Label of the partition to be used for the file system.
-
-    config APP_FILE_SYSTEM_FORMAT_IF_MOUNT_FAILED
-      bool "Format File System if Mount Failed"
-      default y
-      help
-        If the file system fails to mount, should it be formatted?
-
-    config APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH
-      string "File System Config Directory Path"
-      default "/config"
-      help
-        Path to the directory where the configuration files are stored.
 
   endmenu
 

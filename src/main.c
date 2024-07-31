@@ -24,6 +24,6 @@ void app_main(void)
   ESP_LOGI(TAG, "Starting application");
 
   ESP_ERROR_CHECK(init_wifi());
-  esp_netif_t *ap_netif = init_ap(&ap_credentials);
+  init_ap(&ap_credentials);
   ESP_ERROR_CHECK(start_wifi());
 }

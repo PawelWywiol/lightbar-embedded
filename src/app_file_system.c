@@ -3,9 +3,9 @@
 static const char *TAG = "APP_FILE_SYSTEM";
 
 esp_vfs_littlefs_conf_t conf = {
-    .base_path = CONFIG_APP_FILE_SYSTEM_BASE_PATH,
+    .base_path = FILE_SYSTEM_BASE_PATH,
     .partition_label = CONFIG_APP_FILE_SYSTEM_PARTITION_LABEL,
-    .format_if_mount_failed = CONFIG_APP_FILE_SYSTEM_FORMAT_IF_MOUNT_FAILED,
+    .format_if_mount_failed = true,
     .dont_mount = false,
 };
 
@@ -50,7 +50,7 @@ void unregister_file_system(void)
 esp_err_t read_file_data(const char *filePath, char *data, size_t size)
 {
   char path[FILE_SYSTEM_MAX_PATH] = {0};
-  snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", CONFIG_APP_FILE_SYSTEM_BASE_PATH, filePath[0] == '/' ? filePath + 1 : filePath);
+  snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", FILE_SYSTEM_BASE_PATH, TRIM_SLASHES(filePath));
 
   ESP_LOGI(TAG, "Reading file %s", path);
 
@@ -79,7 +79,7 @@ esp_err_t read_file_data(const char *filePath, char *data, size_t size)
 esp_err_t write_file_data(const char *filePath, const char *data, size_t size)
 {
   char path[FILE_SYSTEM_MAX_PATH] = {0};
-  snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", CONFIG_APP_FILE_SYSTEM_BASE_PATH, filePath[0] == '/' ? filePath + 1 : filePath);
+  snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", FILE_SYSTEM_BASE_PATH, TRIM_SLASHES(filePath));
 
   ESP_LOGI(TAG, "Writing file %s", path);
 
@@ -108,7 +108,7 @@ esp_err_t write_file_data(const char *filePath, const char *data, size_t size)
 esp_err_t create_directory(const char *directoryPath)
 {
   char path[FILE_SYSTEM_MAX_PATH] = {0};
-  snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", CONFIG_APP_FILE_SYSTEM_BASE_PATH, directoryPath[0] == '/' ? directoryPath + 1 : directoryPath);
+  snprintf(path, FILE_SYSTEM_MAX_PATH, "%s/%s", FILE_SYSTEM_BASE_PATH, TRIM_SLASHES(directoryPath));
 
   struct stat st;
   if (stat(path, &st) == -1)
@@ -126,5 +126,5 @@ esp_err_t create_directory(const char *directoryPath)
 
 esp_err_t create_config_directory()
 {
-  return create_directory(CONFIG_APP_FILE_SYSTEM_CONFIG_DIRECTORY_PATH);
+  return create_directory(FILE_SYSTEM_CONFIG_DIRECTORY_PATH);
 }
