@@ -1,3 +1,4 @@
 .pio
 .vscode
 *.old
+.DS_Store

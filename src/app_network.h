@@ -15,20 +15,20 @@ typedef struct
 {
   char ssid[SIZE_WITH_TRAILING_ZERO(SSID_MAX_LENGTH)];
   char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
-} WiFiCredentials;
+} wifi_credentials_t;
 
 esp_err_t init_wifi();
-esp_netif_t *init_ap(const WiFiCredentials *ap_credentials);
+esp_netif_t *init_ap(const wifi_credentials_t *ap_credentials);
 esp_err_t start_wifi();
 
 void uid(char *uid, size_t length);
 
-void reset_wifi_credentials(WiFiCredentials *wifi_credentials);
-esp_err_t read_wifi_credentials(WiFiCredentials *wifi_credentials);
-esp_err_t write_wifi_credentials(const WiFiCredentials *wifi_credentials);
+void reset_wifi_credentials(wifi_credentials_t *wifi_credentials);
+esp_err_t read_wifi_credentials(wifi_credentials_t *wifi_credentials);
+esp_err_t write_wifi_credentials(const wifi_credentials_t *wifi_credentials);
 
-void reset_ap_credentials(WiFiCredentials *wifi_credentials);
-esp_err_t read_ap_credentials(WiFiCredentials *wifi_credentials);
-esp_err_t write_ap_credentials(const WiFiCredentials *wifi_credentials);
+void reset_ap_credentials(wifi_credentials_t *wifi_credentials);
+esp_err_t read_ap_credentials(wifi_credentials_t *wifi_credentials);
+esp_err_t write_ap_credentials(const wifi_credentials_t *wifi_credentials);
 
 #endif // __APP_NETWORK_H__

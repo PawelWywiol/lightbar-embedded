@@ -3,11 +3,12 @@
 
 #include "app_defines.h"
 #include "app_nvs.h"
-#include "app_file_system.h"
+#include "app_vfs.h"
 #include "app_network.h"
+#include "app_server.h"
 
-WiFiCredentials wifi_credentials;
-WiFiCredentials ap_credentials;
+wifi_credentials_t wifi_credentials;
+wifi_credentials_t ap_credentials;
 
 static const char *TAG = "APP_MAIN";
 
@@ -16,14 +17,14 @@ void app_main(void)
   ESP_LOGI(TAG, "Initializing application");
 
   ESP_ERROR_CHECK(init_nvs());
-  ESP_ERROR_CHECK(register_file_system());
-  ESP_ERROR_CHECK(create_config_directory());
+  ESP_ERROR_CHECK(init_vfs());
+
   ESP_ERROR_CHECK(read_wifi_credentials(&wifi_credentials));
   ESP_ERROR_CHECK(read_ap_credentials(&ap_credentials));
-
-  ESP_LOGI(TAG, "Starting application");
 
   ESP_ERROR_CHECK(init_wifi());
   init_ap(&ap_credentials);
   ESP_ERROR_CHECK(start_wifi());
+
+  ESP_ERROR_CHECK(init_server());
 }
