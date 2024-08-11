@@ -142,6 +142,34 @@ static esp_err_t common_get_handler(httpd_req_t *req)
   return ESP_OK;
 }
 
+static esp_err_t api_get_handler(httpd_req_t *req)
+{
+  ESP_LOGI(TAG, "API GET request");
+
+  set_cors_headers(req);
+  httpd_resp_set_type(req, "application/json");
+
+  cJSON *root = cJSON_CreateObject();
+  cJSON_AddStringToObject(root, "type", "info");
+
+  const char *info = cJSON_Print(root);
+  httpd_resp_sendstr(req, info);
+  free((void *)info);
+
+  cJSON_Delete(root);
+  return ESP_OK;
+}
+
+static esp_err_t api_post_handler(httpd_req_t *req)
+{
+  ESP_LOGI(TAG, "API POST request");
+
+  set_cors_headers(req);
+  httpd_resp_set_type(req, "application/json");
+
+  return ESP_OK;
+}
+
 esp_err_t init_server(void)
 {
   ESP_LOGI(TAG, "Initializing server");
@@ -159,6 +187,20 @@ esp_err_t init_server(void)
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.uri_match_fn = httpd_uri_match_wildcard;
   GOTO_CHECK(httpd_start(&server, &config) == ESP_OK, TAG, "Failed to start server", error_start);
+
+  httpd_uri_t api_get_uri = {
+      .uri = "/api",
+      .method = HTTP_GET,
+      .handler = api_get_handler,
+      .user_ctx = context};
+  httpd_register_uri_handler(server, &api_get_uri);
+
+  httpd_uri_t api_post_uri = {
+      .uri = "/api",
+      .method = HTTP_POST,
+      .handler = api_post_handler,
+      .user_ctx = context};
+  httpd_register_uri_handler(server, &api_post_uri);
 
   httpd_uri_t common_get_uri = {
       .uri = "/*",

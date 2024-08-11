@@ -7,6 +7,7 @@
 #include "esp_log.h"
 #include "esp_err.h"
 #include "esp_http_server.h"
+#include "cJSON.h"
 
 #include "app_defines.h"
 #include "app_vfs.h"
