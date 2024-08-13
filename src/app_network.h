@@ -2,11 +2,17 @@
 #define __APP_NETWORK_H__
 
 #include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_err.h"
 #include "esp_log.h"
 #include "esp_mac.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
+#include "esp_netif.h"
+#include "mdns.h"
+#include "lwip/apps/netbiosns.h"
+#include "lwip/inet.h"
 
 #include "app_defines.h"
 #include "app_nvs.h"
@@ -17,8 +23,9 @@ typedef struct
   char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
 } wifi_credentials_t;
 
+esp_err_t init_netif();
 esp_err_t init_wifi();
-esp_netif_t *init_ap(const wifi_credentials_t *ap_credentials);
+esp_err_t init_ap(const wifi_credentials_t *ap_credentials);
 esp_err_t start_wifi();
 
 void uid(char *uid, size_t length);
@@ -30,5 +37,10 @@ esp_err_t write_wifi_credentials(const wifi_credentials_t *wifi_credentials);
 void reset_ap_credentials(wifi_credentials_t *wifi_credentials);
 esp_err_t read_ap_credentials(wifi_credentials_t *wifi_credentials);
 esp_err_t write_ap_credentials(const wifi_credentials_t *wifi_credentials);
+
+esp_err_t init_mdns();
+esp_err_t init_netbios();
+
+esp_err_t init_dhcps();
 
 #endif // __APP_NETWORK_H__

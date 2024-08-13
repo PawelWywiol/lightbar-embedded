@@ -175,7 +175,7 @@ esp_err_t init_server(void)
   ESP_LOGI(TAG, "Initializing server");
 
   server_context_t *context = calloc(1, sizeof(server_context_t));
-  GOTO_CHECK(context, TAG, "Failed to allocate memory for server context", error);
+  GOTO_CHECK(context == NULL, TAG, "Failed to allocate memory for server context", error);
 
   snprintf(
       context->base_path,
@@ -186,7 +186,7 @@ esp_err_t init_server(void)
   httpd_handle_t server = NULL;
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.uri_match_fn = httpd_uri_match_wildcard;
-  GOTO_CHECK(httpd_start(&server, &config) == ESP_OK, TAG, "Failed to start server", error_start);
+  GOTO_CHECK(httpd_start(&server, &config), TAG, "Failed to start server", error_start);
 
   httpd_uri_t api_get_uri = {
       .uri = "/api",

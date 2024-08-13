@@ -54,7 +54,7 @@
 #define GOTO_CHECK(a, tag, str, goto_tag, ...)                              \
   do                                                                        \
   {                                                                         \
-    if (!(a))                                                               \
+    if ((long)(a) != 0)                                                           \
     {                                                                       \
       ESP_LOGE(tag, "%s(%d): " str, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
       goto goto_tag;                                                        \

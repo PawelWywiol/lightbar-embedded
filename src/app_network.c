@@ -32,63 +32,74 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
   }
 }
 
-esp_err_t init_wifi()
+esp_err_t init_netif()
 {
-  esp_err_t err = esp_netif_init();
+  ESP_LOGI(TAG, "Initializing netif");
 
-  if (err != ESP_OK)
-  {
-    ESP_LOGE(TAG, "Failed to initialize netif (%s)", esp_err_to_name(err));
-    return err;
-  }
+  GOTO_CHECK(esp_netif_init(), TAG, "Failed to initialize netif", error);
+  GOTO_CHECK(esp_event_loop_create_default(), TAG, "Failed to create event loop", error);
 
-  err = esp_event_loop_create_default();
-
-  if (err != ESP_OK)
-  {
-    ESP_LOGE(TAG, "Failed to create event loop (%s)", esp_err_to_name(err));
-    return err;
-  }
-
-  wifi_init_config_t config = WIFI_INIT_CONFIG_DEFAULT();
-  err = esp_wifi_init(&config);
-
-  if (err != ESP_OK)
-  {
-    ESP_LOGE(TAG, "Failed to initialize WiFi (%s)", esp_err_to_name(err));
-    return err;
-  }
-
-  err = esp_event_handler_instance_register(WIFI_EVENT,
-                                            ESP_EVENT_ANY_ID,
-                                            &wifi_event_handler,
-                                            NULL,
-                                            NULL);
-
-  if (err != ESP_OK)
-  {
-    ESP_LOGE(TAG, "Failed to register WiFi event handler (%s)", esp_err_to_name(err));
-    return err;
-  }
-
-  err = esp_event_handler_instance_register(IP_EVENT,
-                                            ESP_EVENT_ANY_ID,
-                                            &wifi_event_handler,
-                                            NULL,
-                                            NULL);
-
-  if (err != ESP_OK)
-  {
-    ESP_LOGE(TAG, "Failed to register IP event handler (%s)", esp_err_to_name(err));
-    return err;
-  }
+  ESP_LOGI(TAG, "Netif initialized");
 
   return ESP_OK;
+error:
+  return ESP_FAIL;
 }
 
-esp_netif_t *init_ap(const wifi_credentials_t *ap_credentials)
+esp_err_t init_wifi()
 {
-  esp_netif_t *esp_netif = esp_netif_create_default_wifi_ap();
+  ESP_LOGI(TAG, "Initializing WiFi");
+
+  wifi_init_config_t config = WIFI_INIT_CONFIG_DEFAULT();
+  GOTO_CHECK(esp_wifi_init(&config), TAG, "Failed to initialize WiFi", error);
+
+  GOTO_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                 ESP_EVENT_ANY_ID,
+                                                 &wifi_event_handler,
+                                                 NULL,
+                                                 NULL),
+             TAG, "Failed to register WiFi event handler", error);
+
+  GOTO_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                 ESP_EVENT_ANY_ID,
+                                                 &wifi_event_handler,
+                                                 NULL,
+                                                 NULL),
+             TAG, "Failed to register IP event handler", error);
+
+  ESP_LOGI(TAG, "WiFi initialized");
+
+  return ESP_OK;
+error:
+  return ESP_FAIL;
+}
+
+esp_err_t init_dhcps()
+{
+  ESP_LOGI(TAG, "Initializing DHCP");
+
+  esp_netif_t *ap_netif = esp_netif_create_default_wifi_ap();
+
+  esp_netif_ip_info_t ip_info = {};
+
+  ip_info.ip.addr = inet_addr(CONFIG_APP_DHCP_IP_START);
+  ip_info.gw.addr = ip_info.ip.addr & ~((uint32_t)0xFF);
+  ip_info.netmask.addr = 0x00FFFFFF;
+
+  GOTO_CHECK(esp_netif_dhcps_stop(ap_netif), TAG, "Failed to stop DHCP server", error);
+  GOTO_CHECK(esp_netif_set_ip_info(ap_netif, &ip_info), TAG, "Failed to set IP info", error);
+  GOTO_CHECK(esp_netif_dhcps_start(ap_netif), TAG, "Failed to start DHCP server", error);
+
+  ESP_LOGI(TAG, "DHCP initialized");
+
+  return ESP_OK;
+error:
+  return ESP_FAIL;
+}
+
+esp_err_t init_ap(const wifi_credentials_t *ap_credentials)
+{
+  ESP_LOGI(TAG, "Initializing AP");
 
   wifi_config_t wifi_config = {
       .ap = {
@@ -118,30 +129,27 @@ esp_netif_t *init_ap(const wifi_credentials_t *ap_credentials)
     wifi_config.ap.authmode = WIFI_AUTH_OPEN;
   }
 
-  ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
+  GOTO_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config), TAG_AP, "Failed to set WiFi mode", error);
 
-  return esp_netif;
+  ESP_LOGI(TAG, "AP initialized");
+
+  return ESP_OK;
+error:
+  return ESP_FAIL;
 }
 
 esp_err_t start_wifi()
 {
-  esp_err_t err = esp_wifi_set_mode(WIFI_MODE_AP);
+  ESP_LOGI(TAG, "Starting WiFi");
 
-  if (err != ESP_OK)
-  {
-    ESP_LOGE(TAG, "Failed to set WiFi mode (%s)", esp_err_to_name(err));
-    return err;
-  }
+  GOTO_CHECK(esp_wifi_set_mode(WIFI_MODE_AP), TAG, "Failed to set WiFi mode", error);
+  GOTO_CHECK(esp_wifi_start(), TAG, "Failed to start WiFi", error);
 
-  err = esp_wifi_start();
-
-  if (err != ESP_OK)
-  {
-    ESP_LOGE(TAG, "Failed to start WiFi (%s)", esp_err_to_name(err));
-    return err;
-  }
+  ESP_LOGI(TAG, "WiFi started");
 
   return ESP_OK;
+error:
+  return ESP_FAIL;
 }
 
 void uid(char *uid, size_t length)
@@ -231,6 +239,40 @@ esp_err_t read_ap_credentials(wifi_credentials_t *ap_credentials)
       return ESP_FAIL;
     }
   }
+
+  return ESP_OK;
+}
+
+esp_err_t init_mdns()
+{
+  ESP_LOGI(TAG, "Initializing MDNS");
+
+  GOTO_CHECK(mdns_init(), TAG, "Failed to initialize MDNS", error);
+  GOTO_CHECK(mdns_hostname_set(CONFIG_APP_MDNS_HOST_NAME), TAG, "Failed to set MDNS hostname", error);
+  GOTO_CHECK(mdns_instance_name_set(CONFIG_APP_MDNS_INSTANCE_NAME), TAG, "Failed to set MDNS instance name", error);
+
+  mdns_txt_item_t serviceData[] = {
+      {"board", "esp32"},
+      {"path", "/"}};
+  size_t serviceDataCount = sizeof(serviceData) / sizeof(serviceData[0]);
+
+  GOTO_CHECK(mdns_service_add(CONFIG_APP_MDNS_INSTANCE_NAME, "_http", "_tcp", 80, serviceData, serviceDataCount), TAG, "Failed to add MDNS service", error);
+
+  ESP_LOGI(TAG, "MDNS service started");
+
+  return ESP_OK;
+error:
+  return ESP_FAIL;
+}
+
+esp_err_t init_netbios()
+{
+  ESP_LOGI(TAG, "Initializing NetBIOS");
+
+  netbiosns_init();
+  netbiosns_set_name(CONFIG_APP_MDNS_HOST_NAME);
+
+  ESP_LOGI(TAG, "NetBIOS service started");
 
   return ESP_OK;
 }
