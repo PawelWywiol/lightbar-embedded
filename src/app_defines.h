@@ -51,14 +51,14 @@
 
 #define SIZE_WITH_TRAILING_ZERO(size) (size + TRAILING_ZERO_LENGTH)
 
-#define GOTO_CHECK(a, tag, str, goto_tag, ...)                              \
-  do                                                                        \
-  {                                                                         \
-    if ((long)(a) != 0)                                                           \
-    {                                                                       \
-      ESP_LOGE(tag, "%s(%d): " str, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
-      goto goto_tag;                                                        \
-    }                                                                       \
+#define GOTO_CHECK(a, tag, str, goto_tag, ...)                                                         \
+  do                                                                                                   \
+  {                                                                                                    \
+    if ((long)(a) != 0)                                                                                \
+    {                                                                                                  \
+      ESP_LOGE(tag, str " [%s : %d / %s]", __FUNCTION__, __LINE__, esp_err_to_name(a), ##__VA_ARGS__); \
+      goto goto_tag;                                                                                   \
+    }                                                                                                  \
   } while (0)
 
 #endif // __APP_DEFINES_H__

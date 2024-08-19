@@ -151,6 +151,10 @@ static esp_err_t api_get_handler(httpd_req_t *req)
 
   cJSON *root = cJSON_CreateObject();
   cJSON_AddStringToObject(root, "type", "info");
+  cJSON_AddNumberToObject(root, "network", 2);
+
+  cJSON *data = cJSON_AddObjectToObject(root, "data");
+  cJSON_AddNumberToObject(data, "leds", 0);
 
   const char *info = cJSON_Print(root);
   httpd_resp_sendstr(req, info);

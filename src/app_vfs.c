@@ -13,26 +13,11 @@ esp_err_t init_vfs(void)
 {
   ESP_LOGI(TAG, "Initializing file system");
 
-  esp_err_t ret = esp_vfs_littlefs_register(&conf);
+  GOTO_CHECK(esp_vfs_littlefs_register(&conf) != ESP_OK, TAG, "Failed to register LittleFS", error);
 
-  if (ret != ESP_OK)
-  {
-    if (ret == ESP_FAIL)
-    {
-      ESP_LOGE(TAG, "Failed to mount or format filesystem");
-    }
-    else if (ret == ESP_ERR_NOT_FOUND)
-    {
-      ESP_LOGE(TAG, "Failed to find LittleFS partition");
-    }
-    else
-    {
-      ESP_LOGE(TAG, "Failed to initialize LittleFS (%s)", esp_err_to_name(ret));
-    }
-    return false;
-  }
-
-  return ret;
+  return ESP_OK;
+error:
+  return ESP_FAIL;
 }
 
 char *clean_vfs_path(char *path)
