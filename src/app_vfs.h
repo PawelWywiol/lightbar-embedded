@@ -19,5 +19,6 @@
 esp_err_t init_vfs(void);
 
 char *clean_vfs_path(char *path);
+size_t get_vfs_free_space(void);
 
 #endif // __APP_VFS_SYSTEM_H__

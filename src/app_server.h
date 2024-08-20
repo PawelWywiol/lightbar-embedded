@@ -12,6 +12,6 @@
 #include "app_defines.h"
 #include "app_vfs.h"
 
-esp_err_t init_server(void);
+esp_err_t init_server(app_config_t *app_config);
 
 #endif // __APP_SERVER_H__

@@ -2,14 +2,10 @@
 
 static const char *TAG = "APP_SERVER";
 
-typedef struct server_context
-{
-  char base_path[SIZE_WITH_TRAILING_ZERO(FILE_SYSTEM_BASE_PATH_MAX_LENGTH)];
-  char scratch[SERVER_CONTEXT_BUFFER_MAX_LENGTH];
-} server_context_t;
-
 #define GZIP_EXTENSION ".gz"
 #define CHECK_FILE_EXTENSION(filename, ext) (strcasecmp(&filename[strlen(filename) - strlen(ext)], ext) == 0)
+
+static app_config_t *_app_config = NULL;
 
 static esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filepath)
 {
@@ -57,6 +53,34 @@ static esp_err_t set_cors_headers(httpd_req_t *req)
   httpd_resp_set_hdr(req, "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   httpd_resp_set_hdr(req, "Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
+  return ESP_OK;
+}
+
+static esp_err_t set_api_response(httpd_req_t *req)
+{
+  ESP_LOGI(TAG, "API GET request");
+
+  set_cors_headers(req);
+  httpd_resp_set_type(req, "application/json");
+
+  cJSON *root = cJSON_CreateObject();
+  cJSON_AddStringToObject(root, "type", "info");
+  cJSON_AddNumberToObject(root, "network", 2);
+
+  cJSON *data = cJSON_AddObjectToObject(root, "data");
+  cJSON_AddNumberToObject(data, "leds", 0);
+  cJSON_AddNumberToObject(data, "space", get_vfs_free_space());
+
+  if (_app_config != NULL)
+  {
+    cJSON_AddStringToObject(data, "uid", _app_config->ap_credentials.ssid);
+  }
+
+  const char *info = cJSON_Print(root);
+  httpd_resp_sendstr(req, info);
+  free((void *)info);
+
+  cJSON_Delete(root);
   return ESP_OK;
 }
 
@@ -146,24 +170,7 @@ static esp_err_t api_get_handler(httpd_req_t *req)
 {
   ESP_LOGI(TAG, "API GET request");
 
-  set_cors_headers(req);
-  httpd_resp_set_type(req, "application/json");
-
-  cJSON *root = cJSON_CreateObject();
-  cJSON_AddStringToObject(root, "type", "info");
-  cJSON_AddNumberToObject(root, "network", 2);
-
-  cJSON *data = cJSON_AddObjectToObject(root, "data");
-  cJSON_AddStringToObject(data, "uid", "");
-  cJSON_AddNumberToObject(data, "leds", 0);
-  cJSON_AddNumberToObject(data, "space", 0);
-
-  const char *info = cJSON_Print(root);
-  httpd_resp_sendstr(req, info);
-  free((void *)info);
-
-  cJSON_Delete(root);
-  return ESP_OK;
+  return set_api_response(req);
 }
 
 static esp_err_t api_post_handler(httpd_req_t *req)
@@ -173,12 +180,58 @@ static esp_err_t api_post_handler(httpd_req_t *req)
   set_cors_headers(req);
   httpd_resp_set_type(req, "application/json");
 
-  return ESP_OK;
+  // get request content length
+  size_t content_length = req->content_len;
+  if (content_length > SERVER_CONTEXT_BUFFER_MAX_LENGTH)
+  {
+    ESP_LOGE(TAG, "Request content length is too large");
+    httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Request content length is too large");
+    return ESP_FAIL;
+  }
+
+  // read request content
+  ssize_t read_bytes = httpd_req_recv(req, req->user_ctx, content_length);
+
+  if (read_bytes <= 0)
+  {
+    ESP_LOGE(TAG, "Failed to read request content");
+    httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Failed to read request content");
+    return ESP_FAIL;
+  }
+
+  // null-terminate request content
+  ((char *)req->user_ctx)[read_bytes] = '\0';
+
+  ESP_LOGI(TAG, "Request content : %s", (char *)req->user_ctx);
+
+  // parse request content
+  cJSON *root = cJSON_Parse(req->user_ctx);
+  if (root == NULL)
+  {
+    ESP_LOGE(TAG, "Failed to parse request content");
+    httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Failed to parse request content");
+    return ESP_FAIL;
+  }
+
+  cJSON *type = cJSON_GetObjectItem(root, "type");
+  if (type == NULL || !cJSON_IsString(type))
+  {
+    ESP_LOGE(TAG, "Failed to get type from request content");
+    httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Failed to get type from request content");
+    cJSON_Delete(root);
+    return ESP_FAIL;
+  }
+
+  cJSON_Delete(root);
+
+  return set_api_response(req);
 }
 
-esp_err_t init_server(void)
+esp_err_t init_server(app_config_t *app_config)
 {
   ESP_LOGI(TAG, "Initializing server");
+
+  _app_config = app_config;
 
   server_context_t *context = calloc(1, sizeof(server_context_t));
   GOTO_CHECK(context == NULL, TAG, "Failed to allocate memory for server context", error);

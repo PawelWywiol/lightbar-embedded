@@ -1,8 +1,6 @@
 #ifndef __APP_DEFINES_H__
 #define __APP_DEFINES_H__
 
-// Common defines
-
 #ifndef FILE_SYSTEM_BASE_PATH_MAX_LENGTH
 #define FILE_SYSTEM_BASE_PATH_MAX_LENGTH 32
 #endif
@@ -60,5 +58,23 @@
       goto goto_tag;                                                                                   \
     }                                                                                                  \
   } while (0)
+
+typedef struct wifi_credentials
+{
+  char ssid[SIZE_WITH_TRAILING_ZERO(SSID_MAX_LENGTH)];
+  char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
+} wifi_credentials_t;
+
+typedef struct server_context
+{
+  char base_path[SIZE_WITH_TRAILING_ZERO(FILE_SYSTEM_BASE_PATH_MAX_LENGTH)];
+  char scratch[SERVER_CONTEXT_BUFFER_MAX_LENGTH];
+} server_context_t;
+
+typedef struct app_config
+{
+  wifi_credentials_t wifi_credentials;
+  wifi_credentials_t ap_credentials;
+} app_config_t;
 
 #endif // __APP_DEFINES_H__
