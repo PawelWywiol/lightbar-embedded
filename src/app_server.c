@@ -56,7 +56,7 @@ static esp_err_t set_cors_headers(httpd_req_t *req)
   return ESP_OK;
 }
 
-static esp_err_t set_api_response(httpd_req_t *req)
+static esp_err_t set_api_response(httpd_req_t *req, char *message)
 {
   ESP_LOGI(TAG, "API GET request");
 
@@ -70,6 +70,12 @@ static esp_err_t set_api_response(httpd_req_t *req)
   cJSON *data = cJSON_AddObjectToObject(root, "data");
   cJSON_AddNumberToObject(data, "leds", 0);
   cJSON_AddNumberToObject(data, "space", get_vfs_free_space());
+
+  if (message != NULL)
+  {
+    cJSON_AddStringToObject(root, "message", message);
+    httpd_resp_set_status(req, HTTPD_400);
+  }
 
   if (_app_config != NULL)
   {
@@ -170,61 +176,33 @@ static esp_err_t api_get_handler(httpd_req_t *req)
 {
   ESP_LOGI(TAG, "API GET request");
 
-  return set_api_response(req);
+  return set_api_response(req, NULL);
 }
 
 static esp_err_t api_post_handler(httpd_req_t *req)
 {
   ESP_LOGI(TAG, "API POST request");
 
-  set_cors_headers(req);
-  httpd_resp_set_type(req, "application/json");
-
-  // get request content length
   size_t content_length = req->content_len;
   if (content_length > SERVER_CONTEXT_BUFFER_MAX_LENGTH)
   {
     ESP_LOGE(TAG, "Request content length is too large");
-    httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Request content length is too large");
-    return ESP_FAIL;
+    return set_api_response(req, "Request content length is too large");
   }
 
-  // read request content
   ssize_t read_bytes = httpd_req_recv(req, req->user_ctx, content_length);
 
   if (read_bytes <= 0)
   {
     ESP_LOGE(TAG, "Failed to read request content");
-    httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Failed to read request content");
-    return ESP_FAIL;
+    return set_api_response(req, "Failed to read request content");
   }
 
-  // null-terminate request content
   ((char *)req->user_ctx)[read_bytes] = '\0';
 
   ESP_LOGI(TAG, "Request content : %s", (char *)req->user_ctx);
 
-  // parse request content
-  cJSON *root = cJSON_Parse(req->user_ctx);
-  if (root == NULL)
-  {
-    ESP_LOGE(TAG, "Failed to parse request content");
-    httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Failed to parse request content");
-    return ESP_FAIL;
-  }
-
-  cJSON *type = cJSON_GetObjectItem(root, "type");
-  if (type == NULL || !cJSON_IsString(type))
-  {
-    ESP_LOGE(TAG, "Failed to get type from request content");
-    httpd_resp_send_err(req, HTTPD_400_BAD_REQUEST, "Failed to get type from request content");
-    cJSON_Delete(root);
-    return ESP_FAIL;
-  }
-
-  cJSON_Delete(root);
-
-  return set_api_response(req);
+  return set_api_response(req, NULL);
 }
 
 esp_err_t init_server(app_config_t *app_config)
