@@ -1,10 +1,6 @@
 #ifndef __APP_DEFINES_H__
 #define __APP_DEFINES_H__
 
-#ifndef FILE_SYSTEM_BASE_PATH_MAX_LENGTH
-#define FILE_SYSTEM_BASE_PATH_MAX_LENGTH 32
-#endif
-
 #ifndef FILE_SYSTEM_PATH_MAX_LENGTH
 #define FILE_SYSTEM_PATH_MAX_LENGTH 256
 #endif
@@ -13,12 +9,8 @@
 #define FILE_SYSTEM_BASE_PATH "/storage"
 #endif
 
-#ifndef FILE_SYSTEM_CONFIG_BASE_PATH
-#define FILE_SYSTEM_CONFIG_BASE_PATH "/config"
-#endif
-
 #ifndef FILE_SYSTEM_PUBLIC_BASE_PATH
-#define FILE_SYSTEM_PUBLIC_BASE_PATH "/public_html"
+#define FILE_SYSTEM_PUBLIC_BASE_PATH "/storage/public_html"
 #endif
 
 #ifndef SERVER_CONTEXT_BUFFER_MAX_LENGTH
@@ -41,10 +33,6 @@
 #define UID_MAX_LENGTH 32
 #endif
 
-#ifndef UUID_MAX_LENGTH
-#define UUID_MAX_LENGTH 36
-#endif
-
 #define TRAILING_ZERO_LENGTH 1
 
 #define SIZE_WITH_TRAILING_ZERO(size) (size + TRAILING_ZERO_LENGTH)
@@ -64,12 +52,6 @@ typedef struct wifi_credentials
   char ssid[SIZE_WITH_TRAILING_ZERO(SSID_MAX_LENGTH)];
   char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
 } wifi_credentials_t;
-
-typedef struct server_context
-{
-  char base_path[SIZE_WITH_TRAILING_ZERO(FILE_SYSTEM_BASE_PATH_MAX_LENGTH)];
-  char scratch[SERVER_CONTEXT_BUFFER_MAX_LENGTH];
-} server_context_t;
 
 typedef struct app_config
 {

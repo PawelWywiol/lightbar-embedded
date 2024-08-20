@@ -11,6 +11,12 @@ app_config_t app_config;
 
 static const char *TAG = "APP_MAIN";
 
+static esp_err_t app_api_post_handler(httpd_req_t *req)
+{
+
+  return ESP_OK;
+}
+
 void app_main(void)
 {
   ESP_LOGI(TAG, "Initializing application");

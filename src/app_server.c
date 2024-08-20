@@ -92,10 +92,8 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
 
 static esp_err_t common_get_handler(httpd_req_t *req)
 {
-  char filepath[FILE_SYSTEM_PATH_MAX_LENGTH];
-
-  server_context_t *context = (server_context_t *)req->user_ctx;
-  strlcpy(filepath, context->base_path, sizeof(filepath));
+  char filepath[FILE_SYSTEM_PATH_MAX_LENGTH] = FILE_SYSTEM_PUBLIC_BASE_PATH;
+  // strlcpy(filepath, FILE_SYSTEM_PUBLIC_BASE_PATH, sizeof(filepath));
 
   if (req->uri[strlen(req->uri) - 1] == '/')
   {
@@ -140,11 +138,13 @@ static esp_err_t common_get_handler(httpd_req_t *req)
     httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Failed to set content type");
   }
 
-  char *chunk = context->scratch;
-  ssize_t read_bytes;
+  char *chunk = req->user_ctx;
+  ssize_t read_bytes = 0;
+
   do
   {
     read_bytes = read(fd, chunk, SERVER_CONTEXT_BUFFER_MAX_LENGTH);
+
     if (read_bytes == -1)
     {
       ESP_LOGE(TAG, "Failed to read file : %s", filepath);
@@ -211,19 +211,13 @@ esp_err_t init_server(app_config_t *app_config)
 
   _app_config = app_config;
 
-  server_context_t *context = calloc(1, sizeof(server_context_t));
+  void *context = calloc(1, SERVER_CONTEXT_BUFFER_MAX_LENGTH);
   GOTO_CHECK(context == NULL, TAG, "Failed to allocate memory for server context", error);
-
-  snprintf(
-      context->base_path,
-      FILE_SYSTEM_BASE_PATH_MAX_LENGTH,
-      "%s%s",
-      FILE_SYSTEM_BASE_PATH, FILE_SYSTEM_PUBLIC_BASE_PATH);
 
   httpd_handle_t server = NULL;
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.uri_match_fn = httpd_uri_match_wildcard;
-  GOTO_CHECK(httpd_start(&server, &config), TAG, "Failed to start server", error_start);
+  GOTO_CHECK(httpd_start(&server, &config), TAG, "Failed to start server", error_free_context);
 
   httpd_uri_t api_get_uri = {
       .uri = "/api",
@@ -247,7 +241,7 @@ esp_err_t init_server(app_config_t *app_config)
   httpd_register_uri_handler(server, &common_get_uri);
 
   return ESP_OK;
-error_start:
+error_free_context:
   free(context);
 error:
   return ESP_FAIL;
