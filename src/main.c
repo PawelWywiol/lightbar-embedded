@@ -20,12 +20,8 @@ void app_main(void)
 
   ESP_ERROR_CHECK(read_credentials(&app_config));
 
-  ESP_ERROR_CHECK(init_netif());
-  ESP_ERROR_CHECK(init_mdns());
-  ESP_ERROR_CHECK(init_netbios());
-  ESP_ERROR_CHECK(init_dhcps());
+  ESP_ERROR_CHECK(init_network());
 
-  ESP_ERROR_CHECK(init_wifi());
   ESP_ERROR_CHECK(init_ap(&app_config.ap_credentials));
   ESP_ERROR_CHECK(start_wifi());
 

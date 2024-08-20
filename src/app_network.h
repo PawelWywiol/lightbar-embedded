@@ -15,14 +15,9 @@
 
 #include "app_defines.h"
 
-esp_err_t init_netif();
-esp_err_t init_wifi();
+esp_err_t init_network();
+
 esp_err_t init_ap(const wifi_credentials_t *ap_credentials);
 esp_err_t start_wifi();
-
-esp_err_t init_mdns();
-esp_err_t init_netbios();
-
-esp_err_t init_dhcps();
 
 #endif // __APP_NETWORK_H__

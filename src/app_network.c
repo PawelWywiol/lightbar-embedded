@@ -31,7 +31,7 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
   }
 }
 
-esp_err_t init_netif()
+static esp_err_t init_netif()
 {
   ESP_LOGI(TAG, "Initializing netif");
 
@@ -45,7 +45,64 @@ error:
   return ESP_FAIL;
 }
 
-esp_err_t init_wifi()
+static esp_err_t init_dhcps()
+{
+  ESP_LOGI(TAG, "Initializing DHCP");
+
+  esp_netif_t *ap_netif = esp_netif_create_default_wifi_ap();
+
+  esp_netif_ip_info_t ip_info = {};
+
+  ip_info.ip.addr = inet_addr(CONFIG_APP_DHCP_IP_START);
+  ip_info.gw.addr = ip_info.ip.addr & ~((uint32_t)0xFF);
+  ip_info.netmask.addr = 0x00FFFFFF;
+
+  GOTO_CHECK(esp_netif_dhcps_stop(ap_netif), TAG, "Failed to stop DHCP server", error);
+  GOTO_CHECK(esp_netif_set_ip_info(ap_netif, &ip_info), TAG, "Failed to set IP info", error);
+  GOTO_CHECK(esp_netif_dhcps_start(ap_netif), TAG, "Failed to start DHCP server", error);
+
+  ESP_LOGI(TAG, "DHCP initialized");
+
+  return ESP_OK;
+error:
+  return ESP_FAIL;
+}
+
+static esp_err_t init_mdns()
+{
+  ESP_LOGI(TAG, "Initializing MDNS");
+
+  GOTO_CHECK(mdns_init(), TAG, "Failed to initialize MDNS", error);
+  GOTO_CHECK(mdns_hostname_set(CONFIG_APP_MDNS_HOST_NAME), TAG, "Failed to set MDNS hostname", error);
+  GOTO_CHECK(mdns_instance_name_set(CONFIG_APP_MDNS_INSTANCE_NAME), TAG, "Failed to set MDNS instance name", error);
+
+  mdns_txt_item_t serviceData[] = {
+      {"board", "esp32"},
+      {"path", "/"}};
+  size_t serviceDataCount = sizeof(serviceData) / sizeof(serviceData[0]);
+
+  GOTO_CHECK(mdns_service_add(CONFIG_APP_MDNS_INSTANCE_NAME, "_http", "_tcp", 80, serviceData, serviceDataCount), TAG, "Failed to add MDNS service", error);
+
+  ESP_LOGI(TAG, "MDNS service started");
+
+  return ESP_OK;
+error:
+  return ESP_FAIL;
+}
+
+static esp_err_t init_netbios()
+{
+  ESP_LOGI(TAG, "Initializing NetBIOS");
+
+  netbiosns_init();
+  netbiosns_set_name(CONFIG_APP_MDNS_HOST_NAME);
+
+  ESP_LOGI(TAG, "NetBIOS service started");
+
+  return ESP_OK;
+}
+
+static esp_err_t init_wifi()
 {
   ESP_LOGI(TAG, "Initializing WiFi");
 
@@ -73,23 +130,17 @@ error:
   return ESP_FAIL;
 }
 
-esp_err_t init_dhcps()
+esp_err_t init_network()
 {
-  ESP_LOGI(TAG, "Initializing DHCP");
+  ESP_LOGI(TAG, "Initializing network");
 
-  esp_netif_t *ap_netif = esp_netif_create_default_wifi_ap();
+  GOTO_CHECK(init_netif(), TAG, "Failed to initialize netif", error);
+  GOTO_CHECK(init_mdns(), TAG, "Failed to initialize MDNS", error);
+  GOTO_CHECK(init_netbios(), TAG, "Failed to initialize NetBIOS", error);
+  GOTO_CHECK(init_dhcps(), TAG, "Failed to initialize DHCP", error);
+  GOTO_CHECK(init_wifi(), TAG, "Failed to initialize WiFi", error);
 
-  esp_netif_ip_info_t ip_info = {};
-
-  ip_info.ip.addr = inet_addr(CONFIG_APP_DHCP_IP_START);
-  ip_info.gw.addr = ip_info.ip.addr & ~((uint32_t)0xFF);
-  ip_info.netmask.addr = 0x00FFFFFF;
-
-  GOTO_CHECK(esp_netif_dhcps_stop(ap_netif), TAG, "Failed to stop DHCP server", error);
-  GOTO_CHECK(esp_netif_set_ip_info(ap_netif, &ip_info), TAG, "Failed to set IP info", error);
-  GOTO_CHECK(esp_netif_dhcps_start(ap_netif), TAG, "Failed to start DHCP server", error);
-
-  ESP_LOGI(TAG, "DHCP initialized");
+  ESP_LOGI(TAG, "Network initialized");
 
   return ESP_OK;
 error:
@@ -149,38 +200,4 @@ esp_err_t start_wifi()
   return ESP_OK;
 error:
   return ESP_FAIL;
-}
-
-esp_err_t init_mdns()
-{
-  ESP_LOGI(TAG, "Initializing MDNS");
-
-  GOTO_CHECK(mdns_init(), TAG, "Failed to initialize MDNS", error);
-  GOTO_CHECK(mdns_hostname_set(CONFIG_APP_MDNS_HOST_NAME), TAG, "Failed to set MDNS hostname", error);
-  GOTO_CHECK(mdns_instance_name_set(CONFIG_APP_MDNS_INSTANCE_NAME), TAG, "Failed to set MDNS instance name", error);
-
-  mdns_txt_item_t serviceData[] = {
-      {"board", "esp32"},
-      {"path", "/"}};
-  size_t serviceDataCount = sizeof(serviceData) / sizeof(serviceData[0]);
-
-  GOTO_CHECK(mdns_service_add(CONFIG_APP_MDNS_INSTANCE_NAME, "_http", "_tcp", 80, serviceData, serviceDataCount), TAG, "Failed to add MDNS service", error);
-
-  ESP_LOGI(TAG, "MDNS service started");
-
-  return ESP_OK;
-error:
-  return ESP_FAIL;
-}
-
-esp_err_t init_netbios()
-{
-  ESP_LOGI(TAG, "Initializing NetBIOS");
-
-  netbiosns_init();
-  netbiosns_set_name(CONFIG_APP_MDNS_HOST_NAME);
-
-  ESP_LOGI(TAG, "NetBIOS service started");
-
-  return ESP_OK;
 }
