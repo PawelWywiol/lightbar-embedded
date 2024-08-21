@@ -56,7 +56,7 @@ static esp_err_t set_cors_headers(httpd_req_t *req)
   return ESP_OK;
 }
 
-static esp_err_t set_api_response(httpd_req_t *req, char *message)
+esp_err_t set_api_response(httpd_req_t *req, char *message)
 {
   ESP_LOGI(TAG, "API GET request");
 
@@ -69,7 +69,10 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
 
   cJSON *data = cJSON_AddObjectToObject(root, "data");
   cJSON_AddNumberToObject(data, "leds", 0);
-  cJSON_AddNumberToObject(data, "space", get_vfs_free_space());
+
+  vfs_size_t vfs_size = get_vfs_space_info();
+
+  cJSON_AddNumberToObject(data, "space", vfs_size.free);
 
   if (message != NULL)
   {
@@ -93,7 +96,6 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
 static esp_err_t common_get_handler(httpd_req_t *req)
 {
   char filepath[FILE_SYSTEM_PATH_MAX_LENGTH] = FILE_SYSTEM_PUBLIC_BASE_PATH;
-  // strlcpy(filepath, FILE_SYSTEM_PUBLIC_BASE_PATH, sizeof(filepath));
 
   if (req->uri[strlen(req->uri) - 1] == '/')
   {
@@ -183,26 +185,13 @@ static esp_err_t api_post_handler(httpd_req_t *req)
 {
   ESP_LOGI(TAG, "API POST request");
 
-  size_t content_length = req->content_len;
-  if (content_length > SERVER_CONTEXT_BUFFER_MAX_LENGTH)
+  if (_app_config == NULL || _app_config->app_api_post_handler == NULL)
   {
-    ESP_LOGE(TAG, "Request content length is too large");
-    return set_api_response(req, "Request content length is too large");
+    ESP_LOGE(TAG, "API POST handler is not set");
+    return set_api_response(req, "Internal server error");
   }
 
-  ssize_t read_bytes = httpd_req_recv(req, req->user_ctx, content_length);
-
-  if (read_bytes <= 0)
-  {
-    ESP_LOGE(TAG, "Failed to read request content");
-    return set_api_response(req, "Failed to read request content");
-  }
-
-  ((char *)req->user_ctx)[read_bytes] = '\0';
-
-  ESP_LOGI(TAG, "Request content : %s", (char *)req->user_ctx);
-
-  return set_api_response(req, NULL);
+  return _app_config->app_api_post_handler(req);
 }
 
 esp_err_t init_server(app_config_t *app_config)

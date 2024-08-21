@@ -41,17 +41,17 @@ char *clean_vfs_path(char *path)
   return new_path;
 }
 
-size_t get_vfs_free_space(void)
+vfs_size_t get_vfs_space_info(void)
 {
-  size_t free_space = 0;
-  size_t total_space = 0;
+  vfs_size_t size = {0};
 
-  esp_err_t err = esp_littlefs_info(conf.partition_label, &total_space, &free_space);
+  esp_err_t err = esp_littlefs_info(conf.partition_label, &size.total, &size.used);
   if (err != ESP_OK)
   {
     ESP_LOGE(TAG, "Failed to get LittleFS info");
-    return 0;
   }
 
-  return free_space;
+  size.free = size.total - size.used;
+
+  return size;
 }

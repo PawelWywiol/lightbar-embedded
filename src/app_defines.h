@@ -1,6 +1,9 @@
 #ifndef __APP_DEFINES_H__
 #define __APP_DEFINES_H__
 
+#include "esp_log.h"
+#include "esp_http_server.h"
+
 #ifndef FILE_SYSTEM_PATH_MAX_LENGTH
 #define FILE_SYSTEM_PATH_MAX_LENGTH 256
 #endif
@@ -57,6 +60,7 @@ typedef struct app_config
 {
   wifi_credentials_t wifi_credentials;
   wifi_credentials_t ap_credentials;
+  esp_err_t (*app_api_post_handler)(httpd_req_t *r);
 } app_config_t;
 
 #endif // __APP_DEFINES_H__
