@@ -34,7 +34,7 @@ static esp_err_t app_api_post_handler(httpd_req_t *req)
 
   ESP_LOGI(TAG, "Request content : %s", (char *)req->user_ctx);
 
-  return ESP_OK;
+  return set_api_response(req, NULL);
 }
 
 void app_main(void)
