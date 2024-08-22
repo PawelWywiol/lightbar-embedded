@@ -54,8 +54,8 @@ static esp_err_t init_dhcps()
   esp_netif_ip_info_t ip_info = {};
 
   ip_info.ip.addr = inet_addr(CONFIG_APP_DHCP_IP_START);
-  ip_info.gw.addr = ip_info.ip.addr & ~((uint32_t)0xFF);
   ip_info.netmask.addr = 0x00FFFFFF;
+  ip_info.gw.addr = inet_addr(CONFIG_APP_DHCP_IP_START);
 
   GOTO_CHECK(esp_netif_dhcps_stop(ap_netif), TAG, "Failed to stop DHCP server", error);
   GOTO_CHECK(esp_netif_set_ip_info(ap_netif, &ip_info), TAG, "Failed to set IP info", error);

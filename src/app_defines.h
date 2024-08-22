@@ -36,6 +36,8 @@
 #define UID_MAX_LENGTH 32
 #endif
 
+#define IP4_ADDR_STRLEN_MAX 16
+
 #define TRAILING_ZERO_LENGTH 1
 
 #define SIZE_WITH_TRAILING_ZERO(size) (size + TRAILING_ZERO_LENGTH)

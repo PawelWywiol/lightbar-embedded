@@ -65,7 +65,7 @@ esp_err_t set_api_response(httpd_req_t *req, char *message)
 
   cJSON *root = cJSON_CreateObject();
   cJSON_AddStringToObject(root, "type", "info");
-  cJSON_AddNumberToObject(root, "network", 2);
+  cJSON_AddNumberToObject(root, "network", get_request_network_type(req));
 
   cJSON *data = cJSON_AddObjectToObject(root, "data");
   cJSON_AddNumberToObject(data, "leds", 0);
@@ -91,6 +91,37 @@ esp_err_t set_api_response(httpd_req_t *req, char *message)
 
   cJSON_Delete(root);
   return ESP_OK;
+}
+
+request_network_type_t get_request_network_type(httpd_req_t *req)
+{
+  uint32_t mask = 0x00FFFFFF;
+  uint32_t gateway = inet_addr(CONFIG_APP_DHCP_IP_START) & mask;
+
+  int socket = httpd_req_to_sockfd(req);
+  char ipstr[INET6_ADDRSTRLEN];
+  struct sockaddr_in6 socket_address;
+  socklen_t socket_address_size = sizeof(socket_address);
+
+  getpeername(socket, (struct sockaddr *)&socket_address, &socket_address_size);
+
+  inet_ntop(AF_INET6, &socket_address.sin6_addr, ipstr, sizeof(ipstr));
+
+  char *ipstr_colon = strrchr(ipstr, ':');
+
+  if (ipstr_colon == NULL)
+  {
+    return NETWORK_TYPE_NONE;
+  }
+
+  uint32_t request_network_mask = (unsigned int)(inet_addr(ipstr_colon + 1) & mask);
+
+  if (request_network_mask == gateway)
+  {
+    return NETWORK_TYPE_AP;
+  }
+
+  return NETWORK_TYPE_STA;
 }
 
 static esp_err_t common_get_handler(httpd_req_t *req)
