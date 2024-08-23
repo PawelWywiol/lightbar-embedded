@@ -56,44 +56,7 @@ static esp_err_t set_cors_headers(httpd_req_t *req)
   return ESP_OK;
 }
 
-esp_err_t set_api_response(httpd_req_t *req, char *message)
-{
-  ESP_LOGI(TAG, "API GET request");
-
-  set_cors_headers(req);
-  httpd_resp_set_type(req, "application/json");
-
-  cJSON *root = cJSON_CreateObject();
-  cJSON_AddStringToObject(root, "type", "info");
-  cJSON_AddNumberToObject(root, "network", get_request_network_type(req));
-
-  cJSON *data = cJSON_AddObjectToObject(root, "data");
-  cJSON_AddNumberToObject(data, "leds", 0);
-
-  vfs_size_t vfs_size = get_vfs_space_info();
-
-  cJSON_AddNumberToObject(data, "space", vfs_size.free);
-
-  if (message != NULL)
-  {
-    cJSON_AddStringToObject(root, "message", message);
-    httpd_resp_set_status(req, HTTPD_400);
-  }
-
-  if (_app_config != NULL)
-  {
-    cJSON_AddStringToObject(data, "uid", _app_config->ap_credentials.ssid);
-  }
-
-  const char *info = cJSON_Print(root);
-  httpd_resp_sendstr(req, info);
-  free((void *)info);
-
-  cJSON_Delete(root);
-  return ESP_OK;
-}
-
-request_network_type_t get_request_network_type(httpd_req_t *req)
+static request_network_type_t get_request_network_type(httpd_req_t *req)
 {
   uint32_t mask = 0x00FFFFFF;
   uint32_t gateway = inet_addr(CONFIG_APP_DHCP_IP_START) & mask;
@@ -223,6 +186,44 @@ static esp_err_t api_post_handler(httpd_req_t *req)
   }
 
   return _app_config->app_api_post_handler(req);
+}
+
+esp_err_t set_api_response(httpd_req_t *req, char *message)
+{
+  ESP_LOGI(TAG, "API GET request");
+
+  set_cors_headers(req);
+  httpd_resp_set_type(req, "application/json");
+
+  cJSON *root = cJSON_CreateObject();
+  cJSON_AddStringToObject(root, "type", "info");
+
+  request_network_type_t network_type = get_request_network_type(req);
+  cJSON_AddNumberToObject(root, "network", network_type);
+
+  cJSON *data = cJSON_AddObjectToObject(root, "data");
+  cJSON_AddNumberToObject(data, "leds", 0);
+
+  vfs_size_t vfs_size = get_vfs_space_info();
+  cJSON_AddNumberToObject(data, "space", vfs_size.free);
+
+  if (message != NULL)
+  {
+    cJSON_AddStringToObject(root, "message", message);
+    httpd_resp_set_status(req, HTTPD_400);
+  }
+
+  if (_app_config != NULL)
+  {
+    cJSON_AddStringToObject(data, "uid", _app_config->ap_credentials.ssid);
+  }
+
+  const char *info = cJSON_Print(root);
+  httpd_resp_sendstr(req, info);
+  free((void *)info);
+
+  cJSON_Delete(root);
+  return ESP_OK;
 }
 
 esp_err_t init_server(app_config_t *app_config)
