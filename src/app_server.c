@@ -172,6 +172,8 @@ static esp_err_t api_get_handler(httpd_req_t *req)
 {
   ESP_LOGI(TAG, "API GET request");
 
+  esp_event_post(APP_EVENTS, APP_EVENT_BASE, NULL, 0, portMAX_DELAY);
+
   return set_api_response(req, NULL);
 }
 

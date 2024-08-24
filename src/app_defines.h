@@ -4,6 +4,11 @@
 #include "esp_log.h"
 #include "esp_http_server.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #ifndef FILE_SYSTEM_PATH_MAX_LENGTH
 #define FILE_SYSTEM_PATH_MAX_LENGTH 256
 #endif
@@ -52,17 +57,21 @@
     }                                                                                                  \
   } while (0)
 
-typedef struct wifi_credentials
-{
-  char ssid[SIZE_WITH_TRAILING_ZERO(SSID_MAX_LENGTH)];
-  char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
-} wifi_credentials_t;
+  typedef struct wifi_credentials
+  {
+    char ssid[SIZE_WITH_TRAILING_ZERO(SSID_MAX_LENGTH)];
+    char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
+  } wifi_credentials_t;
 
-typedef struct app_config
-{
-  wifi_credentials_t wifi_credentials;
-  wifi_credentials_t ap_credentials;
-  esp_err_t (*app_api_post_handler)(httpd_req_t *r);
-} app_config_t;
+  typedef struct app_config
+  {
+    wifi_credentials_t wifi_credentials;
+    wifi_credentials_t ap_credentials;
+    esp_err_t (*app_api_post_handler)(httpd_req_t *r);
+  } app_config_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __APP_DEFINES_H__

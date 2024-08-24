@@ -1,6 +1,5 @@
-#include "esp_log.h"
-
 #include "app_defines.h"
+#include "app_events.h"
 #include "app_nvs.h"
 #include "app_vfs.h"
 #include "app_utils.h"
@@ -10,6 +9,8 @@
 app_config_t app_config;
 
 static const char *TAG = "APP_MAIN";
+
+ESP_EVENT_DEFINE_BASE(APP_EVENTS);
 
 static esp_err_t app_api_post_handler(httpd_req_t *req)
 {
@@ -37,11 +38,19 @@ static esp_err_t app_api_post_handler(httpd_req_t *req)
   return set_api_response(req, NULL);
 }
 
+static void all_event_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
+{
+  ESP_LOGI(TAG, "%s:%lu: all_event_handler", base, id);
+}
+
 void app_main(void)
 {
   ESP_LOGI(TAG, "Initializing application");
 
   app_config.app_api_post_handler = app_api_post_handler;
+
+  ESP_ERROR_CHECK(esp_event_loop_create_default());
+  ESP_ERROR_CHECK(esp_event_handler_instance_register(ESP_EVENT_ANY_BASE, ESP_EVENT_ANY_ID, all_event_handler, NULL, NULL));
 
   ESP_ERROR_CHECK(init_nvs());
   ESP_ERROR_CHECK(init_vfs());

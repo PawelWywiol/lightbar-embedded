@@ -12,20 +12,29 @@
 
 #include "app_defines.h"
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #define ALLOWED_PATH_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_./"
 #define FORBIDDEN_CHARACTERS_PLACEHOLDER '-'
 #define TRIM_SLASHES(path) (path[0] == '/' ? path + 1 : path)
 
-typedef struct vfs_size
-{
-  size_t total;
-  size_t used;
-  size_t free;
-} vfs_size_t;
+  typedef struct vfs_size
+  {
+    size_t total;
+    size_t used;
+    size_t free;
+  } vfs_size_t;
 
-esp_err_t init_vfs(void);
+  esp_err_t init_vfs(void);
 
-char *clean_vfs_path(char *path);
-vfs_size_t get_vfs_space_info(void);
+  char *clean_vfs_path(char *path);
+  vfs_size_t get_vfs_space_info(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __APP_VFS_SYSTEM_H__

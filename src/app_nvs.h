@@ -7,8 +7,17 @@
 
 #include "app_defines.h"
 
-esp_err_t init_nvs(void);
-esp_err_t nvs_read_data(const char *key, void *data, size_t length);
-esp_err_t nvs_write_data(const char *key, void *data, size_t length);
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+  esp_err_t init_nvs(void);
+  esp_err_t nvs_read_data(const char *key, void *data, size_t length);
+  esp_err_t nvs_write_data(const char *key, void *data, size_t length);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __APP_NVS_H__

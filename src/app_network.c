@@ -36,7 +36,6 @@ static esp_err_t init_netif()
   ESP_LOGI(TAG, "Initializing netif");
 
   GOTO_CHECK(esp_netif_init(), TAG, "Failed to initialize netif", error);
-  GOTO_CHECK(esp_event_loop_create_default(), TAG, "Failed to create event loop", error);
 
   ESP_LOGI(TAG, "Netif initialized");
 
