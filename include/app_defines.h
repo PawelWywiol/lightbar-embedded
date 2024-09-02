@@ -67,7 +67,6 @@ extern "C"
   {
     wifi_credentials_t wifi_credentials;
     wifi_credentials_t ap_credentials;
-    esp_err_t (*app_api_post_handler)(httpd_req_t *r);
   } app_config_t;
 
 #ifdef __cplusplus

@@ -26,7 +26,14 @@ extern "C"
     NETWORK_TYPE_AP
   } request_network_type_t;
 
-  esp_err_t set_api_response(httpd_req_t *req, char *message);
+  typedef struct request_chunk_data_type
+  {
+    void *data;
+    ssize_t size;
+    ssize_t total;
+    ssize_t processed;
+  } request_chunk_data_t;
+
   esp_err_t init_server(app_config_t *app_config);
 
 #ifdef __cplusplus

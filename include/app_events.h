@@ -13,6 +13,7 @@ extern "C"
   enum
   {
     APP_EVENT_BASE = 0,
+    APP_EVENT_POST_CHUNK,
   };
 
 #ifdef __cplusplus

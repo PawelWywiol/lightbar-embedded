@@ -168,29 +168,7 @@ static esp_err_t common_get_handler(httpd_req_t *req)
   return ESP_OK;
 }
 
-static esp_err_t api_get_handler(httpd_req_t *req)
-{
-  ESP_LOGI(TAG, "API GET request");
-
-  esp_event_post(APP_EVENTS, APP_EVENT_BASE, NULL, 0, portMAX_DELAY);
-
-  return set_api_response(req, NULL);
-}
-
-static esp_err_t api_post_handler(httpd_req_t *req)
-{
-  ESP_LOGI(TAG, "API POST request");
-
-  if (_app_config == NULL || _app_config->app_api_post_handler == NULL)
-  {
-    ESP_LOGE(TAG, "API POST handler is not set");
-    return set_api_response(req, "Internal server error");
-  }
-
-  return _app_config->app_api_post_handler(req);
-}
-
-esp_err_t set_api_response(httpd_req_t *req, char *message)
+static esp_err_t set_api_response(httpd_req_t *req, char *message)
 {
   ESP_LOGI(TAG, "API GET request");
 
@@ -226,6 +204,56 @@ esp_err_t set_api_response(httpd_req_t *req, char *message)
 
   cJSON_Delete(root);
   return ESP_OK;
+}
+
+static esp_err_t api_get_handler(httpd_req_t *req)
+{
+  ESP_LOGI(TAG, "API GET request");
+
+  esp_event_post(APP_EVENTS, APP_EVENT_BASE, NULL, 0, portMAX_DELAY);
+
+  return set_api_response(req, NULL);
+}
+
+static esp_err_t api_post_handler(httpd_req_t *req)
+{
+  ESP_LOGI(TAG, "API POST request");
+
+  vfs_size_t vfs_size = get_vfs_space_info();
+  size_t content_length = req->content_len;
+
+  if (content_length >= vfs_size.free)
+  {
+    ESP_LOGE(TAG, "Request content length is too large");
+    return set_api_response(req, "Request content length is too large");
+  }
+
+  ssize_t read_bytes = 0;
+  ssize_t processed_bytes = 0;
+
+  do
+  {
+    read_bytes = httpd_req_recv(req, req->user_ctx, content_length);
+
+    if (read_bytes <= 0)
+    {
+      ESP_LOGE(TAG, "Failed to read request content");
+      return set_api_response(req, "Failed to read request content");
+    }
+
+    processed_bytes += read_bytes;
+
+    request_chunk_data_t chunk_data = {
+        .data = req->user_ctx,
+        .size = read_bytes,
+        .total = content_length,
+        .processed = processed_bytes};
+
+    esp_event_post(APP_EVENTS, APP_EVENT_POST_CHUNK, &chunk_data, sizeof(request_chunk_data_t), portMAX_DELAY);
+
+  } while (read_bytes > 0 && processed_bytes < content_length);
+
+  return set_api_response(req, "");
 }
 
 esp_err_t init_server(app_config_t *app_config)

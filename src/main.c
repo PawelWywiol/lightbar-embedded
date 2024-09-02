@@ -12,45 +12,19 @@ static const char *TAG = "APP_MAIN";
 
 ESP_EVENT_DEFINE_BASE(APP_EVENTS);
 
-static esp_err_t app_api_post_handler(httpd_req_t *req)
+static void app_event_post_chunk_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
 {
-  ESP_LOGI(TAG, "API POST request");
+  request_chunk_data_t *chunk_data = (request_chunk_data_t *)event_data;
 
-  size_t content_length = req->content_len;
-  if (content_length >= SERVER_CONTEXT_BUFFER_MAX_LENGTH)
-  {
-    ESP_LOGE(TAG, "Request content length is too large");
-    return set_api_response(req, "Request content length is too large");
-  }
-
-  ssize_t read_bytes = httpd_req_recv(req, req->user_ctx, content_length);
-
-  if (read_bytes <= 0)
-  {
-    ESP_LOGE(TAG, "Failed to read request content");
-    return set_api_response(req, "Failed to read request content");
-  }
-
-  ((char *)req->user_ctx)[read_bytes] = '\0';
-
-  ESP_LOGI(TAG, "Request content : %s", (char *)req->user_ctx);
-
-  return set_api_response(req, NULL);
-}
-
-static void all_event_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
-{
-  ESP_LOGI(TAG, "%s:%lu: all_event_handler", base, id);
+  ESP_LOGI(TAG, "%s:%lu: APP_EVENT_POST_CHUNK [%d]", base, id, chunk_data->size);
 }
 
 void app_main(void)
 {
   ESP_LOGI(TAG, "Initializing application");
 
-  app_config.app_api_post_handler = app_api_post_handler;
-
   ESP_ERROR_CHECK(esp_event_loop_create_default());
-  ESP_ERROR_CHECK(esp_event_handler_instance_register(ESP_EVENT_ANY_BASE, ESP_EVENT_ANY_ID, all_event_handler, NULL, NULL));
+  ESP_ERROR_CHECK(esp_event_handler_instance_register(APP_EVENTS, APP_EVENT_POST_CHUNK, app_event_post_chunk_handler, NULL, NULL));
 
   ESP_ERROR_CHECK(init_nvs());
   ESP_ERROR_CHECK(init_vfs());
