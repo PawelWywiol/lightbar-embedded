@@ -16,10 +16,28 @@ static void app_event_post_chunk_handler(void *handler_args, esp_event_base_t ba
 {
   request_chunk_data_t *chunk = (request_chunk_data_t *)event_data;
 
-  connection_request_type_info_t type = *((connection_request_type_info_t *)chunk->data);
+  connection_request_type_info_t type_info = *((connection_request_type_info_t *)chunk->data);
   size_t data_size = *((size_t *)(chunk->data + CONNECTION_REQUEST_TYPE_INFO_LENGTH));
 
-  ESP_LOGI(TAG, "APP_EVENT_POST_CHUNK: [%d][%04x][%d]", chunk->size, type, data_size);
+  if (chunk->size != data_size + CONNECTION_REQUEST_INFO_LENGTH)
+  {
+    ESP_LOGE(TAG, "APP_EVENT_POST_CHUNK: Invalid chunk size [%d][%d]", chunk->size, data_size);
+    return;
+  }
+
+  connection_request_type_info_t eol_info =
+      *((connection_request_type_info_t *)(chunk->data +
+                                           CONNECTION_REQUEST_TYPE_INFO_LENGTH +
+                                           CONNECTION_REQUEST_SIZE_INFO_LENGTH +
+                                           data_size));
+
+  if (eol_info != CONNECTION_REQUEST_EOL_INFO)
+  {
+    ESP_LOGE(TAG, "APP_EVENT_POST_CHUNK: Invalid EOL info [%04x]", eol_info);
+    return;
+  }
+
+  ESP_LOGI(TAG, "APP_EVENT_POST_CHUNK: [%d][%04x][%d][%04x]", chunk->size, type_info, data_size, eol_info);
 }
 
 void app_main(void)
