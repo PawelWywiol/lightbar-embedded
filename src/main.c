@@ -14,9 +14,12 @@ ESP_EVENT_DEFINE_BASE(APP_EVENTS);
 
 static void app_event_post_chunk_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
 {
-  request_chunk_data_t *chunk_data = (request_chunk_data_t *)event_data;
+  request_chunk_data_t *chunk = (request_chunk_data_t *)event_data;
 
-  ESP_LOGI(TAG, "%s:%lu: APP_EVENT_POST_CHUNK [%d]", base, id, chunk_data->size);
+  connection_request_type_info_t type = *((connection_request_type_info_t *)chunk->data);
+  size_t data_size = *((size_t *)(chunk->data + CONNECTION_REQUEST_TYPE_INFO_LENGTH));
+
+  ESP_LOGI(TAG, "APP_EVENT_POST_CHUNK: [%d][%04x][%d]", chunk->size, type, data_size);
 }
 
 void app_main(void)
