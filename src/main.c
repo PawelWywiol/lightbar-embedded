@@ -37,7 +37,7 @@ static void app_event_post_chunk_handler(void *handler_args, esp_event_base_t ba
     return;
   }
 
-  ESP_LOGI(TAG, "APP_EVENT_POST_CHUNK: [%d][%04x][%d][%04x]", chunk->size, type_info, data_size, eol_info);
+  ESP_LOGI(TAG, "APP_EVENT_POST_CHUNK: [%04x][%d][%s]", type_info, data_size, chunk->uid);
 }
 
 void app_main(void)

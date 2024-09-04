@@ -228,30 +228,31 @@ static esp_err_t api_post_handler(httpd_req_t *req)
     return set_api_response(req, "Request content length is too large");
   }
 
-  ssize_t read_bytes = 0;
-  ssize_t processed_bytes = 0;
+  request_chunk_data_t chunk = {
+      .data = req->user_ctx,
+      .total = content_length,
+      .size = 0,
+      .processed = 0};
+
+  // uid(chunk.uid, UID_MAX_LENGTH);
+  snprintf(chunk.uid, UID_MAX_LENGTH, "%08x", (unsigned int)esp_timer_get_time());
+  uid(chunk.uid + strlen(chunk.uid), UID_MAX_LENGTH - strlen(chunk.uid));
+  chunk.uid[UID_MAX_LENGTH - 1] = '\0';
 
   do
   {
-    read_bytes = httpd_req_recv(req, req->user_ctx, content_length);
+    chunk.size = httpd_req_recv(req, req->user_ctx, content_length);
+    chunk.processed += chunk.size;
 
-    if (read_bytes <= 0)
+    if (chunk.size <= 0)
     {
       ESP_LOGE(TAG, "Failed to read request content");
       return set_api_response(req, "Failed to read request content");
     }
 
-    processed_bytes += read_bytes;
+    esp_event_post(APP_EVENTS, APP_EVENT_POST_CHUNK, &chunk, sizeof(request_chunk_data_t), portMAX_DELAY);
 
-    request_chunk_data_t chunk_data = {
-        .data = req->user_ctx,
-        .size = read_bytes,
-        .total = content_length,
-        .processed = processed_bytes};
-
-    esp_event_post(APP_EVENTS, APP_EVENT_POST_CHUNK, &chunk_data, sizeof(request_chunk_data_t), portMAX_DELAY);
-
-  } while (read_bytes > 0 && processed_bytes < content_length);
+  } while (chunk.size > 0 && chunk.processed < content_length);
 
   return set_api_response(req, "");
 }

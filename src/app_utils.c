@@ -13,7 +13,7 @@ void uid(char *uid, size_t length)
     uid[i] = uid_chars[rand() % (sizeof(uid_chars) - 1)];
   }
 
-  uid[length] = '\0';
+  uid[length - 1] = '\0';
 }
 
 void reset_wifi_credentials(wifi_credentials_t *wifi_credentials)

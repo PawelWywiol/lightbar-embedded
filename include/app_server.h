@@ -7,12 +7,14 @@
 #include "esp_log.h"
 #include "esp_err.h"
 #include "esp_http_server.h"
+#include "esp_timer.h"
 #include "lwip/sockets.h"
 #include "cJSON.h"
 
 #include "app_defines.h"
 #include "app_events.h"
 #include "app_vfs.h"
+#include "app_utils.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -32,6 +34,7 @@ extern "C"
     ssize_t size;
     ssize_t total;
     ssize_t processed;
+    char uid[UID_MAX_LENGTH];
   } request_chunk_data_t;
 
   esp_err_t init_server(app_config_t *app_config);
