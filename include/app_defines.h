@@ -1,22 +1,20 @@
 #ifndef __APP_DEFINES_H__
 #define __APP_DEFINES_H__
 
-#include "esp_log.h"
 #include "esp_http_server.h"
+#include "esp_log.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-  typedef enum connection_request_type_info
-  {
-    CONNECTION_REQUEST_TYPE_NONE = 0,
-    CONNECTION_REQUEST_WIFI_INFO = 0x77696669,
-    CONNECTION_REQUEST_COLORS_INFO = 0x636f6c6f,
-    CONNECTION_REQUEST_FRAME_INFO = 0x6672616d,
-    CONNECTION_REQUEST_EOL_INFO = 0x454f4c00
-  } connection_request_type_info_t;
+typedef enum connection_request_type_info {
+  CONNECTION_REQUEST_TYPE_NONE = 0,
+  CONNECTION_REQUEST_WIFI_INFO = 0x77696669,
+  CONNECTION_REQUEST_COLORS_INFO = 0x636f6c6f,
+  CONNECTION_REQUEST_FRAME_INFO = 0x6672616d,
+  CONNECTION_REQUEST_EOL_INFO = 0x454f4c00
+} connection_request_type_info_t;
 
 #define CONNECTION_REQUEST_TYPE_INFO_LENGTH 4
 #define CONNECTION_REQUEST_SIZE_INFO_LENGTH 4
@@ -65,27 +63,24 @@ extern "C"
 
 #define SIZE_WITH_TRAILING_ZERO(size) (size + TRAILING_ZERO_LENGTH)
 
-#define GOTO_CHECK(a, tag, str, goto_tag, ...)                                                         \
-  do                                                                                                   \
-  {                                                                                                    \
-    if ((long)(a) != 0)                                                                                \
-    {                                                                                                  \
-      ESP_LOGE(tag, str " [%s : %d / %s]", __FUNCTION__, __LINE__, esp_err_to_name(a), ##__VA_ARGS__); \
-      goto goto_tag;                                                                                   \
-    }                                                                                                  \
+#define GOTO_CHECK(a, tag, str, goto_tag, ...)                                 \
+  do {                                                                         \
+    if ((long)(a) != 0) {                                                      \
+      ESP_LOGE(tag, str " [%s : %d / %s]", __FUNCTION__, __LINE__,             \
+               esp_err_to_name(a), ##__VA_ARGS__);                             \
+      goto goto_tag;                                                           \
+    }                                                                          \
   } while (0)
 
-  typedef struct wifi_credentials
-  {
-    char ssid[SIZE_WITH_TRAILING_ZERO(SSID_MAX_LENGTH)];
-    char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
-  } wifi_credentials_t;
+typedef struct wifi_credentials {
+  char ssid[SIZE_WITH_TRAILING_ZERO(SSID_MAX_LENGTH)];
+  char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
+} wifi_credentials_t;
 
-  typedef struct app_config
-  {
-    wifi_credentials_t wifi_credentials;
-    wifi_credentials_t ap_credentials;
-  } app_config_t;
+typedef struct app_config {
+  wifi_credentials_t wifi_credentials;
+  wifi_credentials_t ap_credentials;
+} app_config_t;
 
 #ifdef __cplusplus
 }
