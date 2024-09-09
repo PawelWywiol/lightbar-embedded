@@ -33,6 +33,9 @@ extern "C"
   char *clean_vfs_path(char *path);
   vfs_size_t get_vfs_space_info(void);
 
+  esp_err_t vfs_make_dir(const char *path);
+  esp_err_t vfs_append_file(const char *path, const void *data, size_t size);
+
 #ifdef __cplusplus
 }
 #endif

@@ -139,7 +139,7 @@ static esp_err_t common_get_handler(httpd_req_t *req)
 
   do
   {
-    read_bytes = read(fd, chunk, SERVER_CONTEXT_BUFFER_MAX_LENGTH);
+    read_bytes = read(fd, chunk, CONTEXT_BUFFER_MAX_LENGTH);
 
     if (read_bytes == -1)
     {
@@ -234,7 +234,6 @@ static esp_err_t api_post_handler(httpd_req_t *req)
       .size = 0,
       .processed = 0};
 
-  // uid(chunk.uid, UID_MAX_LENGTH);
   snprintf(chunk.uid, UID_MAX_LENGTH, "%08x", (unsigned int)esp_timer_get_time());
   uid(chunk.uid + strlen(chunk.uid), UID_MAX_LENGTH - strlen(chunk.uid));
   chunk.uid[UID_MAX_LENGTH - 1] = '\0';
@@ -250,7 +249,7 @@ static esp_err_t api_post_handler(httpd_req_t *req)
       return set_api_response(req, "Failed to read request content");
     }
 
-    esp_event_post(APP_EVENTS, APP_EVENT_POST_CHUNK, &chunk, sizeof(request_chunk_data_t), portMAX_DELAY);
+    esp_event_post(APP_EVENTS, APP_EVENT_PROCESS_REQUEST_CHUNK, &chunk, sizeof(request_chunk_data_t), portMAX_DELAY);
 
   } while (chunk.size > 0 && chunk.processed < content_length);
 
@@ -263,7 +262,7 @@ esp_err_t init_server(app_config_t *app_config)
 
   _app_config = app_config;
 
-  void *context = calloc(1, SERVER_CONTEXT_BUFFER_MAX_LENGTH);
+  void *context = calloc(1, CONTEXT_BUFFER_MAX_LENGTH);
   GOTO_CHECK(context == NULL, TAG, "Failed to allocate memory for server context", error);
 
   httpd_handle_t server = NULL;

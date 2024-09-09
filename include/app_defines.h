@@ -11,6 +11,7 @@ extern "C"
 
   typedef enum connection_request_type_info
   {
+    CONNECTION_REQUEST_TYPE_NONE = 0,
     CONNECTION_REQUEST_WIFI_INFO = 0x77696669,
     CONNECTION_REQUEST_COLORS_INFO = 0x636f6c6f,
     CONNECTION_REQUEST_FRAME_INFO = 0x6672616d,
@@ -34,8 +35,12 @@ extern "C"
 #define FILE_SYSTEM_PUBLIC_BASE_PATH "/storage/public_html"
 #endif
 
-#ifndef SERVER_CONTEXT_BUFFER_MAX_LENGTH
-#define SERVER_CONTEXT_BUFFER_MAX_LENGTH (1024 * 10)
+#ifndef FILE_SYSTEM_TEMP_BASE_PATH
+#define FILE_SYSTEM_TEMP_BASE_PATH "/storage/temp"
+#endif
+
+#ifndef CONTEXT_BUFFER_MAX_LENGTH
+#define CONTEXT_BUFFER_MAX_LENGTH (1024 * 10)
 #endif
 
 #ifndef SSID_MAX_LENGTH

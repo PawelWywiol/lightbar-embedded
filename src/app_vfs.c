@@ -55,3 +55,43 @@ vfs_size_t get_vfs_space_info(void)
 
   return size;
 }
+
+esp_err_t vfs_make_dir(const char *path)
+{
+  ESP_LOGI(TAG, "Creating directory: %s", path);
+
+  struct stat dir_stat;
+  if (stat(path, &dir_stat) == 0)
+  {
+    ESP_LOGI(TAG, "Directory already exists: %s", path);
+    return ESP_OK;
+  }
+
+  GOTO_CHECK(mkdir(path, 0755) != 0, TAG, "Failed to create directory", error);
+
+  return ESP_OK;
+error:
+  return ESP_FAIL;
+}
+
+esp_err_t vfs_append_file(const char *path, const void *data, size_t size)
+{
+  ESP_LOGI(TAG, "Appending file: %s", path);
+
+  FILE *file = fopen(path, "a");
+  GOTO_CHECK(file == NULL, TAG, "Failed to open file", error);
+
+  size_t written = fwrite(data, 1, size, file);
+  GOTO_CHECK(written != size, TAG, "Failed to write file", error);
+
+  fclose(file);
+
+  return ESP_OK;
+error:
+  if (file != NULL)
+  {
+    fclose(file);
+  }
+
+  return ESP_FAIL;
+}
