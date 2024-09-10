@@ -20,9 +20,9 @@ extern "C"
 {
 #endif
 
-    esp_err_t init_network();
-    esp_err_t init_ap(const wifi_credentials_t *ap_credentials);
-    esp_err_t start_wifi();
+  esp_err_t init_network();
+  esp_err_t init_ap(const wifi_credentials_t *ap_credentials);
+  esp_err_t start_wifi();
 
 #ifdef __cplusplus
 }

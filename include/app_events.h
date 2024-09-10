@@ -8,14 +8,14 @@ extern "C"
 {
 #endif
 
-    ESP_EVENT_DECLARE_BASE(APP_EVENTS);
+  ESP_EVENT_DECLARE_BASE(APP_EVENTS);
 
-    enum
-    {
-        APP_EVENT_BASE = 0,
-        APP_EVENT_PROCESS_REQUEST_CHUNK,
-        APP_EVENT_PROCESS_REQUEST_CHUNKS_FILE,
-    };
+  enum
+  {
+    APP_EVENT_BASE = 0,
+    APP_EVENT_PROCESS_REQUEST_CHUNK,
+    APP_EVENT_PROCESS_REQUEST_CHUNKS_FILE,
+  };
 
 #ifdef __cplusplus
 }
