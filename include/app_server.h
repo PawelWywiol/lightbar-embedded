@@ -37,7 +37,7 @@ extern "C"
     char uid[UID_MAX_LENGTH];
   } request_chunk_data_t;
 
-  esp_err_t init_server(app_config_t *app_config);
+  esp_err_t init_server(const char *app_uid);
 
 #ifdef __cplusplus
 }

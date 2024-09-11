@@ -23,8 +23,6 @@ extern "C"
   esp_err_t read_ap_credentials(wifi_credentials_t *wifi_credentials);
   esp_err_t write_ap_credentials(const wifi_credentials_t *wifi_credentials);
 
-  esp_err_t read_credentials(app_config_t *app_config);
-
 #ifdef __cplusplus
 }
 #endif

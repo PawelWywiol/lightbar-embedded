@@ -5,7 +5,7 @@ static const char *TAG = "APP_SERVER";
 #define GZIP_EXTENSION ".gz"
 #define CHECK_FILE_EXTENSION(filename, ext) (strcasecmp(&filename[strlen(filename) - strlen(ext)], ext) == 0)
 
-static app_config_t *_app_config = NULL;
+char *_app_uid = NULL;
 
 static esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filepath)
 {
@@ -195,9 +195,9 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
     httpd_resp_set_status(req, HTTPD_400);
   }
 
-  if (_app_config != NULL)
+  if (_app_uid != NULL)
   {
-    cJSON_AddStringToObject(data, "uid", _app_config->ap_credentials.ssid);
+    cJSON_AddStringToObject(data, "uid", _app_uid);
   }
 
   const char *info = cJSON_Print(root);
@@ -254,11 +254,11 @@ static esp_err_t api_post_handler(httpd_req_t *req)
   return set_api_response(req, "");
 }
 
-esp_err_t init_server(app_config_t *app_config)
+esp_err_t init_server(const char *app_uid)
 {
   ESP_LOGI(TAG, "Initializing server");
 
-  _app_config = app_config;
+  _app_uid = app_uid;
 
   void *context = calloc(1, CONTEXT_BUFFER_MAX_LENGTH);
   GOTO_CHECK(context == NULL, TAG, "Failed to allocate memory for server context", error);

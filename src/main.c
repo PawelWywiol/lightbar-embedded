@@ -6,11 +6,22 @@
 #include "app_utils.h"
 #include "app_vfs.h"
 
-app_config_t app_config;
+wifi_credentials_t wifi_credentials;
+wifi_credentials_t ap_credentials;
 
 static const char *TAG = "APP_MAIN";
 
 ESP_EVENT_DEFINE_BASE(APP_EVENTS);
+
+static void process_request_wifi_credentials(wifi_credentials_t *wifi_credentials)
+{
+  ESP_LOGI(TAG, "Processing wifi credentials : %s", wifi_credentials->ssid);
+
+  if (write_wifi_credentials(wifi_credentials) != ESP_OK)
+  {
+    ESP_LOGE(TAG, "Failed to write wifi credentials");
+  }
+}
 
 static void app_event_process_request_chunks_file_handler(void *handler_args, esp_event_base_t base, int32_t id,
                                                           void *event_data)
@@ -38,8 +49,18 @@ static void app_event_process_request_chunks_file_handler(void *handler_args, es
   {
     connection_request_type_info_t chunk_end_info = CONNECTION_REQUEST_TYPE_NONE;
     connection_request_type_info_t chunk_type_info = CONNECTION_REQUEST_TYPE_NONE;
-    GOTO_CHECK(read(file, &chunk_type_info, CONNECTION_REQUEST_TYPE_INFO_LENGTH) != CONNECTION_REQUEST_TYPE_INFO_LENGTH,
-               TAG, "Failed to read request type", error_free_context);
+
+    size_t type_info_size = 0;
+    type_info_size = read(file, &chunk_type_info, CONNECTION_REQUEST_TYPE_INFO_LENGTH);
+
+    if (type_info_size == 0)
+    {
+      break;
+    }
+
+    GOTO_CHECK(type_info_size != CONNECTION_REQUEST_TYPE_INFO_LENGTH, TAG, "Failed to read request type",
+               error_close_file);
+
     size_t chunk_context_size = 0;
     GOTO_CHECK(read(file, &chunk_context_size, CONNECTION_REQUEST_SIZE_INFO_LENGTH) !=
                  CONNECTION_REQUEST_SIZE_INFO_LENGTH,
@@ -60,6 +81,14 @@ static void app_event_process_request_chunks_file_handler(void *handler_args, es
     GOTO_CHECK(read(file, &chunk_end_info, CONNECTION_REQUEST_EOL_INFO_LENGTH) != CONNECTION_REQUEST_EOL_INFO_LENGTH,
                TAG, "Failed to read request EOL", error_close_file);
     GOTO_CHECK(chunk_end_info != CONNECTION_REQUEST_EOL_INFO, TAG, "Failed to read request EOL", error_close_file);
+
+    if (chunk_type_info == CONNECTION_REQUEST_WIFI_INFO && chunk_context_size == sizeof(wifi_credentials_t))
+    {
+      wifi_credentials_t *wifi_credentials = (wifi_credentials_t *)context;
+      ESP_LOGI(TAG, "Received wifi credentials : %s", wifi_credentials->ssid);
+
+      process_request_wifi_credentials(wifi_credentials);
+    }
 
   } while (true);
 
@@ -128,12 +157,13 @@ void app_main(void)
   ESP_ERROR_CHECK(init_nvs());
   ESP_ERROR_CHECK(init_vfs());
 
-  ESP_ERROR_CHECK(read_credentials(&app_config));
+  ESP_ERROR_CHECK(read_wifi_credentials(&wifi_credentials));
+  ESP_ERROR_CHECK(read_ap_credentials(&ap_credentials));
 
   ESP_ERROR_CHECK(init_network());
 
-  ESP_ERROR_CHECK(init_ap(&app_config.ap_credentials));
+  ESP_ERROR_CHECK(init_ap(&ap_credentials));
   ESP_ERROR_CHECK(start_wifi());
 
-  ESP_ERROR_CHECK(init_server(&app_config));
+  ESP_ERROR_CHECK(init_server(ap_credentials.ssid));
 }

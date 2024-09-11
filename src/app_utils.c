@@ -95,31 +95,3 @@ esp_err_t read_ap_credentials(wifi_credentials_t *ap_credentials)
 
   return ESP_OK;
 }
-
-esp_err_t read_credentials(app_config_t *app_config)
-{
-  ESP_LOGI(TAG, "Reading credentials");
-
-  if (app_config == NULL)
-  {
-    ESP_LOGE(TAG, "Invalid app config");
-
-    return ESP_FAIL;
-  }
-
-  if (read_wifi_credentials(&app_config->wifi_credentials) != ESP_OK)
-  {
-    ESP_LOGE(TAG, "Failed to read WiFi credentials");
-
-    return ESP_FAIL;
-  }
-
-  if (read_ap_credentials(&app_config->ap_credentials) != ESP_OK)
-  {
-    ESP_LOGE(TAG, "Failed to read AP credentials");
-
-    return ESP_FAIL;
-  }
-
-  return ESP_OK;
-}
