@@ -26,6 +26,10 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
     ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
     ESP_LOGI(TAG_STA, "Got IP:" IPSTR, IP2STR(&event->ip_info.ip));
   }
+  else
+  {
+    ESP_LOGI(TAG, "Unknown event [%s][%ld]", event_base, event_id);
+  }
 }
 
 static esp_err_t init_netif()
@@ -101,14 +105,15 @@ static esp_err_t init_wifi()
 {
   ESP_LOGI(TAG, "Initializing WiFi");
 
-  wifi_init_config_t config = WIFI_INIT_CONFIG_DEFAULT();
-  GOTO_CHECK(esp_wifi_init(&config), TAG, "Failed to initialize WiFi", error);
-
   GOTO_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL), TAG,
              "Failed to register WiFi event handler", error);
 
   GOTO_CHECK(esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL), TAG,
              "Failed to register IP event handler", error);
+
+  wifi_init_config_t config = WIFI_INIT_CONFIG_DEFAULT();
+  GOTO_CHECK(esp_wifi_init(&config), TAG, "Failed to initialize WiFi", error);
+  GOTO_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA), TAG, "Failed to set WiFi mode", error);
 
   ESP_LOGI(TAG, "WiFi initialized");
 
@@ -177,14 +182,73 @@ error:
   return ESP_FAIL;
 }
 
+esp_err_t init_sta(const wifi_credentials_t *wifi_credentials)
+{
+  ESP_LOGI(TAG, "Initializing STA");
+
+  esp_netif_t *esp_netif_sta = esp_netif_create_default_wifi_sta();
+
+  wifi_config_t wifi_config = {
+    .sta =
+      {
+        .scan_method = WIFI_ALL_CHANNEL_SCAN,
+        .failure_retry_cnt = CONFIG_APP_STA_MAXIMUM_RETRY,
+      },
+  };
+
+  strncpy((char *)wifi_config.sta.ssid, wifi_credentials->ssid, sizeof(wifi_config.sta.ssid));
+  strncpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
+
+  wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
+  wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
+
+  GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG_STA, "Failed to set WiFi mode", error);
+
+  esp_netif_set_default_netif(esp_netif_sta);
+
+  ESP_LOGI(TAG, "STA initialized");
+
+  return ESP_OK;
+error:
+  return ESP_FAIL;
+}
+
 esp_err_t start_wifi()
 {
   ESP_LOGI(TAG, "Starting WiFi");
 
-  GOTO_CHECK(esp_wifi_set_mode(WIFI_MODE_AP), TAG, "Failed to set WiFi mode", error);
   GOTO_CHECK(esp_wifi_start(), TAG, "Failed to start WiFi", error);
 
   ESP_LOGI(TAG, "WiFi started");
+
+  return ESP_OK;
+error:
+  return ESP_FAIL;
+}
+
+esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
+{
+  ESP_LOGI(TAG, "Reconnecting STA");
+
+  wifi_config_t wifi_config = {
+    .sta =
+      {
+        .scan_method = WIFI_ALL_CHANNEL_SCAN,
+        .failure_retry_cnt = CONFIG_APP_STA_MAXIMUM_RETRY,
+      },
+  };
+
+  strncpy((char *)wifi_config.sta.ssid, wifi_credentials->ssid, sizeof(wifi_config.sta.ssid));
+  strncpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
+
+  wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
+  wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
+
+  GOTO_CHECK(esp_wifi_disconnect(), TAG_STA, "Failed to disconnect WiFi", error);
+  GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG_STA, "Failed to set WiFi mode", error);
+  GOTO_CHECK(esp_wifi_connect(), TAG_STA, "Failed to connect WiFi", error);
+
+  ESP_LOGI(TAG, "STA reconnected");
 
   return ESP_OK;
 error:

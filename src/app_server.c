@@ -5,7 +5,7 @@ static const char *TAG = "APP_SERVER";
 #define GZIP_EXTENSION ".gz"
 #define CHECK_FILE_EXTENSION(filename, ext) (strcasecmp(&filename[strlen(filename) - strlen(ext)], ext) == 0)
 
-char *_app_uid = NULL;
+extern const char *_app_uid = NULL;
 
 static esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filepath)
 {
@@ -162,7 +162,7 @@ static esp_err_t common_get_handler(httpd_req_t *req)
     }
   } while (read_bytes > 0);
 
-  ESP_LOGI(TAG, "File sending complete");
+  ESP_LOGI(TAG, "File sending complete : %s", filepath);
 
   close(fd);
   httpd_resp_send_chunk(req, NULL, 0);
@@ -254,7 +254,7 @@ static esp_err_t api_post_handler(httpd_req_t *req)
   return set_api_response(req, "");
 }
 
-esp_err_t init_server(const char *app_uid)
+esp_err_t init_server(char *app_uid)
 {
   ESP_LOGI(TAG, "Initializing server");
 

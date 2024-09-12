@@ -84,6 +84,12 @@ menu "App Config"
       help
         Start IP for DHCP.
 
+    config APP_STA_MAXIMUM_RETRY
+      int "STA Maximum Retry"
+      default 5
+      help
+        Maximum number of retries for the STA.
+
   endmenu
 
 endmenu

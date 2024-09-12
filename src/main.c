@@ -13,14 +13,26 @@ static const char *TAG = "APP_MAIN";
 
 ESP_EVENT_DEFINE_BASE(APP_EVENTS);
 
-static void process_request_wifi_credentials(wifi_credentials_t *wifi_credentials)
+static void process_request_wifi_credentials(void *data, size_t size)
 {
-  ESP_LOGI(TAG, "Processing wifi credentials : %s", wifi_credentials->ssid);
+  GOTO_CHECK(size != sizeof(wifi_credentials_t), TAG, "Invalid wifi credentials size", error);
 
-  if (write_wifi_credentials(wifi_credentials) != ESP_OK)
-  {
-    ESP_LOGE(TAG, "Failed to write wifi credentials");
-  }
+  wifi_credentials_t *new_wifi_credentials = (wifi_credentials_t *)data;
+  ESP_LOGI(TAG, "Processing wifi credentials : %s", new_wifi_credentials->ssid);
+
+  GOTO_CHECK(strlen(new_wifi_credentials->ssid) == 0 || strlen(new_wifi_credentials->ssid) >= SSID_MAX_LENGTH ||
+               strlen(new_wifi_credentials->password) == 0 ||
+               strlen(new_wifi_credentials->password) >= PASSWORD_MAX_LENGTH,
+             TAG, "Invalid wifi credentials", error);
+
+  GOTO_CHECK(memcpy(&wifi_credentials, new_wifi_credentials, sizeof(wifi_credentials_t)) == NULL, TAG,
+             "Failed to copy wifi credentials", error);
+
+  GOTO_CHECK(write_wifi_credentials(&wifi_credentials), TAG, "Failed to write wifi credentials", error);
+
+  GOTO_CHECK(reconnect_sta(new_wifi_credentials), TAG, "Failed to reconnect to wifi", error);
+
+error:
 }
 
 static void app_event_process_request_chunks_file_handler(void *handler_args, esp_event_base_t base, int32_t id,
@@ -82,12 +94,9 @@ static void app_event_process_request_chunks_file_handler(void *handler_args, es
                TAG, "Failed to read request EOL", error_close_file);
     GOTO_CHECK(chunk_end_info != CONNECTION_REQUEST_EOL_INFO, TAG, "Failed to read request EOL", error_close_file);
 
-    if (chunk_type_info == CONNECTION_REQUEST_WIFI_INFO && chunk_context_size == sizeof(wifi_credentials_t))
+    if (chunk_type_info == CONNECTION_REQUEST_WIFI_INFO)
     {
-      wifi_credentials_t *wifi_credentials = (wifi_credentials_t *)context;
-      ESP_LOGI(TAG, "Received wifi credentials : %s", wifi_credentials->ssid);
-
-      process_request_wifi_credentials(wifi_credentials);
+      process_request_wifi_credentials(context, chunk_context_size);
     }
 
   } while (true);
@@ -161,8 +170,9 @@ void app_main(void)
   ESP_ERROR_CHECK(read_ap_credentials(&ap_credentials));
 
   ESP_ERROR_CHECK(init_network());
-
   ESP_ERROR_CHECK(init_ap(&ap_credentials));
+  ESP_ERROR_CHECK(init_sta(&wifi_credentials));
+
   ESP_ERROR_CHECK(start_wifi());
 
   ESP_ERROR_CHECK(init_server(ap_credentials.ssid));
