@@ -4,27 +4,91 @@ static const char *TAG = "APP_NETWORK";
 static const char *TAG_AP = "APP_NETWORK_AP";
 static const char *TAG_STA = "APP_NETWORK_STA";
 
+static char public_ip[IP4_ADDR_STRLEN_MAX] = {0};
+
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
-  if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_AP_STACONNECTED)
+  if (event_base == WIFI_EVENT)
   {
-    wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
-    ESP_LOGI(TAG_AP, "Station " MACSTR " joined, AID=%d", MAC2STR(event->mac), event->aid);
+    switch (event_id)
+    {
+    case WIFI_EVENT_STA_START: {
+      esp_wifi_connect();
+      ESP_LOGI(TAG_STA, "Station started");
+    }
+    break;
+    case WIFI_EVENT_STA_STOP: {
+      ESP_LOGI(TAG_STA, "Station stopped");
+    }
+    break;
+    case WIFI_EVENT_STA_CONNECTED: {
+      wifi_event_sta_connected_t *event = (wifi_event_sta_connected_t *)event_data;
+      ESP_LOGI(TAG_STA, "Station connected to %s, AID=%d", (char *)event->ssid, event->aid);
+    }
+    break;
+    case WIFI_EVENT_STA_DISCONNECTED: {
+      wifi_event_sta_disconnected_t *event = (wifi_event_sta_disconnected_t *)event_data;
+      ESP_LOGI(TAG_STA, "Station disconnected from %s, reason:%d", (char *)event->ssid, event->reason);
+    }
+    break;
+    case WIFI_EVENT_AP_START: {
+      ESP_LOGI(TAG_AP, "Access point started");
+    }
+    break;
+    case WIFI_EVENT_AP_STOP: {
+      ESP_LOGI(TAG_AP, "Access point stopped");
+    }
+    break;
+    case WIFI_EVENT_AP_STACONNECTED: {
+      wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
+      ESP_LOGI(TAG_AP, "Station " MACSTR " joined, AID=%d", MAC2STR(event->mac), event->aid);
+    }
+    break;
+    case WIFI_EVENT_AP_STADISCONNECTED: {
+      wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)event_data;
+      ESP_LOGI(TAG_AP, "Station " MACSTR " left, AID=%d, reason:%d", MAC2STR(event->mac), event->aid, event->reason);
+    }
+    break;
+    case WIFI_EVENT_STA_BEACON_TIMEOUT: {
+      ESP_LOGI(TAG_STA, "Beacon timeout");
+    }
+    break;
+    case WIFI_EVENT_HOME_CHANNEL_CHANGE: {
+      wifi_event_home_channel_change_t *event = (wifi_event_home_channel_change_t *)event_data;
+      ESP_LOGI(TAG, "Home channel changed from %d to %d", event->old_chan, event->new_chan);
+    }
+    break;
+    default:
+      ESP_LOGI(TAG, "Unknown event [%s][%ld]", event_base, event_id);
+      break;
+    }
   }
-  else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_AP_STADISCONNECTED)
+  else if (event_base == IP_EVENT)
   {
-    wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)event_data;
-    ESP_LOGI(TAG_AP, "Station " MACSTR " left, AID=%d, reason:%d", MAC2STR(event->mac), event->aid, event->reason);
-  }
-  else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
-  {
-    esp_wifi_connect();
-    ESP_LOGI(TAG_STA, "Station started");
-  }
-  else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
-  {
-    ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-    ESP_LOGI(TAG_STA, "Got IP:" IPSTR, IP2STR(&event->ip_info.ip));
+    switch (event_id)
+    {
+    case IP_EVENT_STA_GOT_IP: {
+      ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+      ESP_LOGI(TAG_STA, "Got IP:" IPSTR, IP2STR(&event->ip_info.ip));
+
+      memset((char *)public_ip, 0, IP4_ADDR_STRLEN_MAX);
+      snprintf((char *)public_ip, IP4_ADDR_STRLEN_MAX, IPSTR, IP2STR(&event->ip_info.ip));
+    }
+    break;
+    case IP_EVENT_STA_LOST_IP: {
+      ESP_LOGI(TAG_STA, "Lost IP");
+
+      memset((char *)public_ip, 0, IP4_ADDR_STRLEN_MAX);
+    }
+    break;
+    case IP_EVENT_AP_STAIPASSIGNED: {
+      ESP_LOGI(TAG_AP, "Station assigned IP");
+    }
+    break;
+    default:
+      ESP_LOGI(TAG, "Unknown event [%s][%ld]", event_base, event_id);
+      break;
+    }
   }
   else
   {
@@ -37,8 +101,6 @@ static esp_err_t init_netif()
   ESP_LOGI(TAG, "Initializing netif");
 
   GOTO_CHECK(esp_netif_init(), TAG, "Failed to initialize netif", error);
-
-  ESP_LOGI(TAG, "Netif initialized");
 
   return ESP_OK;
 error:
@@ -61,8 +123,6 @@ static esp_err_t init_dhcps()
   GOTO_CHECK(esp_netif_set_ip_info(ap_netif, &ip_info), TAG, "Failed to set IP info", error);
   GOTO_CHECK(esp_netif_dhcps_start(ap_netif), TAG, "Failed to start DHCP server", error);
 
-  ESP_LOGI(TAG, "DHCP initialized");
-
   return ESP_OK;
 error:
   return ESP_FAIL;
@@ -82,8 +142,6 @@ static esp_err_t init_mdns()
   GOTO_CHECK(mdns_service_add(CONFIG_APP_MDNS_INSTANCE_NAME, "_http", "_tcp", 80, serviceData, serviceDataCount), TAG,
              "Failed to add MDNS service", error);
 
-  ESP_LOGI(TAG, "MDNS service started");
-
   return ESP_OK;
 error:
   return ESP_FAIL;
@@ -95,8 +153,6 @@ static esp_err_t init_netbios()
 
   netbiosns_init();
   netbiosns_set_name(CONFIG_APP_MDNS_HOST_NAME);
-
-  ESP_LOGI(TAG, "NetBIOS service started");
 
   return ESP_OK;
 }
@@ -115,8 +171,6 @@ static esp_err_t init_wifi()
   GOTO_CHECK(esp_wifi_init(&config), TAG, "Failed to initialize WiFi", error);
   GOTO_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA), TAG, "Failed to set WiFi mode", error);
 
-  ESP_LOGI(TAG, "WiFi initialized");
-
   return ESP_OK;
 error:
   return ESP_FAIL;
@@ -131,8 +185,6 @@ esp_err_t init_network()
   GOTO_CHECK(init_netbios(), TAG, "Failed to initialize NetBIOS", error);
   GOTO_CHECK(init_dhcps(), TAG, "Failed to initialize DHCP", error);
   GOTO_CHECK(init_wifi(), TAG, "Failed to initialize WiFi", error);
-
-  ESP_LOGI(TAG, "Network initialized");
 
   return ESP_OK;
 error:
@@ -175,8 +227,6 @@ esp_err_t init_ap(const wifi_credentials_t *ap_credentials)
 
   GOTO_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config), TAG_AP, "Failed to set WiFi mode", error);
 
-  ESP_LOGI(TAG, "AP initialized");
-
   return ESP_OK;
 error:
   return ESP_FAIL;
@@ -206,8 +256,6 @@ esp_err_t init_sta(const wifi_credentials_t *wifi_credentials)
 
   esp_netif_set_default_netif(esp_netif_sta);
 
-  ESP_LOGI(TAG, "STA initialized");
-
   return ESP_OK;
 error:
   return ESP_FAIL;
@@ -218,8 +266,6 @@ esp_err_t start_wifi()
   ESP_LOGI(TAG, "Starting WiFi");
 
   GOTO_CHECK(esp_wifi_start(), TAG, "Failed to start WiFi", error);
-
-  ESP_LOGI(TAG, "WiFi started");
 
   return ESP_OK;
 error:
@@ -247,8 +293,6 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
   GOTO_CHECK(esp_wifi_disconnect(), TAG_STA, "Failed to disconnect WiFi", error);
   GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG_STA, "Failed to set WiFi mode", error);
   GOTO_CHECK(esp_wifi_connect(), TAG_STA, "Failed to connect WiFi", error);
-
-  ESP_LOGI(TAG, "STA reconnected");
 
   return ESP_OK;
 error:

@@ -5,7 +5,23 @@ static const char *TAG = "APP_SERVER";
 #define GZIP_EXTENSION ".gz"
 #define CHECK_FILE_EXTENSION(filename, ext) (strcasecmp(&filename[strlen(filename) - strlen(ext)], ext) == 0)
 
-extern const char *_app_uid = NULL;
+static char *_app_uid = NULL;
+static char _host_ip[IP4_ADDR_STRLEN_MAX] = {0};
+
+static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+{
+  if (event_base == IP_EVENT && IP_EVENT_STA_GOT_IP)
+  {
+    ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+    memset((char *)_host_ip, 0, IP4_ADDR_STRLEN_MAX);
+    snprintf((char *)_host_ip, IP4_ADDR_STRLEN_MAX, IPSTR, IP2STR(&event->ip_info.ip));
+  }
+
+  if (event_base == IP_EVENT && IP_EVENT_STA_LOST_IP)
+  {
+    memset((char *)_host_ip, 0, IP4_ADDR_STRLEN_MAX);
+  }
+}
 
 static esp_err_t set_content_type_from_file(httpd_req_t *req, const char *filepath)
 {
@@ -183,6 +199,11 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   request_network_type_t network_type = get_request_network_type(req);
   cJSON_AddNumberToObject(root, "network", network_type);
 
+  if (network_type == NETWORK_TYPE_STA)
+  {
+    cJSON_AddStringToObject(root, "host", _host_ip);
+  }
+
   cJSON *data = cJSON_AddObjectToObject(root, "data");
   cJSON_AddNumberToObject(data, "leds", 0);
 
@@ -276,6 +297,9 @@ esp_err_t init_server(char *app_uid)
 
   httpd_uri_t common_get_uri = {.uri = "/*", .method = HTTP_GET, .handler = common_get_handler, .user_ctx = context};
   httpd_register_uri_handler(server, &common_get_uri);
+
+  GOTO_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL), TAG,
+             "Failed to register WiFi event handler", error);
 
   return ESP_OK;
 error_free_context:

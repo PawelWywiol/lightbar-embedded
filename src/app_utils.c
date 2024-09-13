@@ -49,6 +49,8 @@ esp_err_t read_wifi_credentials(wifi_credentials_t *wifi_credentials)
     }
   }
 
+  ESP_LOGI(TAG, "WiFi ssid : %s", wifi_credentials->ssid);
+
   return ESP_OK;
 }
 
@@ -66,6 +68,8 @@ void reset_ap_credentials(wifi_credentials_t *ap_credentials)
 
   strncpy(ap_credentials->password, CONFIG_APP_AP_PASSWORD, strlen(CONFIG_APP_AP_PASSWORD));
   ap_credentials->password[strlen(CONFIG_APP_AP_PASSWORD)] = '\0';
+
+  ESP_LOGI(TAG, "New AP ssid : %s", ap_credentials->ssid);
 }
 
 esp_err_t write_ap_credentials(const wifi_credentials_t *ap_credentials)
@@ -92,6 +96,8 @@ esp_err_t read_ap_credentials(wifi_credentials_t *ap_credentials)
       return ESP_FAIL;
     }
   }
+
+  ESP_LOGI(TAG, "AP ssid : %s", ap_credentials->ssid);
 
   return ESP_OK;
 }

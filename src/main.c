@@ -101,8 +101,6 @@ static void app_event_process_request_chunks_file_handler(void *handler_args, es
 
   } while (true);
 
-  ESP_LOGI(TAG, "Processed request chunks file : %s", path);
-
 error_close_file:
   close(file);
 error_free_context:
