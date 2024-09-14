@@ -128,35 +128,6 @@ error:
   return ESP_FAIL;
 }
 
-static esp_err_t init_mdns()
-{
-  ESP_LOGI(TAG, "Initializing MDNS");
-
-  GOTO_CHECK(mdns_init(), TAG, "Failed to initialize MDNS", error);
-  GOTO_CHECK(mdns_hostname_set(CONFIG_APP_MDNS_HOST_NAME), TAG, "Failed to set MDNS hostname", error);
-  GOTO_CHECK(mdns_instance_name_set(CONFIG_APP_MDNS_INSTANCE_NAME), TAG, "Failed to set MDNS instance name", error);
-
-  mdns_txt_item_t serviceData[] = {{"board", "esp32"}, {"path", "/"}};
-  size_t serviceDataCount = sizeof(serviceData) / sizeof(serviceData[0]);
-
-  GOTO_CHECK(mdns_service_add(CONFIG_APP_MDNS_INSTANCE_NAME, "_http", "_tcp", 80, serviceData, serviceDataCount), TAG,
-             "Failed to add MDNS service", error);
-
-  return ESP_OK;
-error:
-  return ESP_FAIL;
-}
-
-static esp_err_t init_netbios()
-{
-  ESP_LOGI(TAG, "Initializing NetBIOS");
-
-  netbiosns_init();
-  netbiosns_set_name(CONFIG_APP_MDNS_HOST_NAME);
-
-  return ESP_OK;
-}
-
 static esp_err_t init_wifi()
 {
   ESP_LOGI(TAG, "Initializing WiFi");
@@ -176,22 +147,7 @@ error:
   return ESP_FAIL;
 }
 
-esp_err_t init_network()
-{
-  ESP_LOGI(TAG, "Initializing network");
-
-  GOTO_CHECK(init_netif(), TAG, "Failed to initialize netif", error);
-  GOTO_CHECK(init_mdns(), TAG, "Failed to initialize MDNS", error);
-  GOTO_CHECK(init_netbios(), TAG, "Failed to initialize NetBIOS", error);
-  GOTO_CHECK(init_dhcps(), TAG, "Failed to initialize DHCP", error);
-  GOTO_CHECK(init_wifi(), TAG, "Failed to initialize WiFi", error);
-
-  return ESP_OK;
-error:
-  return ESP_FAIL;
-}
-
-esp_err_t init_ap(const wifi_credentials_t *ap_credentials)
+static esp_err_t init_ap(const wifi_credentials_t *ap_credentials)
 {
   ESP_LOGI(TAG, "Initializing AP");
 
@@ -225,18 +181,17 @@ esp_err_t init_ap(const wifi_credentials_t *ap_credentials)
     wifi_config.ap.authmode = WIFI_AUTH_OPEN;
   }
 
-  GOTO_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config), TAG_AP, "Failed to set WiFi mode", error);
-
   return ESP_OK;
-error:
-  return ESP_FAIL;
 }
 
-esp_err_t init_sta(const wifi_credentials_t *wifi_credentials)
+static esp_err_t init_sta(const wifi_credentials_t *ap_credentials, const wifi_credentials_t *wifi_credentials)
 {
   ESP_LOGI(TAG, "Initializing STA");
 
   esp_netif_t *esp_netif_sta = esp_netif_create_default_wifi_sta();
+
+  esp_netif_t *netif = esp_netif_get_handle_from_ifkey("WIFI_STA_DEF");
+  esp_netif_set_hostname(netif, ap_credentials->ssid);
 
   wifi_config_t wifi_config = {
     .sta =
@@ -261,9 +216,15 @@ error:
   return ESP_FAIL;
 }
 
-esp_err_t start_wifi()
+esp_err_t init_network(const wifi_credentials_t *ap_credentials, const wifi_credentials_t *wifi_credentials)
 {
-  ESP_LOGI(TAG, "Starting WiFi");
+  ESP_LOGI(TAG, "Initializing network");
+
+  GOTO_CHECK(init_netif(), TAG, "Failed to initialize netif", error);
+  GOTO_CHECK(init_dhcps(), TAG, "Failed to initialize DHCP", error);
+  GOTO_CHECK(init_wifi(), TAG, "Failed to initialize WiFi", error);
+  GOTO_CHECK(init_ap(ap_credentials), TAG, "Failed to initialize AP", error);
+  GOTO_CHECK(init_sta(ap_credentials, wifi_credentials), TAG, "Failed to initialize STA", error);
 
   GOTO_CHECK(esp_wifi_start(), TAG, "Failed to start WiFi", error);
 

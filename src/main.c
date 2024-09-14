@@ -167,11 +167,7 @@ void app_main(void)
   ESP_ERROR_CHECK(read_wifi_credentials(&wifi_credentials));
   ESP_ERROR_CHECK(read_ap_credentials(&ap_credentials));
 
-  ESP_ERROR_CHECK(init_network());
-  ESP_ERROR_CHECK(init_ap(&ap_credentials));
-  ESP_ERROR_CHECK(init_sta(&wifi_credentials));
-
-  ESP_ERROR_CHECK(start_wifi());
+  ESP_ERROR_CHECK(init_network(&ap_credentials, &wifi_credentials));
 
   ESP_ERROR_CHECK(init_server(ap_credentials.ssid));
 }

@@ -66,18 +66,6 @@ menu "App Config"
       help
         Maximum number of connections for the AP.
 
-    config APP_MDNS_INSTANCE_NAME
-      string "mDNS Instance Name"
-      default "lightbar"
-      help
-        Instance name for mDNS.
-
-    config APP_MDNS_HOST_NAME
-      string "mDNS Host Name"
-      default "lightbar"
-      help
-        Host name for mDNS.
-
     config APP_DHCP_IP_START
       string "DHCP IP Start"
       default "1.2.3.4"

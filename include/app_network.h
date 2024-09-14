@@ -9,9 +9,7 @@
 #include "esp_wifi.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "lwip/apps/netbiosns.h"
 #include "lwip/inet.h"
-#include "mdns.h"
 
 #include "app_defines.h"
 
@@ -20,10 +18,7 @@ extern "C"
 {
 #endif
 
-  esp_err_t init_network();
-  esp_err_t init_ap(const wifi_credentials_t *ap_credentials);
-  esp_err_t init_sta(const wifi_credentials_t *wifi_credentials);
-  esp_err_t start_wifi();
+  esp_err_t init_network(const wifi_credentials_t *ap_credentials, const wifi_credentials_t *wifi_credentials);
   esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials);
 
 #ifdef __cplusplus
