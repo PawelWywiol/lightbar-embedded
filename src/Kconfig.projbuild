@@ -78,6 +78,12 @@ menu "App Config"
       help
         Maximum number of retries for the STA.
 
+    config APP_STA_CONNECT_TIMEOUT
+      int "STA Connect Timeout"
+      default 15
+      help
+        Timeout for the STA connection in seconds.
+
   endmenu
 
 endmenu

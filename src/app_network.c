@@ -2,14 +2,33 @@
 
 static const char *TAG = "APP_NETWORK";
 
-static void wifi_on_sta_got_ip_handler(void)
+static void check_wifi_info(void)
 {
-  ESP_LOGW(TAG, "STA got IP");
+  vTaskDelay(CONFIG_APP_STA_CONNECT_TIMEOUT * 1000 / portTICK_PERIOD_MS);
+
+  wifi_ap_record_t ap_info;
+  esp_err_t err = esp_wifi_sta_get_ap_info(&ap_info);
+
+  if (err != ESP_OK)
+  {
+    ESP_LOGW(TAG, "Failed to get AP info");
+    reconnect_sta(NULL);
+    return;
+  }
+
+  ESP_LOGI(TAG, "STA is connected to AP %s", ap_info.ssid);
 }
 
-static void wifi_on_sta_lost_ip_handler(void)
+static void wifi_on_sta_connected_handler(void)
 {
-  ESP_LOGW(TAG, "STA lost IP");
+  ESP_LOGW(TAG, "STA connected to AP");
+}
+
+static void wifi_on_sta_disconnected_handler(void)
+{
+  ESP_LOGW(TAG, "STA disconnected from AP");
+
+  check_wifi_info();
 }
 
 static void wifi_on_sta_start_handler(void)
@@ -17,28 +36,23 @@ static void wifi_on_sta_start_handler(void)
   reconnect_sta(NULL);
 }
 
-static wifi_event_handlers_t wifi_handlers = {.on_sta_start = wifi_on_sta_start_handler,
-                                              .on_sta_got_ip = wifi_on_sta_got_ip_handler,
-                                              .on_sta_lost_ip = wifi_on_sta_lost_ip_handler};
-
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
+  ESP_LOGW(TAG, "WiFi event : %s [%lu]", event_base, event_id);
+
   if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
   {
-    if (wifi_handlers.on_sta_start)
-      wifi_handlers.on_sta_start();
+    wifi_on_sta_start_handler();
   }
 
-  if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
+  if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_CONNECTED)
   {
-    if (wifi_handlers.on_sta_got_ip)
-      wifi_handlers.on_sta_got_ip();
+    wifi_on_sta_connected_handler();
   }
 
-  if (event_base == IP_EVENT && event_id == IP_EVENT_STA_LOST_IP)
+  if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
   {
-    if (wifi_handlers.on_sta_lost_ip)
-      wifi_handlers.on_sta_lost_ip();
+    wifi_on_sta_disconnected_handler();
   }
 }
 
