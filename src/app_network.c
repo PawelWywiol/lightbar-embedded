@@ -2,35 +2,47 @@
 
 static const char *TAG = "APP_NETWORK";
 
-static void wifi_event_got_ip_handler()
+static void wifi_event_got_ip_handler(void)
 {
   ESP_LOGW(TAG, "STA got IP");
 }
 
-static void wifi_event_lost_ip_handler()
+static void wifi_event_lost_ip_handler(void)
 {
   ESP_LOGW(TAG, "STA lost IP");
 }
+
+static void wifi_event_sta_start_handler(void)
+{
+  reconnect_sta(NULL);
+}
+
+static wifi_event_handlers_t wifi_handlers = {.on_sta_start = wifi_event_sta_start_handler,
+                                              .on_sta_got_ip = wifi_event_got_ip_handler,
+                                              .on_sta_lost_ip = wifi_event_lost_ip_handler};
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
   if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
   {
-    reconnect_sta(NULL);
+    if (wifi_handlers.on_sta_start)
+      wifi_handlers.on_sta_start();
   }
 
   if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
   {
-    wifi_event_got_ip_handler();
+    if (wifi_handlers.on_sta_got_ip)
+      wifi_handlers.on_sta_got_ip();
   }
 
   if (event_base == IP_EVENT && event_id == IP_EVENT_STA_LOST_IP)
   {
-    wifi_event_lost_ip_handler();
+    if (wifi_handlers.on_sta_lost_ip)
+      wifi_handlers.on_sta_lost_ip();
   }
 }
 
-static esp_err_t init_netif()
+static esp_err_t init_netif(void)
 {
   ESP_LOGI(TAG, "Initializing netif");
 
@@ -41,7 +53,7 @@ error:
   return ESP_FAIL;
 }
 
-static esp_err_t init_dhcps()
+static esp_err_t init_dhcps(void)
 {
   ESP_LOGI(TAG, "Initializing DHCP");
 
@@ -62,7 +74,7 @@ error:
   return ESP_FAIL;
 }
 
-static esp_err_t init_wifi()
+static esp_err_t init_wifi(void)
 {
   ESP_LOGI(TAG, "Initializing WiFi");
 
@@ -115,7 +127,11 @@ static esp_err_t init_ap(const wifi_credentials_t *ap_credentials)
     wifi_config.ap.authmode = WIFI_AUTH_OPEN;
   }
 
+  GOTO_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config), TAG, "Failed to set AP config", error);
+
   return ESP_OK;
+error:
+  return ESP_FAIL;
 }
 
 static esp_err_t init_sta(const wifi_credentials_t *ap_credentials, const wifi_credentials_t *wifi_credentials)
@@ -141,7 +157,7 @@ static esp_err_t init_sta(const wifi_credentials_t *ap_credentials, const wifi_c
   wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
   wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
 
-  GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set WiFi mode", error);
+  GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set STA config", error);
 
   esp_netif_set_default_netif(esp_netif_sta);
 
@@ -189,7 +205,7 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
     wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
     wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
 
-    GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set WiFi mode", error);
+    GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set STA config", error);
   }
 
   GOTO_CHECK(esp_wifi_connect(), TAG, "Failed to connect WiFi", error);
