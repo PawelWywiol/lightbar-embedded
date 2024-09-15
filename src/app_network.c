@@ -2,24 +2,24 @@
 
 static const char *TAG = "APP_NETWORK";
 
-static void wifi_event_got_ip_handler(void)
+static void wifi_on_sta_got_ip_handler(void)
 {
   ESP_LOGW(TAG, "STA got IP");
 }
 
-static void wifi_event_lost_ip_handler(void)
+static void wifi_on_sta_lost_ip_handler(void)
 {
   ESP_LOGW(TAG, "STA lost IP");
 }
 
-static void wifi_event_sta_start_handler(void)
+static void wifi_on_sta_start_handler(void)
 {
   reconnect_sta(NULL);
 }
 
-static wifi_event_handlers_t wifi_handlers = {.on_sta_start = wifi_event_sta_start_handler,
-                                              .on_sta_got_ip = wifi_event_got_ip_handler,
-                                              .on_sta_lost_ip = wifi_event_lost_ip_handler};
+static wifi_event_handlers_t wifi_handlers = {.on_sta_start = wifi_on_sta_start_handler,
+                                              .on_sta_got_ip = wifi_on_sta_got_ip_handler,
+                                              .on_sta_lost_ip = wifi_on_sta_lost_ip_handler};
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
