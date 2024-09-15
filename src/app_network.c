@@ -1,98 +1,32 @@
 #include "app_network.h"
 
 static const char *TAG = "APP_NETWORK";
-static const char *TAG_AP = "APP_NETWORK_AP";
-static const char *TAG_STA = "APP_NETWORK_STA";
 
-static char public_ip[IP4_ADDR_STRLEN_MAX] = {0};
+static void wifi_event_got_ip_handler()
+{
+  ESP_LOGW(TAG, "STA got IP");
+}
+
+static void wifi_event_lost_ip_handler()
+{
+  ESP_LOGW(TAG, "STA lost IP");
+}
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
-  if (event_base == WIFI_EVENT)
+  if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
   {
-    switch (event_id)
-    {
-    case WIFI_EVENT_STA_START: {
-      esp_wifi_connect();
-      ESP_LOGI(TAG_STA, "Station started");
-    }
-    break;
-    case WIFI_EVENT_STA_STOP: {
-      ESP_LOGI(TAG_STA, "Station stopped");
-    }
-    break;
-    case WIFI_EVENT_STA_CONNECTED: {
-      wifi_event_sta_connected_t *event = (wifi_event_sta_connected_t *)event_data;
-      ESP_LOGI(TAG_STA, "Station connected to %s, AID=%d", (char *)event->ssid, event->aid);
-    }
-    break;
-    case WIFI_EVENT_STA_DISCONNECTED: {
-      wifi_event_sta_disconnected_t *event = (wifi_event_sta_disconnected_t *)event_data;
-      ESP_LOGI(TAG_STA, "Station disconnected from %s, reason:%d", (char *)event->ssid, event->reason);
-    }
-    break;
-    case WIFI_EVENT_AP_START: {
-      ESP_LOGI(TAG_AP, "Access point started");
-    }
-    break;
-    case WIFI_EVENT_AP_STOP: {
-      ESP_LOGI(TAG_AP, "Access point stopped");
-    }
-    break;
-    case WIFI_EVENT_AP_STACONNECTED: {
-      wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
-      ESP_LOGI(TAG_AP, "Station " MACSTR " joined, AID=%d", MAC2STR(event->mac), event->aid);
-    }
-    break;
-    case WIFI_EVENT_AP_STADISCONNECTED: {
-      wifi_event_ap_stadisconnected_t *event = (wifi_event_ap_stadisconnected_t *)event_data;
-      ESP_LOGI(TAG_AP, "Station " MACSTR " left, AID=%d, reason:%d", MAC2STR(event->mac), event->aid, event->reason);
-    }
-    break;
-    case WIFI_EVENT_STA_BEACON_TIMEOUT: {
-      ESP_LOGI(TAG_STA, "Beacon timeout");
-    }
-    break;
-    case WIFI_EVENT_HOME_CHANNEL_CHANGE: {
-      wifi_event_home_channel_change_t *event = (wifi_event_home_channel_change_t *)event_data;
-      ESP_LOGI(TAG, "Home channel changed from %d to %d", event->old_chan, event->new_chan);
-    }
-    break;
-    default:
-      ESP_LOGI(TAG, "Unknown event [%s][%ld]", event_base, event_id);
-      break;
-    }
+    reconnect_sta(NULL);
   }
-  else if (event_base == IP_EVENT)
+
+  if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
   {
-    switch (event_id)
-    {
-    case IP_EVENT_STA_GOT_IP: {
-      ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
-      ESP_LOGI(TAG_STA, "Got IP:" IPSTR, IP2STR(&event->ip_info.ip));
-
-      memset((char *)public_ip, 0, IP4_ADDR_STRLEN_MAX);
-      snprintf((char *)public_ip, IP4_ADDR_STRLEN_MAX, IPSTR, IP2STR(&event->ip_info.ip));
-    }
-    break;
-    case IP_EVENT_STA_LOST_IP: {
-      ESP_LOGI(TAG_STA, "Lost IP");
-
-      memset((char *)public_ip, 0, IP4_ADDR_STRLEN_MAX);
-    }
-    break;
-    case IP_EVENT_AP_STAIPASSIGNED: {
-      ESP_LOGI(TAG_AP, "Station assigned IP");
-    }
-    break;
-    default:
-      ESP_LOGI(TAG, "Unknown event [%s][%ld]", event_base, event_id);
-      break;
-    }
+    wifi_event_got_ip_handler();
   }
-  else
+
+  if (event_base == IP_EVENT && event_id == IP_EVENT_STA_LOST_IP)
   {
-    ESP_LOGI(TAG, "Unknown event [%s][%ld]", event_base, event_id);
+    wifi_event_lost_ip_handler();
   }
 }
 
@@ -207,7 +141,7 @@ static esp_err_t init_sta(const wifi_credentials_t *ap_credentials, const wifi_c
   wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
   wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
 
-  GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG_STA, "Failed to set WiFi mode", error);
+  GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set WiFi mode", error);
 
   esp_netif_set_default_netif(esp_netif_sta);
 
@@ -237,23 +171,28 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
 {
   ESP_LOGI(TAG, "Reconnecting STA");
 
-  wifi_config_t wifi_config = {
-    .sta =
-      {
-        .scan_method = WIFI_ALL_CHANNEL_SCAN,
-        .failure_retry_cnt = CONFIG_APP_STA_MAXIMUM_RETRY,
-      },
-  };
+  GOTO_CHECK(esp_wifi_disconnect(), TAG, "Failed to disconnect WiFi", error);
 
-  strncpy((char *)wifi_config.sta.ssid, wifi_credentials->ssid, sizeof(wifi_config.sta.ssid));
-  strncpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
+  if (wifi_credentials != NULL)
+  {
+    wifi_config_t wifi_config = {
+      .sta =
+        {
+          .scan_method = WIFI_ALL_CHANNEL_SCAN,
+          .failure_retry_cnt = CONFIG_APP_STA_MAXIMUM_RETRY,
+        },
+    };
 
-  wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
-  wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
+    strncpy((char *)wifi_config.sta.ssid, wifi_credentials->ssid, sizeof(wifi_config.sta.ssid));
+    strncpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
 
-  GOTO_CHECK(esp_wifi_disconnect(), TAG_STA, "Failed to disconnect WiFi", error);
-  GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG_STA, "Failed to set WiFi mode", error);
-  GOTO_CHECK(esp_wifi_connect(), TAG_STA, "Failed to connect WiFi", error);
+    wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
+    wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
+
+    GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set WiFi mode", error);
+  }
+
+  GOTO_CHECK(esp_wifi_connect(), TAG, "Failed to connect WiFi", error);
 
   return ESP_OK;
 error:
