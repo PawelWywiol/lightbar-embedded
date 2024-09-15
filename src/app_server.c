@@ -8,18 +8,20 @@ static const char *TAG = "APP_SERVER";
 static char *_app_uid = NULL;
 static char _host_ip[IP4_ADDR_STRLEN_MAX] = {0};
 
-static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
+static void wifi_on_ip_change_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
-  if (event_base == IP_EVENT && IP_EVENT_STA_GOT_IP)
+  if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
   {
     ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
     memset((char *)_host_ip, 0, IP4_ADDR_STRLEN_MAX);
     snprintf((char *)_host_ip, IP4_ADDR_STRLEN_MAX, IPSTR, IP2STR(&event->ip_info.ip));
+    ESP_LOGI(TAG, "Got IP: %s", _host_ip);
   }
 
-  if (event_base == IP_EVENT && IP_EVENT_STA_LOST_IP)
+  if (event_base == IP_EVENT && event_id == IP_EVENT_STA_LOST_IP)
   {
     memset((char *)_host_ip, 0, IP4_ADDR_STRLEN_MAX);
+    ESP_LOGW(TAG, "Lost IP");
   }
 }
 
@@ -298,8 +300,8 @@ esp_err_t init_server(char *app_uid)
   httpd_uri_t common_get_uri = {.uri = "/*", .method = HTTP_GET, .handler = common_get_handler, .user_ctx = context};
   httpd_register_uri_handler(server, &common_get_uri);
 
-  GOTO_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL), TAG,
-             "Failed to register WiFi event handler", error);
+  GOTO_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_on_ip_change_handler, NULL, NULL),
+             TAG, "Failed to register WiFi event handler", error);
 
   return ESP_OK;
 error_free_context:
