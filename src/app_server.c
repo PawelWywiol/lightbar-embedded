@@ -201,7 +201,7 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   request_network_type_t network_type = get_request_network_type(req);
   cJSON_AddNumberToObject(root, "network", network_type);
 
-  if (network_type == NETWORK_TYPE_STA)
+  if (network_type == NETWORK_TYPE_AP)
   {
     cJSON_AddStringToObject(root, "host", _host_ip);
   }
@@ -223,7 +223,8 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
     cJSON_AddStringToObject(data, "uid", _app_uid);
   }
 
-  const char *info = cJSON_Print(root);
+  const char *info = cJSON_PrintUnformatted(root);
+
   httpd_resp_sendstr(req, info);
   free((void *)info);
 
@@ -300,7 +301,7 @@ esp_err_t init_server(char *app_uid)
   httpd_uri_t common_get_uri = {.uri = "/*", .method = HTTP_GET, .handler = common_get_handler, .user_ctx = context};
   httpd_register_uri_handler(server, &common_get_uri);
 
-  GOTO_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_on_ip_change_handler, NULL, NULL),
+  GOTO_CHECK(esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, &wifi_on_ip_change_handler, NULL, NULL),
              TAG, "Failed to register WiFi event handler", error);
 
   return ESP_OK;
