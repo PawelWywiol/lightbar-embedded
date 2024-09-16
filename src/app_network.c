@@ -2,10 +2,8 @@
 
 static const char *TAG = "APP_NETWORK";
 
-static void check_wifi_info(void)
+static void check_sta_info(void *arg)
 {
-  vTaskDelay(CONFIG_APP_STA_CONNECT_TIMEOUT * 1000 / portTICK_PERIOD_MS);
-
   wifi_ap_record_t ap_info;
   esp_err_t err = esp_wifi_sta_get_ap_info(&ap_info);
 
@@ -28,7 +26,12 @@ static void wifi_on_sta_disconnected_handler(void)
 {
   ESP_LOGW(TAG, "STA disconnected from AP");
 
-  check_wifi_info();
+  const esp_timer_create_args_t timer_args = {.callback = &check_sta_info, .arg = NULL, .name = "wifi_check_timer"};
+
+  esp_timer_handle_t timer;
+  esp_timer_create(&timer_args, &timer);
+
+  esp_timer_start_once(timer, CONFIG_APP_STA_CONNECT_TIMEOUT * 1000 * 1000);
 }
 
 static void wifi_on_sta_start_handler(void)
