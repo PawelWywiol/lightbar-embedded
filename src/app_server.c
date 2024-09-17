@@ -198,14 +198,6 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   cJSON *root = cJSON_CreateObject();
   cJSON_AddStringToObject(root, "type", "info");
 
-  request_network_type_t network_type = get_request_network_type(req);
-  cJSON_AddNumberToObject(root, "network", network_type);
-
-  if (network_type == NETWORK_TYPE_AP)
-  {
-    cJSON_AddStringToObject(root, "host", _host_ip);
-  }
-
   cJSON *data = cJSON_AddObjectToObject(root, "data");
   cJSON_AddNumberToObject(data, "leds", 0);
 
@@ -221,6 +213,14 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   if (_app_uid != NULL)
   {
     cJSON_AddStringToObject(data, "uid", _app_uid);
+  }
+
+  request_network_type_t network_type = get_request_network_type(req);
+  cJSON_AddNumberToObject(data, "network", network_type);
+
+  if (network_type == NETWORK_TYPE_AP)
+  {
+    cJSON_AddStringToObject(data, "host", _host_ip);
   }
 
   const char *info = cJSON_PrintUnformatted(root);
