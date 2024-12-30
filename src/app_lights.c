@@ -22,21 +22,102 @@ rmt_transmit_config_t tx_config = {
 esp_timer_handle_t lights_loop_timer;
 lights_data_t lights_data = {0};
 
+uint32_t resolveColorHue(uint8_t color)
+{
+  return ((color & LIGHTS_PALLETTE_HUE_MASK) * 360) / (LIGHTS_PALLETTE_HUE_MASK + 1);
+}
+
+uint32_t resolveColorLightness(uint8_t color)
+{
+  return ((color & LIGHTS_PALLETTE_LIGHTNESS_MASK) >> 6) * LIGHTS_PALLETTE_LIGHTNESS_STEP +
+         LIGHTS_PALLETTE_LIGHTNESS_BASE;
+}
+
+void resolve_binary_color(uint8_t color, uint8_t *rgb)
+{
+  uint32_t h = resolveColorHue(color);
+  uint32_t s = 100;
+  uint32_t v = resolveColorLightness(color);
+
+  uint32_t rgb_max = v * 2.55f;
+  uint32_t rgb_min = rgb_max * (100 - s) / 100.0f;
+
+  uint32_t i = h / 60;
+  uint32_t diff = h % 60;
+
+  uint32_t rgb_adj = (rgb_max - rgb_min) * diff / 60;
+
+  switch (i)
+  {
+  case 0:
+    rgb[0] = rgb_max;
+    rgb[1] = rgb_min + rgb_adj;
+    rgb[2] = rgb_min;
+    break;
+  case 1:
+    rgb[0] = rgb_max - rgb_adj;
+    rgb[1] = rgb_max;
+    rgb[2] = rgb_min;
+    break;
+  case 2:
+    rgb[0] = rgb_min;
+    rgb[1] = rgb_max;
+    rgb[2] = rgb_min + rgb_adj;
+    break;
+  case 3:
+    rgb[0] = rgb_min;
+    rgb[1] = rgb_max - rgb_adj;
+    rgb[2] = rgb_max;
+    break;
+  case 4:
+    rgb[0] = rgb_min + rgb_adj;
+    rgb[1] = rgb_min;
+    rgb[2] = rgb_max;
+    break;
+  default:
+    rgb[0] = rgb_max;
+    rgb[1] = rgb_min;
+    rgb[2] = rgb_max - rgb_adj;
+    break;
+  }
+}
+
 static void lights_loop_timer_callback(void *arg)
 {
+  resolve_current_light_schema_frame();
+
   if (lights_data.status != LIGHTS_STATUS_RUNNING)
   {
     return;
   }
 
-  int64_t current_time = esp_timer_get_time();
+  show_current_light_schema_frame();
+}
 
-  if (current_time >= lights_data.next_frame.time)
-  {
-    return;
-  }
+static void on_init_light_schema_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
+{
+  memset(&lights_data, 0, sizeof(lights_data_t));
 
-  ESP_LOGI(TAG, "Lights loop timer callback [%lld]", current_time - lights_data.current_frame.time);
+  request_chunk_data_t *chunk = (request_chunk_data_t *)event_data;
+
+  ESP_LOGI(TAG, "Processing lights schema file [%s]", chunk->uid);
+
+  snprintf(lights_data.file_path, FILE_SYSTEM_PATH_MAX_LENGTH, "%s/%s", FILE_SYSTEM_TEMP_BASE_PATH, chunk->uid);
+
+  struct stat file_stat = {0};
+  GOTO_CHECK(stat(lights_data.file_path, &file_stat), TAG, "Failed to get file stat", error_cleanup);
+  GOTO_CHECK(file_stat.st_size != chunk->total, TAG, "File size mismatch", error_cleanup);
+
+  chunk->total = file_stat.st_size;
+
+  GOTO_CHECK(process_current_light_schema_file(), TAG, "Failed to process lights schema file", error_cleanup);
+
+  return;
+
+error_cleanup:
+  memset(&lights_data, 0, sizeof(lights_data_t));
+
+  ESP_LOGE(TAG, "Failed to process lights schema file [%s]", chunk->uid);
 }
 
 int64_t calculate_frame_duration(uint8_t tempo)
@@ -44,7 +125,7 @@ int64_t calculate_frame_duration(uint8_t tempo)
   return 60000000 / (tempo ? tempo : 1);
 }
 
-esp_err_t resolve_lights_frame_context(frame_data_t *frame, void *context, size_t chunk_context_size)
+esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, void *context, size_t chunk_context_size)
 {
   GOTO_CHECK(chunk_context_size < LIGHTS_FRAME_MIN_CONTEXT_SIZE, TAG, "Invalid frame context size", error);
 
@@ -66,7 +147,7 @@ error:
   return ESP_FAIL;
 }
 
-esp_err_t process_light_schema_file(void)
+esp_err_t process_current_light_schema_file(void)
 {
   u_int32_t frames_count = 0;
   ssize_t file_offset = lights_data.next_frame.offset;
@@ -129,7 +210,7 @@ esp_err_t process_light_schema_file(void)
 
       if (lights_data.first_frame.chunk_type == CONNECTION_REQUEST_TYPE_NONE)
       {
-        GOTO_CHECK(resolve_lights_frame_context(&lights_data.first_frame, context, chunk_context_size), TAG,
+        GOTO_CHECK(resolve_lights_frame_from_context(&lights_data.first_frame, context, chunk_context_size), TAG,
                    "Failed to resolve first frame context", error_close_file);
         lights_data.first_frame.offset = file_offset;
         lights_data.first_frame.chunk_type = chunk_type_info;
@@ -139,7 +220,7 @@ esp_err_t process_light_schema_file(void)
 
       if (lights_data.current_frame.chunk_type == CONNECTION_REQUEST_TYPE_NONE)
       {
-        GOTO_CHECK(resolve_lights_frame_context(&lights_data.current_frame, context, chunk_context_size), TAG,
+        GOTO_CHECK(resolve_lights_frame_from_context(&lights_data.current_frame, context, chunk_context_size), TAG,
                    "Failed to resolve current frame context", error_close_file);
         lights_data.current_frame.offset = file_offset;
         lights_data.current_frame.chunk_type = chunk_type_info;
@@ -148,7 +229,7 @@ esp_err_t process_light_schema_file(void)
       }
       else if (lights_data.next_frame.chunk_type == CONNECTION_REQUEST_TYPE_NONE)
       {
-        GOTO_CHECK(resolve_lights_frame_context(&lights_data.next_frame, context, chunk_context_size), TAG,
+        GOTO_CHECK(resolve_lights_frame_from_context(&lights_data.next_frame, context, chunk_context_size), TAG,
                    "Failed to resolve next frame context", error_close_file);
         lights_data.next_frame.offset = file_offset;
         lights_data.next_frame.chunk_type = chunk_type_info;
@@ -191,36 +272,8 @@ error_cleanup:
   return ESP_FAIL;
 }
 
-static void init_light_schema_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
+esp_err_t resolve_current_light_schema_frame(void)
 {
-  memset(&lights_data, 0, sizeof(lights_data_t));
-
-  request_chunk_data_t *chunk = (request_chunk_data_t *)event_data;
-
-  ESP_LOGI(TAG, "Processing lights schema file [%s]", chunk->uid);
-
-  snprintf(lights_data.file_path, FILE_SYSTEM_PATH_MAX_LENGTH, "%s/%s", FILE_SYSTEM_TEMP_BASE_PATH, chunk->uid);
-
-  struct stat file_stat = {0};
-  GOTO_CHECK(stat(lights_data.file_path, &file_stat), TAG, "Failed to get file stat", error_cleanup);
-  GOTO_CHECK(file_stat.st_size != chunk->total, TAG, "File size mismatch", error_cleanup);
-
-  chunk->total = file_stat.st_size;
-
-  GOTO_CHECK(process_light_schema_file(), TAG, "Failed to process lights schema file", error_cleanup);
-
-  return;
-
-error_cleanup:
-  memset(&lights_data, 0, sizeof(lights_data_t));
-
-  ESP_LOGE(TAG, "Failed to process lights schema file [%s]", chunk->uid);
-}
-
-esp_err_t switch_light_schema_frame(void)
-{
-  ESP_LOGI(TAG, "Processing lights schema file");
-
   if (lights_data.status != LIGHTS_STATUS_RUNNING)
   {
     return ESP_FAIL;
@@ -260,7 +313,7 @@ esp_err_t switch_light_schema_frame(void)
     return ESP_OK;
   }
 
-  GOTO_CHECK(process_light_schema_file(), TAG, "Failed to process lights schema file", error_cleanup);
+  GOTO_CHECK(process_current_light_schema_file(), TAG, "Failed to process lights schema file", error_cleanup);
 
   return ESP_OK;
 
@@ -269,6 +322,27 @@ error_cleanup:
 
   ESP_LOGE(TAG, "Failed to process lights schema file");
 
+  return ESP_FAIL;
+}
+
+esp_err_t show_current_light_schema_frame(void)
+{
+  if (lights_data.status != LIGHTS_STATUS_RUNNING)
+  {
+    return ESP_FAIL;
+  }
+
+  for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
+  {
+    resolve_binary_color(lights_data.current_frame.colors[i], &led_strip_pixels[i * 3]);
+  }
+
+  GOTO_CHECK(rmt_transmit(led_channel, led_encoder, led_strip_pixels, sizeof(led_strip_pixels), &tx_config), TAG,
+             "Failed to transmit data", error);
+  GOTO_CHECK(rmt_tx_wait_all_done(led_channel, portMAX_DELAY), TAG, "Failed to wait for all data to be sent", error);
+
+  return ESP_OK;
+error:
   return ESP_FAIL;
 }
 
@@ -323,7 +397,7 @@ esp_err_t init_lights_events(void)
 {
   ESP_LOGI(TAG, "Initializing lights events");
 
-  GOTO_CHECK(esp_event_handler_instance_register(APP_EVENTS, APP_EVENT_INIT_LIGHTS_SCHEMA, init_light_schema_handler,
+  GOTO_CHECK(esp_event_handler_instance_register(APP_EVENTS, APP_EVENT_INIT_LIGHTS_SCHEMA, on_init_light_schema_handler,
                                                  NULL, NULL),
              TAG, "Failed to register lights schema file handler", error);
 

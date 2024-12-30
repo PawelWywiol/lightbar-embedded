@@ -24,6 +24,15 @@ extern "C"
 #define LIGHTS_LOOP_FPS 24
 #define LIGHTS_LOOP_PERIOD (1000000 / LIGHTS_LOOP_FPS)
 #define LIGHTS_FRAME_MIN_CONTEXT_SIZE 3
+
+#define LIGHTS_PALLETTE_HUE_MASK 0b00111111
+#define LIGHTS_PALLETTE_HUE_MAX LIGHTS_PALLETTE_HUE_MASK + 1
+#define LIGHTS_PALLETTE_HUE_MAX_VALUE 360
+#define LIGHTS_PALLETTE_LIGHTNESS_MASK 0b11000000
+#define LIGHTS_PALLETTE_LIGHTNESS_MAX (LIGHTS_PALLETTE_LIGHTNESS_MASK >> 6) + 1
+#define LIGHTS_PALLETTE_LIGHTNESS_STEP 30
+#define LIGHTS_PALLETTE_LIGHTNESS_BASE 10
+
 #define RMT_LED_STRIP_RESOLUTION_HZ 10000000 // 10MHz resolution, 1 tick = 0.1us (led strip needs a high resolution)
 #define RMT_LED_STRIP_GPIO_NUM CONFIG_APP_LIGHTS_GPIO
 #define RMT_LED_NUMBERS CONFIG_APP_LIGHTS_COUNT
@@ -59,11 +68,15 @@ extern "C"
     lights_status_t status;
   } lights_data_t;
 
+  int64_t calculate_frame_duration(uint8_t tempo);
+  esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, void *context, size_t chunk_context_size);
+  esp_err_t process_current_light_schema_file(void);
+  esp_err_t resolve_current_light_schema_frame(void);
+  esp_err_t show_current_light_schema_frame(void);
+
   esp_err_t init_lights_leds(void);
   esp_err_t init_lights_loop(void);
   esp_err_t init_lights_events(void);
-  int64_t calculate_frame_duration(uint8_t tempo);
-  esp_err_t resolve_lights_frame_context(frame_data_t *frame, void *context, size_t chunk_context_size);
 
 #ifdef __cplusplus
 }
