@@ -1,5 +1,6 @@
 #include "app_defines.h"
 #include "app_events.h"
+#include "app_lights.h"
 #include "app_network.h"
 #include "app_nvs.h"
 #include "app_server.h"
@@ -38,6 +39,9 @@ error:
 static void app_event_process_request_chunks_file_handler(void *handler_args, esp_event_base_t base, int32_t id,
                                                           void *event_data)
 {
+  int available_frames = 0;
+  int count_frames = 0;
+
   request_chunk_data_t *chunk = (request_chunk_data_t *)event_data;
 
   ESP_LOGI(TAG, "Processing request chunks file [%s]", chunk->uid);
@@ -70,6 +74,8 @@ static void app_event_process_request_chunks_file_handler(void *handler_args, es
       break;
     }
 
+    count_frames++;
+
     GOTO_CHECK(type_info_size != CONNECTION_REQUEST_TYPE_INFO_LENGTH, TAG, "Failed to read request type",
                error_close_file);
 
@@ -94,6 +100,12 @@ static void app_event_process_request_chunks_file_handler(void *handler_args, es
                TAG, "Failed to read request EOL", error_close_file);
     GOTO_CHECK(chunk_end_info != CONNECTION_REQUEST_EOL_INFO, TAG, "Failed to read request EOL", error_close_file);
 
+    if (chunk_type_info == CONNECTION_REQUEST_FRAME_INFO)
+    {
+      available_frames++;
+      continue;
+    }
+
     if (chunk_type_info == CONNECTION_REQUEST_WIFI_INFO)
     {
       process_request_wifi_credentials(context, chunk_context_size);
@@ -106,7 +118,13 @@ error_close_file:
 error_free_context:
   free(context);
 error_unlink:
-  if (unlink(path) == 0)
+  if (count_frames > 0 && available_frames == count_frames)
+  {
+    ESP_LOGI(TAG, "All frames [%d] are available", count_frames);
+
+    esp_event_post(APP_EVENTS, APP_EVENT_INIT_LIGHTS_SCHEMA, chunk, sizeof(request_chunk_data_t), portMAX_DELAY);
+  }
+  else if (unlink(path) == 0)
   {
     ESP_LOGI(TAG, "Removed file : %s", path);
   }
@@ -114,8 +132,6 @@ error_unlink:
   {
     ESP_LOGE(TAG, "Failed to remove file : %s", path);
   }
-
-  return;
 }
 
 static void app_event_process_request_chunk_handler(void *handler_args, esp_event_base_t base, int32_t id,
@@ -168,6 +184,9 @@ void app_main(void)
   ESP_ERROR_CHECK(read_ap_credentials(&ap_credentials));
 
   ESP_ERROR_CHECK(init_network(&ap_credentials, &wifi_credentials));
-
   ESP_ERROR_CHECK(init_server(ap_credentials.ssid));
+
+  ESP_ERROR_CHECK(init_lights_leds());
+  ESP_ERROR_CHECK(init_lights_loop());
+  ESP_ERROR_CHECK(init_lights_events());
 }

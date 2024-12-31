@@ -275,7 +275,7 @@ static esp_err_t api_post_handler(httpd_req_t *req)
 
   } while (chunk.size > 0 && chunk.processed < content_length);
 
-  return set_api_response(req, "");
+  return set_api_response(req, NULL);
 }
 
 esp_err_t init_server(char *app_uid)

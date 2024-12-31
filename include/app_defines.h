@@ -70,7 +70,6 @@ extern "C"
   {
     CONNECTION_REQUEST_TYPE_NONE = 0,
     CONNECTION_REQUEST_WIFI_INFO = 0x77696669,
-    CONNECTION_REQUEST_COLORS_INFO = 0x636f6c6f,
     CONNECTION_REQUEST_FRAME_INFO = 0x6672616d,
     CONNECTION_REQUEST_EOL_INFO = 0x454f4c00
   } connection_request_type_info_t;
@@ -80,6 +79,15 @@ extern "C"
     char ssid[SIZE_WITH_TRAILING_ZERO(SSID_MAX_LENGTH)];
     char password[SIZE_WITH_TRAILING_ZERO(PASSWORD_MAX_LENGTH)];
   } wifi_credentials_t;
+
+  typedef struct request_chunk_data_type
+  {
+    void *data;
+    ssize_t size;
+    ssize_t total;
+    ssize_t processed;
+    char uid[UID_MAX_LENGTH];
+  } request_chunk_data_t;
 
 #ifdef __cplusplus
 }
