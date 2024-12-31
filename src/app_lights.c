@@ -35,6 +35,24 @@ uint32_t resolveColorLightness(uint8_t color)
 
 void resolve_binary_color(uint8_t color, uint8_t *rgb)
 {
+  if (color == 0)
+  {
+    rgb[0] = 0;
+    rgb[1] = 0;
+    rgb[2] = 0;
+
+    return;
+  }
+
+  if (color == 255)
+  {
+    rgb[0] = 255;
+    rgb[1] = 255;
+    rgb[2] = 255;
+
+    return;
+  }
+
   uint32_t h = resolveColorHue(color);
   uint32_t s = 100;
   uint32_t v = resolveColorLightness(color);
