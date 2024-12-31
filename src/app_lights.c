@@ -24,7 +24,7 @@ lights_data_t lights_data = {0};
 
 uint32_t resolveColorHue(uint8_t color)
 {
-  return ((color & LIGHTS_PALLETTE_HUE_MASK) * 360) / (LIGHTS_PALLETTE_HUE_MASK + 1);
+  return ((color & LIGHTS_PALLETTE_HUE_MASK) * 360) / LIGHTS_PALLETTE_HUE_MAX;
 }
 
 uint32_t resolveColorLightness(uint8_t color)
@@ -35,27 +35,19 @@ uint32_t resolveColorLightness(uint8_t color)
 
 void resolve_binary_color(uint8_t color, uint8_t *rgb)
 {
-  if (color == 0)
-  {
-    rgb[0] = 0;
-    rgb[1] = 0;
-    rgb[2] = 0;
-
-    return;
-  }
-
-  if (color == 255)
-  {
-    rgb[0] = 255;
-    rgb[1] = 255;
-    rgb[2] = 255;
-
-    return;
-  }
-
   uint32_t h = resolveColorHue(color);
   uint32_t s = 100;
   uint32_t v = resolveColorLightness(color);
+
+  if (color % LIGHTS_PALLETTE_HUE_MAX == LIGHTS_PALLETTE_HUE_MASK)
+  {
+    s = 0;
+  }
+
+  if (color == LIGHTS_PALLETTE_HUE_MASK)
+  {
+    v = 0;
+  }
 
   uint32_t rgb_max = v * 2.55f;
   uint32_t rgb_min = rgb_max * (100 - s) / 100.0f;
