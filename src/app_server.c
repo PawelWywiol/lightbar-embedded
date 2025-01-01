@@ -199,10 +199,12 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   cJSON_AddStringToObject(root, "type", "info");
 
   cJSON *data = cJSON_AddObjectToObject(root, "data");
-  cJSON_AddNumberToObject(data, "leds", 0);
+  cJSON_AddNumberToObject(data, "leds", CONFIG_APP_LIGHTS_COUNT);
 
   vfs_size_t vfs_size = get_vfs_space_info();
-  cJSON_AddNumberToObject(data, "space", vfs_size.free);
+  cJSON_AddNumberToObject(data, "free", vfs_size.free);
+  cJSON_AddNumberToObject(data, "used", vfs_size.used);
+  cJSON_AddNumberToObject(data, "total", vfs_size.total);
 
   if (message != NULL)
   {
