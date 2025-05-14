@@ -10,14 +10,14 @@ led_strip_encoder_config_t encoder_config = {
 };
 rmt_channel_handle_t led_channel = NULL;
 rmt_tx_channel_config_t tx_chan_config = {
-  .clk_src = RMT_CLK_SRC_DEFAULT, // select source clock
+  .clk_src = RMT_CLK_SRC_DEFAULT, //
   .gpio_num = RMT_LED_STRIP_GPIO_NUM,
-  .mem_block_symbols = 64, // increase the block size can make the LED less flickering
+  .mem_block_symbols = 64,
   .resolution_hz = RMT_LED_STRIP_RESOLUTION_HZ,
-  .trans_queue_depth = 4, // set the number of transactions that can be pending in the background
+  .trans_queue_depth = 4,
 };
 rmt_transmit_config_t tx_config = {
-  .loop_count = 0, // no transfer loop
+  .loop_count = 0,
 };
 esp_timer_handle_t lights_loop_timer;
 lights_data_t lights_data = {0};
