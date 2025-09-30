@@ -193,18 +193,13 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   ESP_LOGI(TAG, "API GET request");
 
   set_cors_headers(req);
-  httpd_resp_set_type(req, "application/json");
+  httpd_resp_set_hdr(req, "Content-Type", "application/json; charset=utf-8");
 
   cJSON *root = cJSON_CreateObject();
   cJSON_AddStringToObject(root, "type", "info");
 
   cJSON *data = cJSON_AddObjectToObject(root, "data");
   cJSON_AddNumberToObject(data, "leds", CONFIG_APP_LIGHTS_COUNT);
-
-  vfs_size_t vfs_size = get_vfs_space_info();
-  cJSON_AddNumberToObject(data, "free", vfs_size.free);
-  cJSON_AddNumberToObject(data, "used", vfs_size.used);
-  cJSON_AddNumberToObject(data, "total", vfs_size.total);
 
   if (message != NULL)
   {
