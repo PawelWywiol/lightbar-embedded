@@ -289,10 +289,10 @@ esp_err_t init_server(char *app_uid)
   config.uri_match_fn = httpd_uri_match_wildcard;
   GOTO_CHECK(httpd_start(&server, &config), TAG, "Failed to start server", error_free_context);
 
-  httpd_uri_t api_get_uri = {.uri = "/api", .method = HTTP_GET, .handler = api_get_handler, .user_ctx = context};
+  httpd_uri_t api_get_uri = {.uri = "/api/lightbar", .method = HTTP_GET, .handler = api_get_handler, .user_ctx = context};
   httpd_register_uri_handler(server, &api_get_uri);
 
-  httpd_uri_t api_post_uri = {.uri = "/api", .method = HTTP_POST, .handler = api_post_handler, .user_ctx = context};
+  httpd_uri_t api_post_uri = {.uri = "/api/lightbar", .method = HTTP_POST, .handler = api_post_handler, .user_ctx = context};
   httpd_register_uri_handler(server, &api_post_uri);
 
   httpd_uri_t common_get_uri = {.uri = "/*", .method = HTTP_GET, .handler = common_get_handler, .user_ctx = context};

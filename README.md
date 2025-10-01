@@ -48,14 +48,6 @@ lightbar-embedded/
 - ESP-IDF framework (version 4.4 or later recommended)
 - PlatformIO (optional, if using PlatformIO build system)
 
-### Build Instructions
-
-Using ESP-IDF:
-```bash
-idf.py build
-idf.py -p /dev/ttyUSB0 flash monitor
-```
-
 ## Configuration
 
 The device can be configured via:
@@ -68,8 +60,8 @@ The device can be configured via:
 
 The device exposes several HTTP endpoints for control:
 
-- `GET /api` - Get device status and configuration
-- `POST /api` - Update device configuration
+- `GET /api/lightbar` - Get device status and configuration
+- `POST /api/lightbar` - Update device configuration
 
 ## License
 
