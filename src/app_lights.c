@@ -106,7 +106,7 @@ static void lights_loop_timer_callback(void *arg)
 
 static void on_init_light_schema_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
 {
-  memset(&lights_data, 0, sizeof(lights_data_t));
+  lights_data.status = LIGHTS_STATUS_STOPPED;
 
   request_chunk_data_t *chunk = (request_chunk_data_t *)event_data;
 
@@ -120,12 +120,14 @@ static void on_init_light_schema_handler(void *handler_args, esp_event_base_t ba
 
   chunk->total = file_stat.st_size;
 
-  GOTO_CHECK(process_current_light_schema_file(), TAG, "Failed to process lights schema file", error_cleanup);
+  GOTO_CHECK(cache_light_schema_frames(), TAG, "Failed to cache lights schema frames", error_cleanup);
 
+  unlink(lights_data.file_path);
   return;
 
 error_cleanup:
-  memset(&lights_data, 0, sizeof(lights_data_t));
+  lights_data.status = LIGHTS_STATUS_NONE;
+  lights_data.cached_frame_count = 0;
 
   ESP_LOGE(TAG, "Failed to process lights schema file [%s]", chunk->uid);
 }
@@ -157,182 +159,183 @@ error:
   return ESP_FAIL;
 }
 
-esp_err_t process_current_light_schema_file(void)
+static uint32_t count_frames_in_file(int file)
 {
-  u_int32_t frames_count = 0;
-  ssize_t file_offset = lights_data.next_frame.offset;
+  uint32_t count = 0;
+  lseek(file, 0, SEEK_SET);
 
-  memset(&lights_data.current_frame, 0, sizeof(frame_data_t));
-  memset(&lights_data.next_frame, 0, sizeof(frame_data_t));
-
-  void *context = NULL;
-  context = calloc(1, CONTEXT_BUFFER_MAX_LENGTH);
-  GOTO_CHECK(context == NULL, TAG, "Failed to allocate memory for server context", error_cleanup);
-
-  int file = -1;
-  file = open(lights_data.file_path, O_RDONLY, 0);
-  GOTO_CHECK(file == -1, TAG, "Failed to open file", error_free_context);
-
-  lseek(file, file_offset, SEEK_SET);
-
-  do
+  while (true)
   {
-    file_offset = lseek(file, 0, SEEK_CUR);
-
-    connection_request_type_info_t chunk_end_info = CONNECTION_REQUEST_TYPE_NONE;
     connection_request_type_info_t chunk_type_info = CONNECTION_REQUEST_TYPE_NONE;
-
-    size_t type_info_size = 0;
-    type_info_size = read(file, &chunk_type_info, CONNECTION_REQUEST_TYPE_INFO_LENGTH);
+    size_t type_info_size = read(file, &chunk_type_info, CONNECTION_REQUEST_TYPE_INFO_LENGTH);
 
     if (type_info_size == 0)
     {
       break;
     }
 
+    if (type_info_size != CONNECTION_REQUEST_TYPE_INFO_LENGTH)
+    {
+      break;
+    }
+
+    size_t chunk_context_size = 0;
+    if (read(file, &chunk_context_size, CONNECTION_REQUEST_SIZE_INFO_LENGTH) != CONNECTION_REQUEST_SIZE_INFO_LENGTH)
+    {
+      break;
+    }
+
+    if (lseek(file, chunk_context_size, SEEK_CUR) == -1)
+    {
+      break;
+    }
+
+    connection_request_type_info_t chunk_end_info = CONNECTION_REQUEST_TYPE_NONE;
+    if (read(file, &chunk_end_info, CONNECTION_REQUEST_EOL_INFO_LENGTH) != CONNECTION_REQUEST_EOL_INFO_LENGTH)
+    {
+      break;
+    }
+
+    if (chunk_end_info != CONNECTION_REQUEST_EOL_INFO)
+    {
+      break;
+    }
+
+    if (chunk_type_info == CONNECTION_REQUEST_FRAME_INFO)
+    {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+esp_err_t cache_light_schema_frames(void)
+{
+  free(lights_data.cached_frames);
+  lights_data.cached_frames = NULL;
+  lights_data.cached_frame_count = 0;
+  lights_data.current_frame_index = 0;
+
+  void *context = calloc(1, CONTEXT_BUFFER_MAX_LENGTH);
+  GOTO_CHECK(context == NULL, TAG, "Failed to allocate context buffer", error);
+
+  int file = open(lights_data.file_path, O_RDONLY, 0);
+  GOTO_CHECK(file == -1, TAG, "Failed to open file", error_free_context);
+
+  uint32_t total_frames = count_frames_in_file(file);
+  GOTO_CHECK(total_frames == 0, TAG, "No frames found", error_close_file);
+
+  size_t frame_size = sizeof(frame_data_t);
+  size_t free_heap = esp_get_free_heap_size();
+  uint32_t max_frames = (free_heap > LIGHTS_MIN_FREE_HEAP) ? (free_heap - LIGHTS_MIN_FREE_HEAP) / frame_size : 0;
+  GOTO_CHECK(max_frames == 0, TAG, "Not enough heap for frames", error_close_file);
+
+  uint32_t frames_to_cache = (total_frames < max_frames) ? total_frames : max_frames;
+
+  lights_data.cached_frames = calloc(frames_to_cache, frame_size);
+  GOTO_CHECK(lights_data.cached_frames == NULL, TAG, "Failed to allocate frame cache", error_close_file);
+
+  lseek(file, 0, SEEK_SET);
+  uint32_t cached = 0;
+
+  while (cached < frames_to_cache)
+  {
+    connection_request_type_info_t chunk_type_info = CONNECTION_REQUEST_TYPE_NONE;
+    connection_request_type_info_t chunk_end_info = CONNECTION_REQUEST_TYPE_NONE;
+
+    size_t type_info_size = read(file, &chunk_type_info, CONNECTION_REQUEST_TYPE_INFO_LENGTH);
+    if (type_info_size == 0)
+    {
+      break;
+    }
+
     GOTO_CHECK(type_info_size != CONNECTION_REQUEST_TYPE_INFO_LENGTH, TAG, "Failed to read request type",
-               error_close_file);
+               error_free_cache);
 
     size_t chunk_context_size = 0;
     GOTO_CHECK(read(file, &chunk_context_size, CONNECTION_REQUEST_SIZE_INFO_LENGTH) !=
                  CONNECTION_REQUEST_SIZE_INFO_LENGTH,
-               TAG, "Failed to read request size", error_free_context);
+               TAG, "Failed to read request size", error_free_cache);
 
     if (chunk_context_size > CONTEXT_BUFFER_MAX_LENGTH)
     {
       GOTO_CHECK(lseek(file, chunk_context_size, SEEK_CUR) == -1, TAG, "Failed to skip request content",
-                 error_close_file);
+                 error_free_cache);
       GOTO_CHECK(read(file, &chunk_end_info, CONNECTION_REQUEST_EOL_INFO_LENGTH) != CONNECTION_REQUEST_EOL_INFO_LENGTH,
-                 TAG, "Failed to read request EOL", error_close_file);
-      GOTO_CHECK(chunk_end_info != CONNECTION_REQUEST_EOL_INFO, TAG, "Failed to read request EOL", error_close_file);
+                 TAG, "Failed to read request EOL", error_free_cache);
+      GOTO_CHECK(chunk_end_info != CONNECTION_REQUEST_EOL_INFO, TAG, "Failed to read request EOL", error_free_cache);
       continue;
     }
 
     GOTO_CHECK(read(file, context, chunk_context_size) != chunk_context_size, TAG, "Failed to read request content",
-               error_close_file);
+               error_free_cache);
     GOTO_CHECK(read(file, &chunk_end_info, CONNECTION_REQUEST_EOL_INFO_LENGTH) != CONNECTION_REQUEST_EOL_INFO_LENGTH,
-               TAG, "Failed to read request EOL", error_close_file);
-    GOTO_CHECK(chunk_end_info != CONNECTION_REQUEST_EOL_INFO, TAG, "Failed to read request EOL", error_close_file);
+               TAG, "Failed to read request EOL", error_free_cache);
+    GOTO_CHECK(chunk_end_info != CONNECTION_REQUEST_EOL_INFO, TAG, "Failed to read request EOL", error_free_cache);
 
     if (chunk_type_info == CONNECTION_REQUEST_FRAME_INFO)
     {
-      frames_count++;
-
-      if (lights_data.first_frame.chunk_type == CONNECTION_REQUEST_TYPE_NONE)
-      {
-        GOTO_CHECK(resolve_lights_frame_from_context(&lights_data.first_frame, context, chunk_context_size), TAG,
-                   "Failed to resolve first frame context", error_close_file);
-        lights_data.first_frame.offset = file_offset;
-        lights_data.first_frame.chunk_type = chunk_type_info;
-
-        ESP_LOGI(TAG, "First frame context resolved");
-      }
-
-      if (lights_data.current_frame.chunk_type == CONNECTION_REQUEST_TYPE_NONE)
-      {
-        GOTO_CHECK(resolve_lights_frame_from_context(&lights_data.current_frame, context, chunk_context_size), TAG,
-                   "Failed to resolve current frame context", error_close_file);
-        lights_data.current_frame.offset = file_offset;
-        lights_data.current_frame.chunk_type = chunk_type_info;
-
-        ESP_LOGI(TAG, "Current frame context resolved");
-      }
-      else if (lights_data.next_frame.chunk_type == CONNECTION_REQUEST_TYPE_NONE)
-      {
-        GOTO_CHECK(resolve_lights_frame_from_context(&lights_data.next_frame, context, chunk_context_size), TAG,
-                   "Failed to resolve next frame context", error_close_file);
-        lights_data.next_frame.offset = file_offset;
-        lights_data.next_frame.chunk_type = chunk_type_info;
-
-        ESP_LOGI(TAG, "Next frame context resolved");
-      }
-      else if (lights_data.frames_count)
-      {
-        break;
-      }
-
-      continue;
+      GOTO_CHECK(resolve_lights_frame_from_context(&lights_data.cached_frames[cached], context, chunk_context_size),
+                 TAG, "Failed to resolve frame context", error_free_cache);
+      lights_data.cached_frames[cached].chunk_type = chunk_type_info;
+      cached++;
     }
+  }
 
-  } while (true);
+  close(file);
+  free(context);
 
+  GOTO_CHECK(cached == 0, TAG, "No frames cached", error_free_cache_only);
+
+  lights_data.cached_frame_count = cached;
+  lights_data.frames_count = cached;
+  lights_data.current_frame_index = 0;
+  lights_data.current_frame = lights_data.cached_frames[0];
+  lights_data.current_frame.time = esp_timer_get_time();
+  lights_data.next_frame_time = lights_data.current_frame.time + lights_data.current_frame.duration;
+  lights_data.status = LIGHTS_STATUS_RUNNING;
+
+  ESP_LOGI(TAG, "Cached %lu frames in RAM", (unsigned long)cached);
+
+  return ESP_OK;
+
+error_free_cache:
+  close(file);
+  free(context);
+error_free_cache_only:
+  free(lights_data.cached_frames);
+  lights_data.cached_frames = NULL;
+  lights_data.cached_frame_count = 0;
+  return ESP_FAIL;
 error_close_file:
   close(file);
 error_free_context:
   free(context);
-
-  if (lights_data.first_frame.chunk_type != CONNECTION_REQUEST_TYPE_NONE &&
-      lights_data.current_frame.chunk_type != CONNECTION_REQUEST_TYPE_NONE)
-  {
-    if (lights_data.next_frame.chunk_type == CONNECTION_REQUEST_TYPE_NONE)
-    {
-      lights_data.next_frame = lights_data.first_frame;
-
-      ESP_LOGI(TAG, "Next frame context resolved");
-    }
-
-    lights_data.frames_count = lights_data.frames_count ? lights_data.frames_count : frames_count;
-    lights_data.current_frame.time = esp_timer_get_time();
-    lights_data.next_frame.time = lights_data.current_frame.time + lights_data.current_frame.duration;
-    lights_data.status = LIGHTS_STATUS_RUNNING;
-
-    return ESP_OK;
-  }
-error_cleanup:
+error:
   return ESP_FAIL;
 }
 
 esp_err_t resolve_current_light_schema_frame(void)
 {
-  if (lights_data.status != LIGHTS_STATUS_RUNNING)
+  if (lights_data.status != LIGHTS_STATUS_RUNNING || lights_data.cached_frame_count == 0)
   {
     return ESP_FAIL;
   }
 
   int64_t current_time = esp_timer_get_time();
 
-  if (current_time < lights_data.next_frame.time)
+  if (current_time < lights_data.next_frame_time)
   {
     return ESP_OK;
   }
 
-  if (lights_data.frames_count == 0)
-  {
-    lights_data.status = LIGHTS_STATUS_STOPPED;
-
-    return ESP_FAIL;
-  }
-
-  if (lights_data.frames_count == 1)
-  {
-    lights_data.current_frame.time = esp_timer_get_time();
-    lights_data.next_frame.time = lights_data.current_frame.time + lights_data.current_frame.duration;
-
-    return ESP_OK;
-  }
-
-  if (lights_data.frames_count == 2)
-  {
-    frame_data_t temp_frame = lights_data.current_frame;
-    lights_data.current_frame = lights_data.next_frame;
-    lights_data.next_frame = temp_frame;
-
-    lights_data.current_frame.time = esp_timer_get_time();
-    lights_data.next_frame.time = lights_data.current_frame.time + lights_data.current_frame.duration;
-
-    return ESP_OK;
-  }
-
-  GOTO_CHECK(process_current_light_schema_file(), TAG, "Failed to process lights schema file", error_cleanup);
+  lights_data.current_frame_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
+  lights_data.current_frame = lights_data.cached_frames[lights_data.current_frame_index];
+  lights_data.current_frame.time = current_time;
+  lights_data.next_frame_time = current_time + lights_data.current_frame.duration;
 
   return ESP_OK;
-
-error_cleanup:
-  memset(&lights_data, 0, sizeof(lights_data_t));
-
-  ESP_LOGE(TAG, "Failed to process lights schema file");
-
-  return ESP_FAIL;
 }
 
 esp_err_t show_current_light_schema_frame(void)

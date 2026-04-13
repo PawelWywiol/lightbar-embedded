@@ -188,12 +188,33 @@ static esp_err_t common_get_handler(httpd_req_t *req)
   return ESP_OK;
 }
 
+static esp_err_t send_api_ok(httpd_req_t *req)
+{
+  set_cors_headers(req);
+  httpd_resp_set_type(req, "application/json");
+  httpd_resp_sendstr(req, "{\"ok\":true}");
+  return ESP_OK;
+}
+
+static esp_err_t send_api_error(httpd_req_t *req, const char *message)
+{
+  set_cors_headers(req);
+  httpd_resp_set_type(req, "application/json");
+  httpd_resp_set_status(req, HTTPD_400);
+
+  cJSON *root = cJSON_CreateObject();
+  cJSON_AddStringToObject(root, "error", message);
+  const char *json = cJSON_PrintUnformatted(root);
+  httpd_resp_sendstr(req, json);
+  free((void *)json);
+  cJSON_Delete(root);
+  return ESP_OK;
+}
+
 static esp_err_t set_api_response(httpd_req_t *req, char *message)
 {
-  ESP_LOGI(TAG, "API GET request");
-
   set_cors_headers(req);
-  httpd_resp_set_hdr(req, "Content-Type", "application/json; charset=utf-8");
+  httpd_resp_set_type(req, "application/json");
 
   cJSON *root = cJSON_CreateObject();
   cJSON_AddStringToObject(root, "type", "info");
@@ -221,7 +242,6 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   }
 
   const char *info = cJSON_PrintUnformatted(root);
-
   httpd_resp_sendstr(req, info);
   free((void *)info);
 
@@ -233,29 +253,21 @@ static esp_err_t api_get_handler(httpd_req_t *req)
 {
   ESP_LOGI(TAG, "API GET request");
 
-  esp_event_post(APP_EVENTS, APP_EVENT_BASE, NULL, 0, portMAX_DELAY);
-
   return set_api_response(req, NULL);
 }
 
 static esp_err_t api_post_handler(httpd_req_t *req)
 {
-  ESP_LOGI(TAG, "API POST request");
-
-  vfs_size_t vfs_size = get_vfs_space_info();
   size_t content_length = req->content_len;
-
-  if (content_length >= vfs_size.free)
-  {
-    ESP_LOGE(TAG, "Request content length is too large");
-    return set_api_response(req, "Request content length is too large");
-  }
 
   request_chunk_data_t chunk = {.data = req->user_ctx, .total = content_length, .size = 0, .processed = 0};
 
   snprintf(chunk.uid, UID_MAX_LENGTH, "%08x", (unsigned int)esp_timer_get_time());
   uid(chunk.uid + strlen(chunk.uid), UID_MAX_LENGTH - strlen(chunk.uid));
   chunk.uid[UID_MAX_LENGTH - 1] = '\0';
+
+  char path[FILE_SYSTEM_PATH_MAX_LENGTH];
+  snprintf(path, FILE_SYSTEM_PATH_MAX_LENGTH, "%s/%s", FILE_SYSTEM_TEMP_BASE_PATH, chunk.uid);
 
   do
   {
@@ -264,15 +276,26 @@ static esp_err_t api_post_handler(httpd_req_t *req)
 
     if (chunk.size <= 0)
     {
-      ESP_LOGE(TAG, "Failed to read request content");
-      return set_api_response(req, "Failed to read request content");
+      return send_api_error(req, "Failed to read request content");
     }
 
-    esp_event_post(APP_EVENTS, APP_EVENT_PROCESS_REQUEST_CHUNK, &chunk, sizeof(request_chunk_data_t), portMAX_DELAY);
+    if (vfs_append_file(path, chunk.data, chunk.size) != ESP_OK)
+    {
+      return send_api_error(req, "Failed to write chunk to file");
+    }
 
   } while (chunk.size > 0 && chunk.processed < content_length);
 
-  return set_api_response(req, NULL);
+  esp_event_post(APP_EVENTS, APP_EVENT_PROCESS_REQUEST_COMPLETE, &chunk, sizeof(request_chunk_data_t), portMAX_DELAY);
+
+  return send_api_ok(req);
+}
+
+static esp_err_t on_open_set_nodelay(httpd_handle_t hd, int sockfd)
+{
+  int nodelay = 1;
+  setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay));
+  return ESP_OK;
 }
 
 esp_err_t init_server(char *app_uid)
@@ -287,6 +310,10 @@ esp_err_t init_server(char *app_uid)
   httpd_handle_t server = NULL;
   httpd_config_t config = HTTPD_DEFAULT_CONFIG();
   config.uri_match_fn = httpd_uri_match_wildcard;
+  config.open_fn = on_open_set_nodelay;
+  config.task_priority = tskIDLE_PRIORITY + 21;
+  config.recv_wait_timeout = 2;
+  config.send_wait_timeout = 2;
   GOTO_CHECK(httpd_start(&server, &config), TAG, "Failed to start server", error_free_context);
 
   httpd_uri_t api_get_uri = {.uri = "/api/lightbar", .method = HTTP_GET, .handler = api_get_handler, .user_ctx = context};
