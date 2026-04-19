@@ -46,6 +46,12 @@ extern "C"
     LIGHTS_STATUS_PAUSED
   } lights_status_t;
 
+  typedef enum lights_frame_type
+  {
+    LIGHTS_FRAME_TYPE_STEP = 0,
+    LIGHTS_FRAME_TYPE_FADE = 1,
+  } lights_frame_type_t;
+
   typedef struct frame_data
   {
     connection_request_type_info_t chunk_type;

@@ -338,6 +338,30 @@ esp_err_t resolve_current_light_schema_frame(void)
   return ESP_OK;
 }
 
+static void resolve_interpolated_color(uint8_t color_from, uint8_t color_to, float t, uint8_t *rgb)
+{
+  uint8_t rgb_from[3];
+  uint8_t rgb_to[3];
+  resolve_binary_color(color_from, rgb_from);
+  resolve_binary_color(color_to, rgb_to);
+
+  for (int c = 0; c < 3; c++)
+  {
+    int from = rgb_from[c];
+    int to = rgb_to[c];
+    int value = from + (int)((to - from) * t);
+    if (value < 0)
+    {
+      value = 0;
+    }
+    if (value > 255)
+    {
+      value = 255;
+    }
+    rgb[c] = (uint8_t)value;
+  }
+}
+
 esp_err_t show_current_light_schema_frame(void)
 {
   if (lights_data.status != LIGHTS_STATUS_RUNNING)
@@ -345,9 +369,39 @@ esp_err_t show_current_light_schema_frame(void)
     return ESP_FAIL;
   }
 
-  for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
+  if (lights_data.cached_frame_count == 0)
   {
-    resolve_binary_color(lights_data.current_frame.colors[i], &led_strip_pixels[i * 3]);
+    return ESP_FAIL;
+  }
+
+  if (lights_data.current_frame.type == LIGHTS_FRAME_TYPE_FADE)
+  {
+    uint32_t next_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
+    const frame_data_t *next_frame = &lights_data.cached_frames[next_index];
+    int64_t elapsed = esp_timer_get_time() - lights_data.current_frame.time;
+    int64_t duration = lights_data.current_frame.duration > 0 ? lights_data.current_frame.duration : 1;
+    float t = (float)elapsed / (float)duration;
+    if (t < 0.0f)
+    {
+      t = 0.0f;
+    }
+    if (t > 1.0f)
+    {
+      t = 1.0f;
+    }
+
+    for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
+    {
+      resolve_interpolated_color(lights_data.current_frame.colors[i], next_frame->colors[i], t,
+                                 &led_strip_pixels[i * 3]);
+    }
+  }
+  else
+  {
+    for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
+    {
+      resolve_binary_color(lights_data.current_frame.colors[i], &led_strip_pixels[i * 3]);
+    }
   }
 
   GOTO_CHECK(rmt_transmit(led_channel, led_encoder, led_strip_pixels, sizeof(led_strip_pixels), &tx_config), TAG,
