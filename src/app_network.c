@@ -194,6 +194,7 @@ esp_err_t init_network(const wifi_credentials_t *ap_credentials, const wifi_cred
   GOTO_CHECK(init_sta(ap_credentials, wifi_credentials), TAG, "Failed to initialize STA", error);
 
   GOTO_CHECK(esp_wifi_start(), TAG, "Failed to start WiFi", error);
+  GOTO_CHECK(esp_wifi_set_ps(WIFI_PS_NONE), TAG, "Failed to disable WiFi power save", error);
 
   return ESP_OK;
 error:

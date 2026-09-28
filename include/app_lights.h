@@ -46,6 +46,12 @@ extern "C"
     LIGHTS_STATUS_PAUSED
   } lights_status_t;
 
+  typedef enum lights_frame_type
+  {
+    LIGHTS_FRAME_TYPE_STEP = 0,
+    LIGHTS_FRAME_TYPE_FADE = 1,
+  } lights_frame_type_t;
+
   typedef struct frame_data
   {
     connection_request_type_info_t chunk_type;
@@ -57,20 +63,24 @@ extern "C"
     int64_t duration;
   } frame_data_t;
 
+#define LIGHTS_MIN_FREE_HEAP 32768
+
   typedef struct lights_data
   {
     char file_path[FILE_SYSTEM_PATH_MAX_LENGTH];
     ssize_t file_size;
-    u_int32_t frames_count;
-    frame_data_t first_frame;
+    uint32_t frames_count;
+    frame_data_t *cached_frames;
+    uint32_t cached_frame_count;
+    uint32_t current_frame_index;
     frame_data_t current_frame;
-    frame_data_t next_frame;
+    int64_t next_frame_time;
     lights_status_t status;
   } lights_data_t;
 
   int64_t calculate_frame_duration(uint8_t tempo);
   esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, void *context, size_t chunk_context_size);
-  esp_err_t process_current_light_schema_file(void);
+  esp_err_t cache_light_schema_frames(void);
   esp_err_t resolve_current_light_schema_frame(void);
   esp_err_t show_current_light_schema_frame(void);
 
