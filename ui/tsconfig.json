@@ -1,0 +1,16 @@
+{
+  "include": ["src", "vite.config.ts"],
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "ES2022"],
+    "types": ["node"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
+  }
+}

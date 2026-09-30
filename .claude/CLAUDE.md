@@ -31,6 +31,14 @@ pio run -e esp32-c3-devkitm-1 -t upload -t monitor
 make format
 ```
 
+### Device Web UI (`ui/`)
+```bash
+make ui                                           # test + build -> data/public_html/index.html.gz
+cd ui && DEVICE_URL=http://<device-ip> pnpm dev   # dev server, /api proxied to device
+```
+- Vanilla TS, no framework; `vite-plugin-singlefile` inlines JS/CSS into one `index.html`, vite plugin gzips it into `data/public_html/` (dir is wiped on build)
+- `ui/src/protocol.ts` mirrors firmware binary request format (`app_defines.h`); keep in sync, also with `lightbar-web/lib/connections`
+
 ### File System
 ```bash
 # Upload filesystem data (from ./data directory to LittleFS)
