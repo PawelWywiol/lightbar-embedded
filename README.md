@@ -38,6 +38,8 @@ lightbar-embedded/
 │   ├── app_defines.h       # Project-wide definitions
 │   ├── app_events.h        # Event system definitions
 │   └── *.h                 # Component headers
+├── ui/                     # Device web UI (vanilla TS, built into one file)
+├── data/                   # LittleFS image (public_html/index.html.gz, lights/)
 └── CMakeLists.txt          # Build configuration
 ```
 
@@ -47,6 +49,16 @@ lightbar-embedded/
 
 - ESP-IDF framework (version 4.4 or later recommended)
 - PlatformIO (optional, if using PlatformIO build system)
+
+### Device web UI
+
+Built into a single gzipped `data/public_html/index.html.gz` (HTML, JS and CSS inline):
+
+```bash
+make ui                                       # install + build ui, writes data/public_html
+pio run -t uploadfs                           # flash LittleFS image
+cd ui && DEVICE_URL=http://192.168.4.1 pnpm dev   # dev server, /api proxied to device
+```
 
 ## Configuration
 

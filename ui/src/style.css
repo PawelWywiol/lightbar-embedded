@@ -1,0 +1,89 @@
+:root {
+  --background: hsl(224 71% 4%);
+  --foreground: hsl(213 31% 91%);
+  --border: hsl(216 34% 17%);
+  --muted: hsl(215 16% 57%);
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  background: var(--background);
+  color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+main,
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+main {
+  width: 24rem;
+  max-width: calc(100% - 2rem);
+  padding: 1rem 0;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+input,
+button {
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--background);
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+}
+
+input::placeholder {
+  color: var(--muted);
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--border);
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+  text-align: right;
+}
+
+dt {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+dd {
+  margin: 0;
+  font-size: 0.75rem;
+}

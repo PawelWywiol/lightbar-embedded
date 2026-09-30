@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lightbar</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Lightbar</h1>
+      <form id="wifi" hidden>
+        <input id="ssid" placeholder="ssid" aria-label="ssid" maxlength="32" autocomplete="off" />
+        <input id="password" type="password" placeholder="password" aria-label="password" maxlength="64" />
+        <button id="save" type="submit" disabled>Save</button>
+      </form>
+      <dl id="info" hidden>
+        <dt>uid :</dt>
+        <dd id="uid"></dd>
+        <dt>leds :</dt>
+        <dd id="leds"></dd>
+      </dl>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

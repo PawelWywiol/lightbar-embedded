@@ -7,6 +7,7 @@ all:
 	@echo "  make flash    upload + monitor"
 	@echo "  make clean    clean build artifacts"
 	@echo "  make format   clang-format src/ include/"
+	@echo "  make ui       build device web UI into data/public_html"
 
 .PHONY: format
 format:
@@ -30,3 +31,7 @@ flash: upload monitor
 .PHONY: clean
 clean:
 	pio run -t clean
+
+.PHONY: ui
+ui:
+	cd ui && pnpm install --frozen-lockfile && pnpm run test && pnpm run build
