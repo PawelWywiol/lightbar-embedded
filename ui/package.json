@@ -5,14 +5,27 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "oxlint --deny-warnings",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "typecheck": "tsc",
+    "deps:check": "pnpm outdated -r",
+    "deps:update": "pnpm update -r --latest"
   },
-  "packageManager": "pnpm@10.33.0",
   "devDependencies": {
     "@types/node": "^24.19.0",
-    "typescript": "~6.0.3",
-    "vite": "^7.3.6",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
+    "typescript": "~7.0.2",
+    "vite": "^8.3.1",
     "vite-plugin-singlefile": "^2.3.3",
-    "vitest": "^4.1.11"
-  }
+    "vitest": "^5.0.3"
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "packageManager": "pnpm@12.8.1+sha512.f64ba907507f5ceafe06c8d38e6052d0179444580ec1279ddd5bfc11cb48aa8a2644b66598e07e761da84872a9fc57d5f902b87fa49d024198d558612aabbe45"
 }

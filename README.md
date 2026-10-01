@@ -55,7 +55,7 @@ lightbar-embedded/
 Built into a single gzipped `data/public_html/index.html.gz` (HTML, JS and CSS inline):
 
 ```bash
-make ui                                       # install + build ui, writes data/public_html
+make ui                                       # install, lint, test, build ui -> data/public_html
 pio run -t uploadfs                           # flash LittleFS image
 cd ui && DEVICE_URL=http://192.168.4.1 pnpm dev   # dev server, /api proxied to device
 ```

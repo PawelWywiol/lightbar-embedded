@@ -33,9 +33,10 @@ make format
 
 ### Device Web UI (`ui/`)
 ```bash
-make ui                                           # test + build -> data/public_html/index.html.gz
+make ui                                           # lint + fmt check + test + build -> data/public_html/index.html.gz
 cd ui && DEVICE_URL=http://<device-ip> pnpm dev   # dev server, /api proxied to device
 ```
+- Tooling: pnpm 12 (`minimumReleaseAge` 1 day in `ui/pnpm-workspace.yaml`), Node 24, oxlint (`pnpm lint`), oxfmt (`pnpm fmt`), vitest, `pnpm deps:check` / `deps:update`
 - Vanilla TS, no framework; `vite-plugin-singlefile` inlines JS/CSS into one `index.html`, vite plugin gzips it into `data/public_html/` (dir is wiped on build)
 - `ui/src/protocol.ts` mirrors firmware binary request format (`app_defines.h`); keep in sync, also with `lightbar-web/lib/connections`
 
