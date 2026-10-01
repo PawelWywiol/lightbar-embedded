@@ -7,7 +7,7 @@ all:
 	@echo "  make flash    upload + monitor"
 	@echo "  make clean    clean build artifacts"
 	@echo "  make format   clang-format src/ include/"
-	@echo "  make ui       build device web UI into data/public_html"
+	@echo "  make ui       lint, test, build device web UI into data/public_html"
 
 .PHONY: format
 format:
@@ -34,4 +34,4 @@ clean:
 
 .PHONY: ui
 ui:
-	cd ui && pnpm install --frozen-lockfile && pnpm run test && pnpm run build
+	cd ui && pnpm install --frozen-lockfile && pnpm run lint && pnpm run fmt:check && pnpm run test && pnpm run build
