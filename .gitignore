@@ -3,3 +3,5 @@ managed_components
 .vscode
 *.old
 .DS_Store
+/sdkconfig.esp32-c3-devkitm-1
+/sdkconfig.esp32-c3-devkitm-1-debug

@@ -2,6 +2,16 @@
 
 static const char *TAG = "APP_NETWORK";
 
+static esp_timer_handle_t sta_check_timer = NULL;
+
+// esp_wifi reads up to 32 SSID bytes without null terminator (802.11 max length)
+static size_t copy_ssid(uint8_t *destination, const char *source)
+{
+  size_t length = strnlen(source, SSID_MAX_LENGTH);
+  memcpy(destination, source, length);
+  return length;
+}
+
 static void check_sta_info(void *arg)
 {
   wifi_ap_record_t ap_info;
@@ -19,19 +29,25 @@ static void check_sta_info(void *arg)
 
 static void wifi_on_sta_connected_handler(void)
 {
-  ESP_LOGW(TAG, "STA connected to AP");
+  ESP_LOGI(TAG, "STA connected to AP");
 }
 
 static void wifi_on_sta_disconnected_handler(void)
 {
-  ESP_LOGW(TAG, "STA disconnected from AP");
+  ESP_LOGI(TAG, "STA disconnected from AP");
 
-  const esp_timer_create_args_t timer_args = {.callback = &check_sta_info, .arg = NULL, .name = "wifi_check_timer"};
+  if (sta_check_timer == NULL)
+  {
+    const esp_timer_create_args_t timer_args = {.callback = &check_sta_info, .arg = NULL, .name = "wifi_check_timer"};
 
-  esp_timer_handle_t timer;
-  esp_timer_create(&timer_args, &timer);
+    if (esp_timer_create(&timer_args, &sta_check_timer) != ESP_OK)
+    {
+      return;
+    }
+  }
 
-  esp_timer_start_once(timer, CONFIG_APP_STA_CONNECT_TIMEOUT * 1000 * 1000);
+  esp_timer_stop(sta_check_timer);
+  esp_timer_start_once(sta_check_timer, CONFIG_APP_STA_CONNECT_TIMEOUT * 1000 * 1000);
 }
 
 static void wifi_on_sta_start_handler(void)
@@ -41,7 +57,7 @@ static void wifi_on_sta_start_handler(void)
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
-  ESP_LOGW(TAG, "WiFi event : %s [%lu]", event_base, event_id);
+  ESP_LOGI(TAG, "WiFi event : %s [%lu]", event_base, event_id);
 
   if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
   {
@@ -132,12 +148,8 @@ static esp_err_t init_ap(const wifi_credentials_t *ap_credentials)
       },
   };
 
-  strncpy((char *)wifi_config.ap.ssid, ap_credentials->ssid, sizeof(wifi_config.ap.ssid));
-  strncpy((char *)wifi_config.ap.password, ap_credentials->password, sizeof(wifi_config.ap.password));
-
-  wifi_config.ap.password[sizeof(wifi_config.ap.password) - 1] = '\0';
-  wifi_config.ap.ssid[sizeof(wifi_config.ap.ssid) - 1] = '\0';
-  wifi_config.ap.ssid_len = strlen((char *)wifi_config.ap.ssid);
+  wifi_config.ap.ssid_len = copy_ssid(wifi_config.ap.ssid, ap_credentials->ssid);
+  strlcpy((char *)wifi_config.ap.password, ap_credentials->password, sizeof(wifi_config.ap.password));
 
   if (strlen(ap_credentials->password) == 0)
   {
@@ -168,11 +180,9 @@ static esp_err_t init_sta(const wifi_credentials_t *ap_credentials, const wifi_c
       },
   };
 
-  strncpy((char *)wifi_config.sta.ssid, wifi_credentials->ssid, sizeof(wifi_config.sta.ssid));
-  strncpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
+  copy_ssid(wifi_config.sta.ssid, wifi_credentials->ssid);
+  strlcpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
 
-  wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
-  wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
 
   GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set STA config", error);
 
@@ -217,11 +227,9 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
         },
     };
 
-    strncpy((char *)wifi_config.sta.ssid, wifi_credentials->ssid, sizeof(wifi_config.sta.ssid));
-    strncpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
+    copy_ssid(wifi_config.sta.ssid, wifi_credentials->ssid);
+    strlcpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
 
-    wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
-    wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
 
     GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set STA config", error);
   }

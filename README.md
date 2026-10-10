@@ -50,6 +50,18 @@ lightbar-embedded/
 - ESP-IDF framework (version 4.4 or later recommended)
 - PlatformIO (optional, if using PlatformIO build system)
 
+### Firmware builds
+
+Two PlatformIO environments share `sdkconfig.defaults` and add one layer each (generated `sdkconfig.<env>` files are not committed):
+
+- `esp32-c3-devkitm-1` (default, release): `sdkconfig.release` — `-O2`, no logs, no console, silent assertions/checks, silent reboot on panic
+- `esp32-c3-devkitm-1-debug`: `sdkconfig.debug` — `-Og`, info logs (startup memory usage, frame cache)
+
+```bash
+make upload        # release build + flash
+make flash-debug   # debug build + flash + serial monitor
+```
+
 ### Device web UI
 
 Built into a single gzipped `data/public_html/index.html.gz` (HTML, JS and CSS inline):
