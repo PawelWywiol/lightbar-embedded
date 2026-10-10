@@ -132,11 +132,9 @@ static esp_err_t init_ap(const wifi_credentials_t *ap_credentials)
       },
   };
 
-  strncpy((char *)wifi_config.ap.ssid, ap_credentials->ssid, sizeof(wifi_config.ap.ssid));
-  strncpy((char *)wifi_config.ap.password, ap_credentials->password, sizeof(wifi_config.ap.password));
+  strlcpy((char *)wifi_config.ap.ssid, ap_credentials->ssid, sizeof(wifi_config.ap.ssid));
+  strlcpy((char *)wifi_config.ap.password, ap_credentials->password, sizeof(wifi_config.ap.password));
 
-  wifi_config.ap.password[sizeof(wifi_config.ap.password) - 1] = '\0';
-  wifi_config.ap.ssid[sizeof(wifi_config.ap.ssid) - 1] = '\0';
   wifi_config.ap.ssid_len = strlen((char *)wifi_config.ap.ssid);
 
   if (strlen(ap_credentials->password) == 0)
@@ -168,11 +166,9 @@ static esp_err_t init_sta(const wifi_credentials_t *ap_credentials, const wifi_c
       },
   };
 
-  strncpy((char *)wifi_config.sta.ssid, wifi_credentials->ssid, sizeof(wifi_config.sta.ssid));
-  strncpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
+  strlcpy((char *)wifi_config.sta.ssid, wifi_credentials->ssid, sizeof(wifi_config.sta.ssid));
+  strlcpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
 
-  wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
-  wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
 
   GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set STA config", error);
 
@@ -217,11 +213,9 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
         },
     };
 
-    strncpy((char *)wifi_config.sta.ssid, wifi_credentials->ssid, sizeof(wifi_config.sta.ssid));
-    strncpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
+    strlcpy((char *)wifi_config.sta.ssid, wifi_credentials->ssid, sizeof(wifi_config.sta.ssid));
+    strlcpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
 
-    wifi_config.sta.password[sizeof(wifi_config.sta.password) - 1] = '\0';
-    wifi_config.sta.ssid[sizeof(wifi_config.sta.ssid) - 1] = '\0';
 
     GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set STA config", error);
   }
