@@ -52,6 +52,8 @@ extern "C"
 
 #define IP4_ADDR_STRLEN_MAX 16
 
+#define LIGHTS_SCHEMA_PROTO_VERSION 1
+
 #define TRAILING_ZERO_LENGTH 1
 
 #define SIZE_WITH_TRAILING_ZERO(size) (size + TRAILING_ZERO_LENGTH)
@@ -70,6 +72,7 @@ extern "C"
   {
     CONNECTION_REQUEST_TYPE_NONE = 0,
     CONNECTION_REQUEST_WIFI_INFO = 0x77696669,
+    CONNECTION_REQUEST_HEAD_INFO = 0x68656164,
     CONNECTION_REQUEST_FRAME_INFO = 0x6672616d,
     CONNECTION_REQUEST_EOL_INFO = 0x454f4c00
   } connection_request_type_info_t;
@@ -87,6 +90,7 @@ extern "C"
     ssize_t total;
     ssize_t processed;
     char uid[UID_MAX_LENGTH];
+    bool has_head;
   } request_chunk_data_t;
 
 #ifdef __cplusplus

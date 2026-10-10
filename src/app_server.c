@@ -221,6 +221,7 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
 
   cJSON *data = cJSON_AddObjectToObject(root, "data");
   cJSON_AddNumberToObject(data, "leds", CONFIG_APP_LIGHTS_COUNT);
+  cJSON_AddNumberToObject(data, "proto", LIGHTS_SCHEMA_PROTO_VERSION);
 
   if (message != NULL)
   {

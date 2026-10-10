@@ -122,10 +122,17 @@ static void on_init_light_schema_handler(void *handler_args, esp_event_base_t ba
 
   GOTO_CHECK(cache_light_schema_frames(), TAG, "Failed to cache lights schema frames", error_cleanup);
 
+  if (chunk->has_head && rename(lights_data.file_path, LIGHTS_CURRENT_FILE_PATH) == 0)
+  {
+    ESP_LOGI(TAG, "Saved lights schema [%s]", LIGHTS_CURRENT_FILE_PATH);
+    return;
+  }
+
   unlink(lights_data.file_path);
   return;
 
 error_cleanup:
+  unlink(lights_data.file_path);
   lights_data.status = LIGHTS_STATUS_NONE;
   lights_data.cached_frame_count = 0;
 
@@ -467,6 +474,19 @@ esp_err_t init_lights_events(void)
   GOTO_CHECK(esp_event_handler_instance_register(APP_EVENTS, APP_EVENT_INIT_LIGHTS_SCHEMA, on_init_light_schema_handler,
                                                  NULL, NULL),
              TAG, "Failed to register lights schema file handler", error);
+
+  mkdir(LIGHTS_BASE_PATH, 0775);
+
+  struct stat file_stat = {0};
+  if (stat(LIGHTS_CURRENT_FILE_PATH, &file_stat) == 0)
+  {
+    strlcpy(lights_data.file_path, LIGHTS_CURRENT_FILE_PATH, sizeof(lights_data.file_path));
+
+    if (cache_light_schema_frames() != ESP_OK)
+    {
+      ESP_LOGW(TAG, "Failed to load saved lights schema [%s]", LIGHTS_CURRENT_FILE_PATH);
+    }
+  }
 
   return ESP_OK;
 error:

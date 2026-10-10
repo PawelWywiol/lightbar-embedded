@@ -40,6 +40,7 @@ static void app_event_process_request_complete_handler(void *handler_args, esp_e
                                                        void *event_data)
 {
   int available_frames = 0;
+  int head_chunks = 0;
   int count_frames = 0;
 
   request_chunk_data_t *chunk = (request_chunk_data_t *)event_data;
@@ -106,6 +107,12 @@ static void app_event_process_request_complete_handler(void *handler_args, esp_e
       continue;
     }
 
+    if (chunk_type_info == CONNECTION_REQUEST_HEAD_INFO)
+    {
+      head_chunks++;
+      continue;
+    }
+
     if (chunk_type_info == CONNECTION_REQUEST_WIFI_INFO)
     {
       process_request_wifi_credentials(context, chunk_context_size);
@@ -118,9 +125,11 @@ error_close_file:
 error_free_context:
   free(context);
 error_unlink:
-  if (count_frames > 0 && available_frames == count_frames)
+  if (available_frames > 0 && available_frames + head_chunks == count_frames)
   {
-    ESP_LOGI(TAG, "All frames [%d] are available", count_frames);
+    ESP_LOGI(TAG, "All frames [%d] are available", available_frames);
+
+    chunk->has_head = head_chunks > 0;
 
     esp_event_post(APP_EVENTS, APP_EVENT_INIT_LIGHTS_SCHEMA, chunk, sizeof(request_chunk_data_t), portMAX_DELAY);
   }
