@@ -1,3 +1,5 @@
+#include "esp_heap_caps.h"
+
 #include "app_defines.h"
 #include "app_events.h"
 #include "app_lights.h"
@@ -165,4 +167,11 @@ void app_main(void)
   ESP_ERROR_CHECK(init_lights_leds());
   ESP_ERROR_CHECK(init_lights_loop());
   ESP_ERROR_CHECK(init_lights_events());
+
+  vfs_invalidate_space_cache();
+  vfs_size_t vfs_size = get_vfs_space_info();
+  ESP_LOGI(TAG, "Memory: heap free %lu B, min %lu B, largest block %u B; storage used %u of %u B",
+           (unsigned long)esp_get_free_heap_size(), (unsigned long)esp_get_minimum_free_heap_size(),
+           (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT), (unsigned)vfs_size.used,
+           (unsigned)vfs_size.total);
 }
