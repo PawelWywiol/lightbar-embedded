@@ -1,3 +1,4 @@
+import { handleBridgeMessage, isAllowedOrigin, parseBridgeOrigin } from './bridge';
 import { API_URL, type DeviceInfo, encodeWifiRequest, NETWORK_TYPE_AP, parseDeviceInfo } from './protocol';
 
 const REFRESH_INTERVAL = 300_000;
@@ -42,6 +43,27 @@ form.addEventListener('submit', async (event) => {
     render();
   }
 });
+
+const bridgeOrigin = parseBridgeOrigin(location.hash);
+const opener = window.opener as Window | null;
+
+if (bridgeOrigin && opener) {
+  select('#bridge').hidden = false;
+
+  window.addEventListener('message', async ({ origin, data, source }) => {
+    if (!isAllowedOrigin(origin) || !source) {
+      return;
+    }
+
+    const response = await handleBridgeMessage(data, (input, init) => fetch(input, init));
+
+    if (response) {
+      (source as Window).postMessage(response, origin);
+    }
+  });
+
+  opener.postMessage({ type: 'ready' }, bridgeOrigin);
+}
 
 void refresh();
 setInterval(refresh, REFRESH_INTERVAL);
