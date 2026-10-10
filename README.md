@@ -54,7 +54,7 @@ lightbar-embedded/
 
 Two PlatformIO environments share `sdkconfig.defaults` and add one layer each (generated `sdkconfig.<env>` files are not committed):
 
-- `esp32-c3-devkitm-1` (default, release): `sdkconfig.release` — `-O2`, warning logs only
+- `esp32-c3-devkitm-1` (default, release): `sdkconfig.release` — `-O2`, no logs, no console, silent assertions/checks, silent reboot on panic
 - `esp32-c3-devkitm-1-debug`: `sdkconfig.debug` — `-Og`, info logs (startup memory usage, frame cache)
 
 ```bash
