@@ -20,6 +20,7 @@ rmt_transmit_config_t tx_config = {
   .loop_count = 0,
 };
 esp_timer_handle_t lights_loop_timer;
+static TaskHandle_t lights_loop_task;
 lights_data_t lights_data = {0};
 
 uint32_t resolveColorHue(uint8_t color)
@@ -94,14 +95,21 @@ void resolve_binary_color(uint8_t color, uint8_t *rgb)
 
 static void lights_loop_timer_callback(void *arg)
 {
-  resolve_current_light_schema_frame();
+  xTaskNotifyGive(lights_loop_task);
+}
 
-  if (lights_data.status != LIGHTS_STATUS_RUNNING)
+static void lights_loop_task_handler(void *arg)
+{
+  while (true)
   {
-    return;
-  }
+    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+    resolve_current_light_schema_frame();
 
-  show_current_light_schema_frame();
+    if (lights_data.status == LIGHTS_STATUS_RUNNING)
+    {
+      show_current_light_schema_frame();
+    }
+  }
 }
 
 static void on_init_light_schema_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
@@ -426,6 +434,10 @@ error:
 esp_err_t init_lights_loop(void)
 {
   ESP_LOGI(TAG, "Initializing lights loop");
+  GOTO_CHECK(xTaskCreate(lights_loop_task_handler, "lights_loop", LIGHTS_LOOP_TASK_STACK_SIZE, NULL,
+                         LIGHTS_LOOP_TASK_PRIORITY, &lights_loop_task) != pdPASS,
+             TAG, "Failed to create lights loop task", error);
+
   const esp_timer_create_args_t lights_loop_timer_args = {.callback = &lights_loop_timer_callback,
                                                           .name = "lights_loop_timer"};
 
