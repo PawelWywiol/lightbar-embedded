@@ -21,8 +21,11 @@ extern "C"
 {
 #endif
 
-#define LIGHTS_LOOP_FPS 24
+#define LIGHTS_LOOP_FPS 60
 #define LIGHTS_LOOP_PERIOD (1000000 / LIGHTS_LOOP_FPS)
+#define LIGHTS_TICKS_PER_MINUTE (LIGHTS_LOOP_FPS * 60)
+#define LIGHTS_TEMPO_BPM_MAX 240
+#define LIGHTS_TEMPO_RESERVED 255
 #define LIGHTS_FRAME_MIN_CONTEXT_SIZE 3
 #define LIGHTS_BASE_PATH FILE_SYSTEM_BASE_PATH "/lights"
 #define LIGHTS_CURRENT_FILE_PATH LIGHTS_BASE_PATH "/current"
@@ -70,8 +73,7 @@ extern "C"
     uint8_t tempo;
     uint8_t colors[CONFIG_APP_LIGHTS_COUNT];
     ssize_t offset;
-    int64_t time;
-    int64_t duration;
+    uint16_t duration_ticks;
   } frame_data_t;
 
 #define LIGHTS_MIN_FREE_HEAP 32768
@@ -85,11 +87,11 @@ extern "C"
     uint32_t cached_frame_count;
     uint32_t current_frame_index;
     frame_data_t current_frame;
-    int64_t next_frame_time;
+    uint16_t current_frame_tick;
     lights_status_t status;
   } lights_data_t;
 
-  int64_t calculate_frame_duration(uint8_t tempo);
+  uint16_t calculate_frame_ticks(uint8_t tempo);
   esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, void *context, size_t chunk_context_size);
   esp_err_t cache_light_schema_frames(void);
   esp_err_t resolve_current_light_schema_frame(void);
