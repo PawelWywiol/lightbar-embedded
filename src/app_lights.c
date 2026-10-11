@@ -139,9 +139,15 @@ error_cleanup:
   ESP_LOGE(TAG, "Failed to process lights schema file [%s]", chunk->uid);
 }
 
-int64_t calculate_frame_duration(uint8_t tempo)
+uint16_t calculate_frame_ticks(uint8_t tempo)
 {
-  return 60000000 / (tempo ? tempo : 1);
+  if (tempo > LIGHTS_TEMPO_BPM_MAX)
+  {
+    return tempo < LIGHTS_TEMPO_RESERVED ? LIGHTS_TEMPO_RESERVED - tempo : 1;
+  }
+
+  uint32_t bpm = tempo ? tempo : 1;
+  return (LIGHTS_TICKS_PER_MINUTE + bpm / 2) / bpm;
 }
 
 esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, void *context, size_t chunk_context_size)
@@ -154,7 +160,7 @@ esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, void *context, 
 
   frame->type = context_data[0];
   frame->tempo = context_data[1];
-  frame->duration = calculate_frame_duration(frame->tempo);
+  frame->duration_ticks = calculate_frame_ticks(frame->tempo);
 
   for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
   {
@@ -299,8 +305,7 @@ esp_err_t cache_light_schema_frames(void)
   lights_data.frames_count = cached;
   lights_data.current_frame_index = 0;
   lights_data.current_frame = lights_data.cached_frames[0];
-  lights_data.current_frame.time = esp_timer_get_time();
-  lights_data.next_frame_time = lights_data.current_frame.time + lights_data.current_frame.duration;
+  lights_data.current_frame_tick = 0;
   lights_data.status = LIGHTS_STATUS_RUNNING;
 
   ESP_LOGI(TAG, "Cached %lu frames in RAM", (unsigned long)cached);
@@ -330,17 +335,14 @@ esp_err_t resolve_current_light_schema_frame(void)
     return ESP_FAIL;
   }
 
-  int64_t current_time = esp_timer_get_time();
-
-  if (current_time < lights_data.next_frame_time)
+  if (++lights_data.current_frame_tick < lights_data.current_frame.duration_ticks)
   {
     return ESP_OK;
   }
 
   lights_data.current_frame_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
   lights_data.current_frame = lights_data.cached_frames[lights_data.current_frame_index];
-  lights_data.current_frame.time = current_time;
-  lights_data.next_frame_time = current_time + lights_data.current_frame.duration;
+  lights_data.current_frame_tick = 0;
 
   return ESP_OK;
 }
@@ -393,17 +395,7 @@ esp_err_t show_current_light_schema_frame(void)
   {
     uint32_t next_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
     const frame_data_t *next_frame = &lights_data.cached_frames[next_index];
-    int64_t elapsed = esp_timer_get_time() - lights_data.current_frame.time;
-    int64_t duration = lights_data.current_frame.duration > 0 ? lights_data.current_frame.duration : 1;
-    float t = (float)elapsed / (float)duration;
-    if (t < 0.0f)
-    {
-      t = 0.0f;
-    }
-    if (t > 1.0f)
-    {
-      t = 1.0f;
-    }
+    float t = (float)lights_data.current_frame_tick / (float)lights_data.current_frame.duration_ticks;
 
     for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
     {
