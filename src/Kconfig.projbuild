@@ -100,6 +100,20 @@ menu "App Config"
       help
         GPIO for the lights.
 
+    choice APP_LIGHTS_COLOR_ORDER
+      prompt "Lights Color Order"
+      default APP_LIGHTS_COLOR_ORDER_GRB
+      help
+        Byte order of color channels expected by the LED chips.
+
+      config APP_LIGHTS_COLOR_ORDER_GRB
+        bool "GRB"
+
+      config APP_LIGHTS_COLOR_ORDER_RGB
+        bool "RGB"
+
+    endchoice
+
   endmenu
 
 
