@@ -369,6 +369,14 @@ static void resolve_interpolated_color(uint8_t color_from, uint8_t color_to, flo
   }
 }
 
+static void set_led_strip_pixel(int index, const uint8_t *rgb)
+{
+  uint8_t *pixel = &led_strip_pixels[index * 3];
+  pixel[LIGHTS_PIXEL_RED_INDEX] = rgb[0];
+  pixel[LIGHTS_PIXEL_GREEN_INDEX] = rgb[1];
+  pixel[LIGHTS_PIXEL_BLUE_INDEX] = rgb[2];
+}
+
 esp_err_t show_current_light_schema_frame(void)
 {
   if (lights_data.status != LIGHTS_STATUS_RUNNING)
@@ -399,15 +407,18 @@ esp_err_t show_current_light_schema_frame(void)
 
     for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
     {
-      resolve_interpolated_color(lights_data.current_frame.colors[i], next_frame->colors[i], t,
-                                 &led_strip_pixels[i * 3]);
+      uint8_t rgb[3];
+      resolve_interpolated_color(lights_data.current_frame.colors[i], next_frame->colors[i], t, rgb);
+      set_led_strip_pixel(i, rgb);
     }
   }
   else
   {
     for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
     {
-      resolve_binary_color(lights_data.current_frame.colors[i], &led_strip_pixels[i * 3]);
+      uint8_t rgb[3];
+      resolve_binary_color(lights_data.current_frame.colors[i], rgb);
+      set_led_strip_pixel(i, rgb);
     }
   }
 
