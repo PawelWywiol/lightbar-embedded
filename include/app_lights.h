@@ -6,6 +6,8 @@
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_timer.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -23,6 +25,8 @@ extern "C"
 
 #define LIGHTS_LOOP_FPS 60
 #define LIGHTS_LOOP_PERIOD (1000000 / LIGHTS_LOOP_FPS)
+#define LIGHTS_LOOP_TASK_STACK_SIZE 3072
+#define LIGHTS_LOOP_TASK_PRIORITY 10
 #define LIGHTS_TICKS_PER_MINUTE (LIGHTS_LOOP_FPS * 60)
 #define LIGHTS_TEMPO_BPM_MAX 240
 #define LIGHTS_TEMPO_RESERVED 255
