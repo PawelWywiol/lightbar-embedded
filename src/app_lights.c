@@ -300,6 +300,13 @@ static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t hue_offset,
   }
 }
 
+static void resolve_next_strip_colors(void)
+{
+  uint32_t next_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
+  uint8_t next_hue_offset = add_hue_offset(lights_data.hue_offset, lights_data.cached_frames[next_index].hue_shift);
+  resolve_frame_strip_colors(next_index, next_hue_offset, lights_data.next_colors);
+}
+
 esp_err_t cache_light_schema_frames(void)
 {
   free(lights_data.cached_frames);
@@ -393,10 +400,9 @@ esp_err_t cache_light_schema_frames(void)
   lights_data.frames_count = cached;
   lights_data.current_frame_index = 0;
   lights_data.current_frame_tick = 0;
-  lights_data.hue_offset = 0;
-  resolve_frame_strip_colors(0, 0, lights_data.current_colors);
-  resolve_frame_strip_colors(1 % cached, add_hue_offset(0, lights_data.cached_frames[0].hue_shift),
-                             lights_data.next_colors);
+  lights_data.hue_offset = add_hue_offset(0, lights_data.cached_frames[0].hue_shift);
+  resolve_frame_strip_colors(0, lights_data.hue_offset, lights_data.current_colors);
+  resolve_next_strip_colors();
   lights_data.status = LIGHTS_STATUS_RUNNING;
 
   ESP_LOGI(TAG, "Cached %lu frames in RAM", (unsigned long)cached);
@@ -434,13 +440,12 @@ esp_err_t resolve_current_light_schema_frame(void)
     return ESP_OK;
   }
 
-  lights_data.hue_offset = add_hue_offset(lights_data.hue_offset, frame->hue_shift);
   lights_data.current_frame_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
   lights_data.current_frame_tick = 0;
+  lights_data.hue_offset =
+    add_hue_offset(lights_data.hue_offset, lights_data.cached_frames[lights_data.current_frame_index].hue_shift);
   memcpy(lights_data.current_colors, lights_data.next_colors, sizeof(lights_data.current_colors));
-  frame = &lights_data.cached_frames[lights_data.current_frame_index];
-  resolve_frame_strip_colors((lights_data.current_frame_index + 1) % lights_data.cached_frame_count,
-                             add_hue_offset(lights_data.hue_offset, frame->hue_shift), lights_data.next_colors);
+  resolve_next_strip_colors();
 
   return ESP_OK;
 }
