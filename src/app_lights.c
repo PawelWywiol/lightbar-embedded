@@ -158,31 +158,39 @@ uint16_t calculate_frame_ticks(uint8_t tempo)
   return (LIGHTS_TICKS_PER_MINUTE + bpm / 2) / bpm;
 }
 
-esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, void *context, size_t chunk_context_size)
+static size_t resolve_frame_colors_size(size_t chunk_context_size)
+{
+  if (chunk_context_size <= LIGHTS_FRAME_HEADER_SIZE)
+  {
+    return 0;
+  }
+
+  size_t colors_size = chunk_context_size - LIGHTS_FRAME_HEADER_SIZE;
+  return colors_size < LIGHTS_FRAME_COLORS_MAX ? colors_size : LIGHTS_FRAME_COLORS_MAX;
+}
+
+esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, uint8_t *colors, void *context,
+                                            size_t chunk_context_size)
 {
   GOTO_CHECK(chunk_context_size < LIGHTS_FRAME_MIN_CONTEXT_SIZE, TAG, "Invalid frame context size", error);
 
   uint8_t *context_data = (uint8_t *)context;
-  uint8_t *context_colors_data = context_data + 2;
-  size_t context_colors_size = chunk_context_size - 2;
 
-  frame->type = context_data[0];
+  frame->flags = context_data[0];
   frame->tempo = context_data[1];
   frame->duration_ticks = calculate_frame_ticks(frame->tempo);
-
-  for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
-  {
-    frame->colors[i] = context_colors_data[i % context_colors_size];
-  }
+  frame->colors_size = resolve_frame_colors_size(chunk_context_size);
+  memcpy(colors, context_data + LIGHTS_FRAME_HEADER_SIZE, frame->colors_size);
 
   return ESP_OK;
 error:
   return ESP_FAIL;
 }
 
-static uint32_t count_frames_in_file(int file)
+static uint32_t count_frames_in_file(int file, size_t *colors_total)
 {
   uint32_t count = 0;
+  *colors_total = 0;
   lseek(file, 0, SEEK_SET);
 
   while (true)
@@ -225,16 +233,61 @@ static uint32_t count_frames_in_file(int file)
     if (chunk_type_info == CONNECTION_REQUEST_FRAME_INFO)
     {
       count++;
+      *colors_total += resolve_frame_colors_size(chunk_context_size);
     }
   }
 
   return count;
 }
 
+static void shuffle_frame_color_indexes(uint8_t *indexes, uint8_t size)
+{
+  for (uint8_t i = 0; i < size; i++)
+  {
+    indexes[i] = i;
+  }
+
+  for (uint8_t i = size - 1; i > 0; i--)
+  {
+    uint8_t j = esp_random() % (i + 1);
+    uint8_t index = indexes[i];
+    indexes[i] = indexes[j];
+    indexes[j] = index;
+  }
+}
+
+static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t *strip_colors)
+{
+  const frame_data_t *frame = &lights_data.cached_frames[frame_index];
+  const uint8_t *colors = lights_data.cached_colors + frame->colors_offset;
+
+  if (!(frame->flags & LIGHTS_FRAME_FLAG_SHUFFLE))
+  {
+    for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
+    {
+      strip_colors[i] = colors[i % frame->colors_size];
+    }
+    return;
+  }
+
+  uint8_t indexes[LIGHTS_FRAME_COLORS_MAX];
+  for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
+  {
+    uint8_t position = i % frame->colors_size;
+    if (position == 0)
+    {
+      shuffle_frame_color_indexes(indexes, frame->colors_size);
+    }
+    strip_colors[i] = colors[indexes[position]];
+  }
+}
+
 esp_err_t cache_light_schema_frames(void)
 {
   free(lights_data.cached_frames);
+  free(lights_data.cached_colors);
   lights_data.cached_frames = NULL;
+  lights_data.cached_colors = NULL;
   lights_data.cached_frame_count = 0;
   lights_data.current_frame_index = 0;
 
@@ -244,12 +297,14 @@ esp_err_t cache_light_schema_frames(void)
   int file = open(lights_data.file_path, O_RDONLY, 0);
   GOTO_CHECK(file == -1, TAG, "Failed to open file", error_free_context);
 
-  uint32_t total_frames = count_frames_in_file(file);
+  size_t colors_total = 0;
+  uint32_t total_frames = count_frames_in_file(file, &colors_total);
   GOTO_CHECK(total_frames == 0, TAG, "No frames found", error_close_file);
 
   size_t frame_size = sizeof(frame_data_t);
   size_t free_heap = esp_get_free_heap_size();
-  uint32_t max_frames = (free_heap > LIGHTS_MIN_FREE_HEAP) ? (free_heap - LIGHTS_MIN_FREE_HEAP) / frame_size : 0;
+  size_t reserved_heap = LIGHTS_MIN_FREE_HEAP + colors_total;
+  uint32_t max_frames = (free_heap > reserved_heap) ? (free_heap - reserved_heap) / frame_size : 0;
   GOTO_CHECK(max_frames == 0, TAG, "Not enough heap for frames", error_close_file);
 
   uint32_t frames_to_cache = (total_frames < max_frames) ? total_frames : max_frames;
@@ -257,8 +312,12 @@ esp_err_t cache_light_schema_frames(void)
   lights_data.cached_frames = calloc(frames_to_cache, frame_size);
   GOTO_CHECK(lights_data.cached_frames == NULL, TAG, "Failed to allocate frame cache", error_close_file);
 
+  lights_data.cached_colors = malloc(colors_total);
+  GOTO_CHECK(lights_data.cached_colors == NULL, TAG, "Failed to allocate colors cache", error_free_cache);
+
   lseek(file, 0, SEEK_SET);
   uint32_t cached = 0;
+  uint32_t colors_offset = 0;
 
   while (cached < frames_to_cache)
   {
@@ -297,9 +356,12 @@ esp_err_t cache_light_schema_frames(void)
 
     if (chunk_type_info == CONNECTION_REQUEST_FRAME_INFO)
     {
-      GOTO_CHECK(resolve_lights_frame_from_context(&lights_data.cached_frames[cached], context, chunk_context_size),
+      frame_data_t *frame = &lights_data.cached_frames[cached];
+      frame->colors_offset = colors_offset;
+      GOTO_CHECK(resolve_lights_frame_from_context(frame, lights_data.cached_colors + colors_offset, context,
+                                                   chunk_context_size),
                  TAG, "Failed to resolve frame context", error_free_cache);
-      lights_data.cached_frames[cached].chunk_type = chunk_type_info;
+      colors_offset += frame->colors_size;
       cached++;
     }
   }
@@ -312,8 +374,9 @@ esp_err_t cache_light_schema_frames(void)
   lights_data.cached_frame_count = cached;
   lights_data.frames_count = cached;
   lights_data.current_frame_index = 0;
-  lights_data.current_frame = lights_data.cached_frames[0];
   lights_data.current_frame_tick = 0;
+  resolve_frame_strip_colors(0, lights_data.current_colors);
+  resolve_frame_strip_colors(1 % cached, lights_data.next_colors);
   lights_data.status = LIGHTS_STATUS_RUNNING;
 
   ESP_LOGI(TAG, "Cached %lu frames in RAM", (unsigned long)cached);
@@ -325,7 +388,9 @@ error_free_cache:
   free(context);
 error_free_cache_only:
   free(lights_data.cached_frames);
+  free(lights_data.cached_colors);
   lights_data.cached_frames = NULL;
+  lights_data.cached_colors = NULL;
   lights_data.cached_frame_count = 0;
   return ESP_FAIL;
 error_close_file:
@@ -343,14 +408,17 @@ esp_err_t resolve_current_light_schema_frame(void)
     return ESP_FAIL;
   }
 
-  if (++lights_data.current_frame_tick < lights_data.current_frame.duration_ticks)
+  const frame_data_t *frame = &lights_data.cached_frames[lights_data.current_frame_index];
+  if (++lights_data.current_frame_tick < frame->duration_ticks)
   {
     return ESP_OK;
   }
 
   lights_data.current_frame_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
-  lights_data.current_frame = lights_data.cached_frames[lights_data.current_frame_index];
   lights_data.current_frame_tick = 0;
+  memcpy(lights_data.current_colors, lights_data.next_colors, sizeof(lights_data.current_colors));
+  resolve_frame_strip_colors((lights_data.current_frame_index + 1) % lights_data.cached_frame_count,
+                             lights_data.next_colors);
 
   return ESP_OK;
 }
@@ -399,16 +467,15 @@ esp_err_t show_current_light_schema_frame(void)
     return ESP_FAIL;
   }
 
-  if (lights_data.current_frame.type == LIGHTS_FRAME_TYPE_FADE)
+  const frame_data_t *frame = &lights_data.cached_frames[lights_data.current_frame_index];
+  if (frame->flags & LIGHTS_FRAME_FLAG_FADE)
   {
-    uint32_t next_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
-    const frame_data_t *next_frame = &lights_data.cached_frames[next_index];
-    float t = (float)lights_data.current_frame_tick / (float)lights_data.current_frame.duration_ticks;
+    float t = (float)lights_data.current_frame_tick / (float)frame->duration_ticks;
 
     for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
     {
       uint8_t rgb[3];
-      resolve_interpolated_color(lights_data.current_frame.colors[i], next_frame->colors[i], t, rgb);
+      resolve_interpolated_color(lights_data.current_colors[i], lights_data.next_colors[i], t, rgb);
       set_led_strip_pixel(i, rgb);
     }
   }
@@ -417,7 +484,7 @@ esp_err_t show_current_light_schema_frame(void)
     for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
     {
       uint8_t rgb[3];
-      resolve_binary_color(lights_data.current_frame.colors[i], rgb);
+      resolve_binary_color(lights_data.current_colors[i], rgb);
       set_led_strip_pixel(i, rgb);
     }
   }
