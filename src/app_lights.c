@@ -177,6 +177,7 @@ esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, uint8_t *colors
   uint8_t *context_data = (uint8_t *)context;
 
   frame->flags = context_data[0];
+  frame->hue_shift = (int8_t)(frame->flags & LIGHTS_FRAME_FLAG_HUE_SHIFT_MASK) >> LIGHTS_FRAME_FLAG_HUE_SHIFT_OFFSET;
   frame->tempo = context_data[1];
   frame->duration_ticks = calculate_frame_ticks(frame->tempo);
   frame->colors_size = resolve_frame_colors_size(chunk_context_size);
@@ -256,7 +257,24 @@ static void shuffle_frame_color_indexes(uint8_t *indexes, uint8_t size)
   }
 }
 
-static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t *strip_colors)
+static uint8_t add_hue_offset(uint8_t hue_offset, int8_t hue_shift)
+{
+  int hue = (hue_offset + hue_shift) % LIGHTS_PALLETTE_CHROMATIC_HUES;
+  return hue < 0 ? hue + LIGHTS_PALLETTE_CHROMATIC_HUES : hue;
+}
+
+static uint8_t shift_color_hue(uint8_t color, uint8_t hue_offset)
+{
+  uint8_t hue = color & LIGHTS_PALLETTE_HUE_MASK;
+  if (hue == LIGHTS_PALLETTE_HUE_MASK)
+  {
+    return color;
+  }
+
+  return (color & LIGHTS_PALLETTE_LIGHTNESS_MASK) | ((hue + hue_offset) % LIGHTS_PALLETTE_CHROMATIC_HUES);
+}
+
+static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t hue_offset, uint8_t *strip_colors)
 {
   const frame_data_t *frame = &lights_data.cached_frames[frame_index];
   const uint8_t *colors = lights_data.cached_colors + frame->colors_offset;
@@ -265,7 +283,7 @@ static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t *strip_colo
   {
     for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
     {
-      strip_colors[i] = colors[i % frame->colors_size];
+      strip_colors[i] = shift_color_hue(colors[i % frame->colors_size], hue_offset);
     }
     return;
   }
@@ -278,8 +296,15 @@ static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t *strip_colo
     {
       shuffle_frame_color_indexes(indexes, frame->colors_size);
     }
-    strip_colors[i] = colors[indexes[position]];
+    strip_colors[i] = shift_color_hue(colors[indexes[position]], hue_offset);
   }
+}
+
+static void resolve_next_strip_colors(void)
+{
+  uint32_t next_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
+  uint8_t next_hue_offset = add_hue_offset(lights_data.hue_offset, lights_data.cached_frames[next_index].hue_shift);
+  resolve_frame_strip_colors(next_index, next_hue_offset, lights_data.next_colors);
 }
 
 esp_err_t cache_light_schema_frames(void)
@@ -375,8 +400,9 @@ esp_err_t cache_light_schema_frames(void)
   lights_data.frames_count = cached;
   lights_data.current_frame_index = 0;
   lights_data.current_frame_tick = 0;
-  resolve_frame_strip_colors(0, lights_data.current_colors);
-  resolve_frame_strip_colors(1 % cached, lights_data.next_colors);
+  lights_data.hue_offset = add_hue_offset(0, lights_data.cached_frames[0].hue_shift);
+  resolve_frame_strip_colors(0, lights_data.hue_offset, lights_data.current_colors);
+  resolve_next_strip_colors();
   lights_data.status = LIGHTS_STATUS_RUNNING;
 
   ESP_LOGI(TAG, "Cached %lu frames in RAM", (unsigned long)cached);
@@ -416,9 +442,10 @@ esp_err_t resolve_current_light_schema_frame(void)
 
   lights_data.current_frame_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
   lights_data.current_frame_tick = 0;
+  lights_data.hue_offset =
+    add_hue_offset(lights_data.hue_offset, lights_data.cached_frames[lights_data.current_frame_index].hue_shift);
   memcpy(lights_data.current_colors, lights_data.next_colors, sizeof(lights_data.current_colors));
-  resolve_frame_strip_colors((lights_data.current_frame_index + 1) % lights_data.cached_frame_count,
-                             lights_data.next_colors);
+  resolve_next_strip_colors();
 
   return ESP_OK;
 }

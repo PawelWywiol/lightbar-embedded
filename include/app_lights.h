@@ -36,11 +36,14 @@ extern "C"
 #define LIGHTS_FRAME_COLORS_MAX 255
 #define LIGHTS_FRAME_FLAG_FADE (1 << 0)
 #define LIGHTS_FRAME_FLAG_SHUFFLE (1 << 1)
+#define LIGHTS_FRAME_FLAG_HUE_SHIFT_MASK 0b11111100
+#define LIGHTS_FRAME_FLAG_HUE_SHIFT_OFFSET 2
 #define LIGHTS_BASE_PATH FILE_SYSTEM_BASE_PATH "/lights"
 #define LIGHTS_CURRENT_FILE_PATH LIGHTS_BASE_PATH "/current"
 
 #define LIGHTS_PALLETTE_HUE_MASK 0b00111111
 #define LIGHTS_PALLETTE_HUE_MAX (LIGHTS_PALLETTE_HUE_MASK + 1)
+#define LIGHTS_PALLETTE_CHROMATIC_HUES LIGHTS_PALLETTE_HUE_MASK
 #define LIGHTS_PALLETTE_HUE_MAX_VALUE 360
 #define LIGHTS_PALLETTE_LIGHTNESS_MASK 0b11000000
 #define LIGHTS_PALLETTE_LIGHTNESS_MAX ((LIGHTS_PALLETTE_LIGHTNESS_MASK >> 6) + 1)
@@ -74,6 +77,7 @@ extern "C"
     uint8_t flags;
     uint8_t tempo;
     uint8_t colors_size;
+    int8_t hue_shift;
     uint16_t duration_ticks;
     uint32_t colors_offset;
   } frame_data_t;
@@ -91,6 +95,7 @@ extern "C"
     uint32_t current_frame_index;
     uint8_t current_colors[CONFIG_APP_LIGHTS_COUNT];
     uint8_t next_colors[CONFIG_APP_LIGHTS_COUNT];
+    uint8_t hue_offset;
     uint16_t current_frame_tick;
     lights_status_t status;
   } lights_data_t;
