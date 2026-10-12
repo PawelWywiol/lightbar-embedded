@@ -4,6 +4,7 @@
 #include "esp_err.h"
 #include "esp_littlefs.h"
 #include "esp_log.h"
+#include "esp_random.h"
 #include "esp_system.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
@@ -31,6 +32,10 @@ extern "C"
 #define LIGHTS_TEMPO_BPM_MAX 240
 #define LIGHTS_TEMPO_RESERVED 255
 #define LIGHTS_FRAME_MIN_CONTEXT_SIZE 3
+#define LIGHTS_FRAME_HEADER_SIZE 2
+#define LIGHTS_FRAME_COLORS_MAX 255
+#define LIGHTS_FRAME_FLAG_FADE (1 << 0)
+#define LIGHTS_FRAME_FLAG_SHUFFLE (1 << 1)
 #define LIGHTS_BASE_PATH FILE_SYSTEM_BASE_PATH "/lights"
 #define LIGHTS_CURRENT_FILE_PATH LIGHTS_BASE_PATH "/current"
 
@@ -64,20 +69,13 @@ extern "C"
     LIGHTS_STATUS_PAUSED
   } lights_status_t;
 
-  typedef enum lights_frame_type
-  {
-    LIGHTS_FRAME_TYPE_STEP = 0,
-    LIGHTS_FRAME_TYPE_FADE = 1,
-  } lights_frame_type_t;
-
   typedef struct frame_data
   {
-    connection_request_type_info_t chunk_type;
-    uint8_t type;
+    uint8_t flags;
     uint8_t tempo;
-    uint8_t colors[CONFIG_APP_LIGHTS_COUNT];
-    ssize_t offset;
+    uint8_t colors_size;
     uint16_t duration_ticks;
+    uint32_t colors_offset;
   } frame_data_t;
 
 #define LIGHTS_MIN_FREE_HEAP 32768
@@ -88,15 +86,18 @@ extern "C"
     ssize_t file_size;
     uint32_t frames_count;
     frame_data_t *cached_frames;
+    uint8_t *cached_colors;
     uint32_t cached_frame_count;
     uint32_t current_frame_index;
-    frame_data_t current_frame;
+    uint8_t current_colors[CONFIG_APP_LIGHTS_COUNT];
+    uint8_t next_colors[CONFIG_APP_LIGHTS_COUNT];
     uint16_t current_frame_tick;
     lights_status_t status;
   } lights_data_t;
 
   uint16_t calculate_frame_ticks(uint8_t tempo);
-  esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, void *context, size_t chunk_context_size);
+  esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, uint8_t *colors, void *context,
+                                              size_t chunk_context_size);
   esp_err_t cache_light_schema_frames(void);
   esp_err_t resolve_current_light_schema_frame(void);
   esp_err_t show_current_light_schema_frame(void);
