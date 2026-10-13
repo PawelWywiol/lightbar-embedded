@@ -158,30 +158,39 @@ uint16_t calculate_frame_ticks(uint8_t tempo)
   return (LIGHTS_TICKS_PER_MINUTE + bpm / 2) / bpm;
 }
 
-static size_t resolve_frame_colors_size(size_t chunk_context_size)
+static size_t resolve_frame_header_size(connection_request_type_info_t chunk_type)
 {
-  if (chunk_context_size <= LIGHTS_FRAME_HEADER_SIZE)
+  return chunk_type == CONNECTION_REQUEST_FRAME_V2_INFO ? LIGHTS_FRAME_V2_HEADER_SIZE : LIGHTS_FRAME_HEADER_SIZE;
+}
+
+static size_t resolve_frame_colors_size(connection_request_type_info_t chunk_type, size_t chunk_context_size)
+{
+  size_t header_size = resolve_frame_header_size(chunk_type);
+  if (chunk_context_size <= header_size)
   {
     return 0;
   }
 
-  size_t colors_size = chunk_context_size - LIGHTS_FRAME_HEADER_SIZE;
+  size_t colors_size = chunk_context_size - header_size;
   return colors_size < LIGHTS_FRAME_COLORS_MAX ? colors_size : LIGHTS_FRAME_COLORS_MAX;
 }
 
-esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, uint8_t *colors, void *context,
+esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, uint8_t *colors,
+                                            connection_request_type_info_t chunk_type, void *context,
                                             size_t chunk_context_size)
 {
-  GOTO_CHECK(chunk_context_size < LIGHTS_FRAME_MIN_CONTEXT_SIZE, TAG, "Invalid frame context size", error);
+  size_t header_size = resolve_frame_header_size(chunk_type);
+  GOTO_CHECK(chunk_context_size <= header_size, TAG, "Invalid frame context size", error);
 
   uint8_t *context_data = (uint8_t *)context;
 
   frame->flags = context_data[0];
   frame->hue_shift = (int8_t)(frame->flags & LIGHTS_FRAME_FLAG_HUE_SHIFT_MASK) >> LIGHTS_FRAME_FLAG_HUE_SHIFT_OFFSET;
-  frame->tempo = context_data[1];
+  frame->pixel_shift = chunk_type == CONNECTION_REQUEST_FRAME_V2_INFO ? (int8_t)context_data[1] : 0;
+  frame->tempo = context_data[header_size - 1];
   frame->duration_ticks = calculate_frame_ticks(frame->tempo);
-  frame->colors_size = resolve_frame_colors_size(chunk_context_size);
-  memcpy(colors, context_data + LIGHTS_FRAME_HEADER_SIZE, frame->colors_size);
+  frame->colors_size = resolve_frame_colors_size(chunk_type, chunk_context_size);
+  memcpy(colors, context_data + header_size, frame->colors_size);
 
   return ESP_OK;
 error:
@@ -231,10 +240,10 @@ static uint32_t count_frames_in_file(int file, size_t *colors_total)
       break;
     }
 
-    if (chunk_type_info == CONNECTION_REQUEST_FRAME_INFO)
+    if (IS_CONNECTION_REQUEST_FRAME(chunk_type_info))
     {
       count++;
-      *colors_total += resolve_frame_colors_size(chunk_context_size);
+      *colors_total += resolve_frame_colors_size(chunk_type_info, chunk_context_size);
     }
   }
 
@@ -263,6 +272,12 @@ static uint8_t add_hue_offset(uint8_t hue_offset, int8_t hue_shift)
   return hue < 0 ? hue + LIGHTS_PALLETTE_CHROMATIC_HUES : hue;
 }
 
+static uint8_t add_pixel_offset(uint8_t pixel_offset, int8_t pixel_shift, uint8_t colors_size)
+{
+  int pixel = (pixel_offset + pixel_shift) % colors_size;
+  return pixel < 0 ? pixel + colors_size : pixel;
+}
+
 static uint8_t shift_color_hue(uint8_t color, uint8_t hue_offset)
 {
   uint8_t hue = color & LIGHTS_PALLETTE_HUE_MASK;
@@ -274,16 +289,18 @@ static uint8_t shift_color_hue(uint8_t color, uint8_t hue_offset)
   return (color & LIGHTS_PALLETTE_LIGHTNESS_MASK) | ((hue + hue_offset) % LIGHTS_PALLETTE_CHROMATIC_HUES);
 }
 
-static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t hue_offset, uint8_t *strip_colors)
+static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t hue_offset, uint8_t pixel_offset,
+                                       uint8_t *strip_colors)
 {
   const frame_data_t *frame = &lights_data.cached_frames[frame_index];
   const uint8_t *colors = lights_data.cached_colors + frame->colors_offset;
+  uint8_t rotation = frame->colors_size - pixel_offset % frame->colors_size;
 
   if (!(frame->flags & LIGHTS_FRAME_FLAG_SHUFFLE))
   {
     for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
     {
-      strip_colors[i] = shift_color_hue(colors[i % frame->colors_size], hue_offset);
+      strip_colors[i] = shift_color_hue(colors[(i + rotation) % frame->colors_size], hue_offset);
     }
     return;
   }
@@ -296,15 +313,24 @@ static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t hue_offset,
     {
       shuffle_frame_color_indexes(indexes, frame->colors_size);
     }
-    strip_colors[i] = shift_color_hue(colors[indexes[position]], hue_offset);
+    strip_colors[i] = shift_color_hue(colors[(indexes[position] + rotation) % frame->colors_size], hue_offset);
   }
+}
+
+static void add_frame_offsets(const frame_data_t *frame)
+{
+  lights_data.hue_offset = add_hue_offset(lights_data.hue_offset, frame->hue_shift);
+  lights_data.pixel_offset = add_pixel_offset(lights_data.pixel_offset, frame->pixel_shift, frame->colors_size);
 }
 
 static void resolve_next_strip_colors(void)
 {
   uint32_t next_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
-  uint8_t next_hue_offset = add_hue_offset(lights_data.hue_offset, lights_data.cached_frames[next_index].hue_shift);
-  resolve_frame_strip_colors(next_index, next_hue_offset, lights_data.next_colors);
+  const frame_data_t *next_frame = &lights_data.cached_frames[next_index];
+  resolve_frame_strip_colors(
+    next_index, add_hue_offset(lights_data.hue_offset, next_frame->hue_shift),
+    add_pixel_offset(lights_data.pixel_offset, next_frame->pixel_shift, next_frame->colors_size),
+    lights_data.next_colors);
 }
 
 esp_err_t cache_light_schema_frames(void)
@@ -379,12 +405,12 @@ esp_err_t cache_light_schema_frames(void)
                TAG, "Failed to read request EOL", error_free_cache);
     GOTO_CHECK(chunk_end_info != CONNECTION_REQUEST_EOL_INFO, TAG, "Failed to read request EOL", error_free_cache);
 
-    if (chunk_type_info == CONNECTION_REQUEST_FRAME_INFO)
+    if (IS_CONNECTION_REQUEST_FRAME(chunk_type_info))
     {
       frame_data_t *frame = &lights_data.cached_frames[cached];
       frame->colors_offset = colors_offset;
-      GOTO_CHECK(resolve_lights_frame_from_context(frame, lights_data.cached_colors + colors_offset, context,
-                                                   chunk_context_size),
+      GOTO_CHECK(resolve_lights_frame_from_context(frame, lights_data.cached_colors + colors_offset, chunk_type_info,
+                                                   context, chunk_context_size),
                  TAG, "Failed to resolve frame context", error_free_cache);
       colors_offset += frame->colors_size;
       cached++;
@@ -400,8 +426,10 @@ esp_err_t cache_light_schema_frames(void)
   lights_data.frames_count = cached;
   lights_data.current_frame_index = 0;
   lights_data.current_frame_tick = 0;
-  lights_data.hue_offset = add_hue_offset(0, lights_data.cached_frames[0].hue_shift);
-  resolve_frame_strip_colors(0, lights_data.hue_offset, lights_data.current_colors);
+  lights_data.hue_offset = 0;
+  lights_data.pixel_offset = 0;
+  add_frame_offsets(&lights_data.cached_frames[0]);
+  resolve_frame_strip_colors(0, lights_data.hue_offset, lights_data.pixel_offset, lights_data.current_colors);
   resolve_next_strip_colors();
   lights_data.status = LIGHTS_STATUS_RUNNING;
 
@@ -442,8 +470,7 @@ esp_err_t resolve_current_light_schema_frame(void)
 
   lights_data.current_frame_index = (lights_data.current_frame_index + 1) % lights_data.cached_frame_count;
   lights_data.current_frame_tick = 0;
-  lights_data.hue_offset =
-    add_hue_offset(lights_data.hue_offset, lights_data.cached_frames[lights_data.current_frame_index].hue_shift);
+  add_frame_offsets(&lights_data.cached_frames[lights_data.current_frame_index]);
   memcpy(lights_data.current_colors, lights_data.next_colors, sizeof(lights_data.current_colors));
   resolve_next_strip_colors();
 
