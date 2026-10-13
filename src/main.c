@@ -103,7 +103,7 @@ static void app_event_process_request_complete_handler(void *handler_args, esp_e
                TAG, "Failed to read request EOL", error_close_file);
     GOTO_CHECK(chunk_end_info != CONNECTION_REQUEST_EOL_INFO, TAG, "Failed to read request EOL", error_close_file);
 
-    if (chunk_type_info == CONNECTION_REQUEST_FRAME_INFO)
+    if (IS_CONNECTION_REQUEST_FRAME(chunk_type_info))
     {
       available_frames++;
       continue;
