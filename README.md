@@ -12,6 +12,8 @@ The device runs its own WiFi access point for setup and joins the home network f
 
 Strip length, GPIO, color order and network defaults: `pio run -t menuconfig` → App Config.
 
+Choosing controllers, strips and power supplies: [docs](docs/README.md).
+
 ## Build and flash
 
 `make` lists targets. `make upload` flashes only the firmware; the device page lives in the LittleFS image, so flash it with `pio run -t uploadfs` on first flash and after `make ui`.
