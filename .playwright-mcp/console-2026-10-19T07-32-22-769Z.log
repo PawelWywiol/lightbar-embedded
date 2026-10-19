@@ -1,0 +1,2 @@
+[     715ms] [DIR] Error @ https://roryhay.es/blog/esp32-c3-super-mini-flaw:25
+[    2219ms] [ERROR] Failed to load resource: net::ERR_FAILED @ chrome-extension://invalid/:0

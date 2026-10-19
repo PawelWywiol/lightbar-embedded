@@ -250,17 +250,17 @@ static uint32_t count_frames_in_file(int file, size_t *colors_total)
   return count;
 }
 
-static void shuffle_frame_color_indexes(uint8_t *indexes, uint8_t size)
+static void shuffle_frame_color_indexes(uint16_t *indexes, uint16_t size)
 {
-  for (uint8_t i = 0; i < size; i++)
+  for (uint16_t i = 0; i < size; i++)
   {
     indexes[i] = i;
   }
 
-  for (uint8_t i = size - 1; i > 0; i--)
+  for (uint16_t i = size - 1; i > 0; i--)
   {
-    uint8_t j = esp_random() % (i + 1);
-    uint8_t index = indexes[i];
+    uint16_t j = esp_random() % (i + 1);
+    uint16_t index = indexes[i];
     indexes[i] = indexes[j];
     indexes[j] = index;
   }
@@ -272,7 +272,7 @@ static uint8_t add_hue_offset(uint8_t hue_offset, int8_t hue_shift)
   return hue < 0 ? hue + LIGHTS_PALLETTE_CHROMATIC_HUES : hue;
 }
 
-static uint8_t add_pixel_offset(uint8_t pixel_offset, int8_t pixel_shift, uint8_t colors_size)
+static uint16_t add_pixel_offset(uint16_t pixel_offset, int8_t pixel_shift, uint16_t colors_size)
 {
   int pixel = (pixel_offset + pixel_shift) % colors_size;
   return pixel < 0 ? pixel + colors_size : pixel;
@@ -289,12 +289,12 @@ static uint8_t shift_color_hue(uint8_t color, uint8_t hue_offset)
   return (color & LIGHTS_PALLETTE_LIGHTNESS_MASK) | ((hue + hue_offset) % LIGHTS_PALLETTE_CHROMATIC_HUES);
 }
 
-static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t hue_offset, uint8_t pixel_offset,
+static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t hue_offset, uint16_t pixel_offset,
                                        uint8_t *strip_colors)
 {
   const frame_data_t *frame = &lights_data.cached_frames[frame_index];
   const uint8_t *colors = lights_data.cached_colors + frame->colors_offset;
-  uint8_t rotation = frame->colors_size - pixel_offset % frame->colors_size;
+  uint16_t rotation = frame->colors_size - pixel_offset % frame->colors_size;
 
   if (!(frame->flags & LIGHTS_FRAME_FLAG_SHUFFLE))
   {
@@ -305,10 +305,10 @@ static void resolve_frame_strip_colors(uint32_t frame_index, uint8_t hue_offset,
     return;
   }
 
-  uint8_t indexes[LIGHTS_FRAME_COLORS_MAX];
+  static uint16_t indexes[LIGHTS_FRAME_COLORS_MAX];
   for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
   {
-    uint8_t position = i % frame->colors_size;
+    uint16_t position = i % frame->colors_size;
     if (position == 0)
     {
       shuffle_frame_color_indexes(indexes, frame->colors_size);

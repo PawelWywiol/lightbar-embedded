@@ -17,17 +17,18 @@
 
 ## LED count limit (255) in code
 
-Going above 255 LEDs needs changes in both repos, not only hardware:
+Limit is 720 LEDs (5 m × 144 LED/m, the highest density found at BTF). It is set in both repos and must change together:
 
 | Place | Limit |
 |---|---|
-| `src/Kconfig.projbuild` `APP_LIGHTS_COUNT` | `range 1 255` |
-| `include/app_lights.h` | `LIGHTS_FRAME_COLORS_MAX 255`, `frame_data_t.colors_size` is `uint8_t`, `lights_data_t.pixel_offset` is `uint8_t` |
-| `src/app_lights.c` | shuffle and pixel offset helpers use `uint8_t` sizes and indexes |
+| `src/Kconfig.projbuild` `APP_LIGHTS_COUNT` | `range 1 720` |
+| `include/app_lights.h` | `LIGHTS_FRAME_COLORS_MAX 720` (`uint16_t` sizes and offsets) |
 | protocol `frm2` | `pixelShift` is `int8` (−128..127 per frame) |
-| lightbar-web `lib/schemes/schemeFormat.ts` | `SCHEME_MAX_COLORS = 255`, `SCHEME_MAX_FRAMES = 255` |
-| lightbar-web editor | lights count 1–255 |
-| lightbar-web API | scheme max 80 KiB |
+| lightbar-web `lib/schemes/schemeFormat.ts` | `SCHEME_MAX_COLORS = 720`, `SCHEME_MAX_FRAMES = 255` |
+| lightbar-web editor | lights count 1–720 |
+| lightbar-web API | scheme max 256 KiB (255 frames × 720 LEDs ≈ 187 KB) |
+
+A scheme's colors are cached in RAM on the device; a large scheme (many frames × many LEDs) may not fit next to Wi-Fi on ESP32-C3 (not measured).
 
 ## Derived hardware requirements
 
