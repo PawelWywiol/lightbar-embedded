@@ -107,6 +107,21 @@ menu "App Config"
       help
         GPIO driven high to enable power on the lights output (board relay), -1 if the board has none.
 
+    config APP_LIGHTS_MAX_CURRENT_MA
+      int "Lights Max Current (mA)"
+      range 0 65000
+      default 400
+      help
+        Estimated LED current limit; brightness of the whole frame is scaled down above it, 0 disables the limit.
+        Set to the power source current minus the board's own current (USB 2.0: 500 mA port).
+
+    config APP_LIGHTS_LED_CURRENT_MA
+      int "Lights LED Current (mA)"
+      range 1 255
+      default 55
+      help
+        Current of one LED at full white, used to estimate the frame current.
+
     choice APP_LIGHTS_COLOR_ORDER
       prompt "Lights Color Order"
       default APP_LIGHTS_COLOR_ORDER_GRB

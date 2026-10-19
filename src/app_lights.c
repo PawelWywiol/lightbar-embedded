@@ -509,6 +509,25 @@ static void set_led_strip_pixel(int index, const uint8_t *rgb)
   pixel[LIGHTS_PIXEL_BLUE_INDEX] = rgb[2];
 }
 
+static void limit_led_strip_current(void)
+{
+  uint32_t channels_sum = 0;
+  for (size_t i = 0; i < sizeof(led_strip_pixels); i++)
+  {
+    channels_sum += led_strip_pixels[i];
+  }
+
+  if (channels_sum <= LIGHTS_MAX_CHANNELS_SUM)
+  {
+    return;
+  }
+
+  for (size_t i = 0; i < sizeof(led_strip_pixels); i++)
+  {
+    led_strip_pixels[i] = led_strip_pixels[i] * LIGHTS_MAX_CHANNELS_SUM / channels_sum;
+  }
+}
+
 esp_err_t show_current_light_schema_frame(void)
 {
   if (lights_data.status != LIGHTS_STATUS_RUNNING)
@@ -541,6 +560,11 @@ esp_err_t show_current_light_schema_frame(void)
       resolve_binary_color(lights_data.current_colors[i], rgb);
       set_led_strip_pixel(i, rgb);
     }
+  }
+
+  if (CONFIG_APP_LIGHTS_MAX_CURRENT_MA > 0)
+  {
+    limit_led_strip_current();
   }
 
   GOTO_CHECK(rmt_transmit(led_channel, led_encoder, led_strip_pixels, sizeof(led_strip_pixels), &tx_config), TAG,

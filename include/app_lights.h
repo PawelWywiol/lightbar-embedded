@@ -63,6 +63,9 @@ extern "C"
 #define LIGHTS_PIXEL_GREEN_INDEX 0
 #endif
 #define LIGHTS_PIXEL_BLUE_INDEX 2
+#define LIGHTS_PIXEL_FULL_WHITE_SUM (3 * 255)
+#define LIGHTS_MAX_CHANNELS_SUM                                                                                        \
+  ((uint32_t)CONFIG_APP_LIGHTS_MAX_CURRENT_MA * LIGHTS_PIXEL_FULL_WHITE_SUM / CONFIG_APP_LIGHTS_LED_CURRENT_MA)
 
   typedef enum lights_status
   {
