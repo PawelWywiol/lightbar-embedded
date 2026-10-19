@@ -580,6 +580,12 @@ esp_err_t init_lights_leds(void)
 {
   ESP_LOGI(TAG, "Initializing lights");
 
+#if CONFIG_APP_LIGHTS_POWER_GPIO >= 0
+  GOTO_CHECK(gpio_set_direction(CONFIG_APP_LIGHTS_POWER_GPIO, GPIO_MODE_OUTPUT), TAG, "Failed to set lights power GPIO",
+             error);
+  GOTO_CHECK(gpio_set_level(CONFIG_APP_LIGHTS_POWER_GPIO, 1), TAG, "Failed to enable lights power", error);
+#endif
+
   ESP_LOGI(TAG, "Create RMT TX channel");
   GOTO_CHECK(rmt_new_tx_channel(&tx_chan_config, &led_channel), TAG, "Failed to create RMT TX channel", error);
 

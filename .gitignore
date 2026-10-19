@@ -5,4 +5,6 @@ managed_components
 .DS_Store
 /sdkconfig.esp32-c3-devkitm-1
 /sdkconfig.esp32-c3-devkitm-1-debug
+/sdkconfig.esp32-s3-devkitc-1
+/sdkconfig.gledopto-gl-c-016wl-d
 .playwright-mcp
