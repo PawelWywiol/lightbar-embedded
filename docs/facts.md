@@ -6,8 +6,8 @@ Markers: see [README.md](README.md). Source ids link to the list at the bottom.
 
 | Chip | Supply | Current | Bit / reset | Data VIH | Order |
 |---|---|---|---|---|---|
-| WS2812B (old) | 3.5–5.3 V | not stated | 1.25 µs ±600 ns / > 50 µs | 0.7·VDD | GRB [L1] |
-| WS2812B-V5 | 3.7–5.3 V | tested at 12 mA/ch, max not stated | T0H 220–380 ns, T1H 580 ns–1 µs / > 280 µs | 2.7 V min | GRB [L2] |
+| WS2812B (old) | 3.5–5.3 V | not stated | T0H 0.4, T1H 0.8, T0L 0.85, T1L 0.45 µs (±150 ns) / > 50 µs | 0.7·VDD | GRB [L1] |
+| WS2812B-V5 | 3.7–5.3 V | tested at 12 mA/ch, max not stated | T0H 220–380 ns, T1H/T0L/T1L 580 ns–1 µs / > 280 µs | 2.7 V [L2][L9]; another V5 sheet: 0.63·VDD [L10] | GRB [L2] |
 | WS2811 (IC) | specs at 4.5–5.5 V, 12/24 V strips feed IC via resistor | 18.5 mA/ch constant | 400 / 800 kbps / > 50 µs | 0.7·VDD | RGB [L3] |
 | SK6812 RGB | 5.2 V typ | not stated (**UNVERIFIED**) | 1.25 µs / 80 µs | 3.4 V at VDD 5 V | GRB [L4] |
 | SK6812 RGBW | 3.5–5.5 V | not stated | 1.25 µs / 80 µs | 3.4 V | RGBW, some strips GRBW [L5][A3] |
@@ -17,21 +17,26 @@ Markers: see [README.md](README.md). Source ids link to the list at the bottom.
 
 - WS2813 / WS2815: backup data input, "if DIN do NOT receive the signal, then switching to BIN" [L6][L7].
 - WS2815: "12V DC power supply, can effectively reduce the operating current of the pixel LED, and decrease the voltage-drop" [L7].
-- 3.3 V data at 5 V supply: 0.7 × 5.0 = 3.5 V > 3.3 V, out of spec for WS2812B (old), WS2811, WS2813; SK6812 needs 3.4 V; WS2812B-V5 needs 2.7 V (**CALC**).
+- ESP32-C3 GPIO high level: VOH ≥ 0.8 × VDD = 2.64 V at 3.3 V [E1]; ESP32 same [E3].
+- 3.3 V data at 5 V supply: no WS2812-type chip is guaranteed: 2.64 V < 2.7 V (V5), < 3.15 V (0.63·VDD), < 3.4 V (SK6812), < 3.5 V (0.7·VDD) (**CALC**). Level shifter needed for spec compliance.
+- BTF does not state which strips use V5; its WS2812B listing says only "Improved version ws2812 IC" [B1]. WS2812B-ECO per BTF differs in bond wire and bracket ("Admixture Gold Line, Brass Bracket"), no ECO datasheet found [B1].
+- ECO power: QuinLED measured 300 BTF LEDs at full white 65.0 W (WS2812B) vs 46.8 W (ECO) [Q5]; The Hook Up measured only a small difference (**conflict**) [T2].
 
 ### Data line timing at 60 FPS (CALC)
 
-Frame 16.67 ms; RGB LED = 24 bits × 1.25 µs = 30 µs; reset 280 µs (WS2812B-V5). Max ≈ (16 667 − 280) / 30 = **546 LEDs per data line**.
+This firmware's encoder (`lib/led_strip_encoder`): T0H 0.3 / T0L 0.9 / T1H 0.9 / T1L 0.3 µs = 1.2 µs per bit, reset 50 µs. RGB LED = 24 × 1.2 = 28.8 µs. Frame 16.67 ms → max ≈ (16 667 − 50) / 28.8 = **576 LEDs per data line** (no time left for computing).
 
 | LEDs | Transfer | 60 FPS |
 |---|---|---|
-| 150 | 4.8 ms | yes |
-| 255 | 7.9 ms | yes |
-| 300 | 9.3 ms | yes |
-| 480 | 14.7 ms | yes, little time left for computing |
-| 720 | 21.9 ms | no, max ≈ 46 FPS |
+| 90 (3 m × 30) | 2.6 ms | yes |
+| 150 (5 m × 30) | 4.4 ms | yes |
+| 300 (5 m × 60) | 8.7 ms | yes |
+| 432 (3 m × 144) | 12.5 ms | yes, little time left |
+| 720 (5 m × 144) | 20.8 ms | no, max ≈ 48 FPS |
 
-RGBW (32 bits) ≈ 40 µs per LED → ≈ 410 per line.
+With the datasheet's 1.25 µs per bit and 280 µs reset: ≈ 546 LEDs. RGBW (32 bits) ≈ 410–430 per line.
+
+Encoder vs datasheets: T1L 0.3 µs is at the lower limit of old WS2812B (0.45 ± 0.15) and below WS2812B-V5 (≥ 580 ns); reset 50 µs is below V5's > 280 µs, but the line idles low ~16 ms between frames.
 
 ## LED current
 
@@ -69,6 +74,20 @@ Per 5 m at full white (**CALC**):
 | 30 | 30 W = 6 A | 7.5 A | 8.3 A | 9 A |
 | 60 | 55 W = 11 A | 15 A | 16.5 A | 18 A |
 
+## RMT channels (ESP-IDF v5.5 `soc_caps.h`)
+
+| Chip | TX | RX | Words/ch | DMA | Other |
+|---|---|---|---|---|---|
+| ESP32 | 8 | 8 (shared, each channel TX or RX) | 64 | no | |
+| ESP32-S2 | 4 | 4 | 64 | no | |
+| ESP32-S3 | 4 | 4 | 48 | yes (last channel only) | |
+| ESP32-C3 | 2 | 2 | 48 | no | |
+| ESP32-C6 | 2 | 2 | 48 | no | Wi-Fi 6 |
+| ESP32-H2 | 2 | 2 | 48 | no | no Wi-Fi |
+| ESP32-C2 | — | — | — | — | no RMT; LEDs only via SPI backend |
+
+[E5][E10]. TX and RX can run at the same time ("Each channel can be independently configured as either transmitter or receiver"); example `examples/peripherals/rmt/ir_nec_transceiver` receives NEC IR on one channel and transmits on another [E10][E11]. A larger non-DMA `mem_block_symbols` takes the neighbouring channel's memory [E12].
+
 ## Power distribution
 
 - Adafruit: "aim for 1 meter or less distance from any pixel to a power connection" [A1].
@@ -80,6 +99,7 @@ Per 5 m at full white (**CALC**):
 - Adafruit: "If using a 3.3V microcontroller you must use a logic level shifter such as a 74AHCT125 or 74HCT245" [A2].
 - WLED: data over long distances (> 5 m) is hard to keep clean; RS485 for long runs [W4].
 - Espressif DevKitC: power from "one and only one of the options", else damage [E6].
+- USB 2.0 §7.2.4.1: "The maximum load (CRPB) that can be placed at the downstream end of a cable is 10 µF in parallel with 44 Ω"; more needs "VBUS surge current limiting" [U7]. A bare 1000 µF on a USB-powered gadget breaks the spec.
 
 ### Copper resistance
 
@@ -165,6 +185,23 @@ GPIO2, 8, 9 are strapping pins on ESP32-C3 [D3].
 
 [G1]–[G4][Q1]–[Q3][C1][W6][T1]. GL-C-016WL-D details [G1]: relay GPIO12 cuts only the controller output ("cannot switch off the additional added power input"), I2S mic SD 26 / WS 5 / SCK 21, spare IO18/19/25/33, firmware upload by UART over USB-C, −20–45 °C, max 800 ICs [G2]. GL-C-017WL-D [G3]: relay GPIO18 inverted, PDM mic SD 32 / WS 15. Gledopto ESP32-C3 models: none found.
 
+## IR receivers
+
+- Vishay TSOP382.. / TSOP48..: "Supply voltage: 2.0 V to 5.5 V", output active low, can be "directly connected to a microprocessor"; TSOP38238 / TSOP4838 marked "LEGACY, FOR LONG BURST REMOTE CONTROLS", TSOP38438 / TSOP4438 recommended for NEC [V1][V2].
+- Supply filter: current datasheets give no values ("R1 and C1 recommended in case there are strong ripple or spikes"); older TSOP11.. sheet: R1 = 100 Ω, C1 = 4.7 µF [V3].
+- TSSP40 is a presence / proximity sensor, not a remote receiver [V4].
+- VS1838B: no manufacturer datasheet; resellers state 2.7–5.5 V or 3.0 / 5.0 V (**conflict**).
+
+## Buttons
+
+- Strapping pins (avoid for buttons / LED data): ESP32 GPIO0, 2, 5, 12, 15; ESP32-C3 GPIO2, 8, 9; ESP32-S3 GPIO0, 3, 45, 46; ESP32-C6 GPIO4, 5, 8, 9, 15 [E13].
+- ESP32 GPIO34–39: input only, no internal pull-up [E13].
+- `espressif/button` component: debounce, single / double / multi click, long press (default 1500 ms), GPIO / ADC / matrix buttons, internal pull enabled by default [E14].
+
+## Without Wi-Fi
+
+Wi-Fi driver starts only with `esp_wifi_init()` [E15]. CPU current without radio (modem-sleep, 160 MHz, peripherals off / on): ESP32-C3 23 / 28 mA, ESP32-C6 27 / 38 mA, ESP32-S3 (single core) 39.9 / 54.6 mA [E1][E2][E16].
+
 ## Sources
 
 - [L1] https://cdn-shop.adafruit.com/datasheets/WS2812B.pdf
@@ -229,3 +266,19 @@ GPIO2, 8, 9 are strapping pins on ESP32-C3 [D3].
 - [D5] https://mischianti.org/esp32-c3-supermini-plus-v2-high-resolution-pinout-datasheet-and-specs/
 - [D6] https://mischianti.org/esp32-c3-super-mini-high-resolution-pinout-datasheet-and-specs/
 - [D7] https://hackaday.io/project/205906-esp32-c3-super-mini-wifi-fix-3-methods-that-work/details
+- [L9] https://cdn.eicom.ru/media/PDF/WS2812B-V5.pdf
+- [L10] https://learn.watterott.com/kb/ws281x/WS2812B-v5.pdf
+- [Q5] https://quinled.info/wp-content/uploads/2020/03/Test-Table-v0.70.pdf
+- [T2] https://thesmarthomehookup.com/the-complete-guide-to-selecting-individually-addressable-led-strips/
+- [U7] USB 2.0 specification §7.2.4.1 (copy: https://www.pjrc.com/teensy/beta/usb20.pdf)
+- [E10] https://docs.espressif.com/projects/esp-idf/en/release-v5.5/esp32c3/api-reference/peripherals/rmt.html
+- [E11] https://github.com/espressif/esp-idf/tree/release/v5.5/examples/peripherals/rmt/ir_nec_transceiver
+- [E12] https://github.com/espressif/esp-idf/blob/release/v5.5/components/esp_driver_rmt/src/rmt_tx.c
+- [E13] https://docs.espressif.com/projects/esp-idf/en/release-v5.5/esp32c3/api-reference/peripherals/gpio.html (and esp32, esp32s3, esp32c6 pages)
+- [E14] https://components.espressif.com/components/espressif/button
+- [E15] https://docs.espressif.com/projects/esp-idf/en/release-v5.5/esp32c3/api-guides/wifi.html
+- [E16] https://documentation.espressif.com/esp32-c6_datasheet_en.pdf
+- [V1] https://www.vishay.com/docs/82491/tsop382.pdf
+- [V2] https://www.vishay.com/docs/82459/tsop48.pdf
+- [V3] https://webpages.charlotte.edu/~jmconrad/ECGR6090-2004-01/labs/82006.pdf
+- [V4] https://www.vishay.com/docs/82458/tssp40.pdf
