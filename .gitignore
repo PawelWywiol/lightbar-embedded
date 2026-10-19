@@ -8,3 +8,4 @@ managed_components
 /sdkconfig.esp32-s3-devkitc-1
 /sdkconfig.gledopto-gl-c-016wl-d
 .playwright-mcp
+dependencies.lock

@@ -42,7 +42,7 @@ Recommendations are conclusions drawn from [facts.md](facts.md) and [opinions.md
 
 - LED current at full white: `N × I_led`, I_led 50 mA (Pololu measured) to 60 mA (Adafruit max); WLED uses 55 mA.
 - USB LEDs: `N = (I_port − I_board) / I_led`.
-- Data line time with this firmware: `N × 28.8 µs + 0.05 ms` ≤ 16.7 ms → ≤ 576 LEDs per line at 60 FPS.
+- Data line time with this firmware: `N × 36 µs + 0.05 ms` (full white) ≤ 16.7 ms → ≤ 461 LEDs per line at 60 FPS.
 - Feed points: ≤ 4 A per strip end, ≤ 8 A per middle feed (QuinLED); ≤ 1 m from any LED to a feed (Adafruit, stricter).
 
 ## Class A: USB powered
@@ -67,10 +67,10 @@ LED count at full white, 55 mA/LED (**CALC**):
 |---|---|---|---|---|---|
 | 3 m × 30 | 90 | — | yes | 3.6 → 5.4 A | LRS-50-5 (10 A) |
 | 3 m × 60 | 180 | — | yes | 6.6 → 10.8 A | LRS-100-5 (18 A) |
-| 3 m × 144 | 432 | — | yes | 15 → 25.9 A | LRS-200-5 (40 A), or LRS-150F-5 (22 A) + limiter |
+| 3 m × 144 | 432 | — | only just | 15 → 25.9 A | LRS-200-5 (40 A), or LRS-150F-5 (22 A) + limiter |
 | 5 m × 30 | 150 | yes | yes | 6 → 9 A | LRS-50-5 (10 A) |
 | 5 m × 60 | 300 | yes | yes | 11 → 18 A (QuinLED measured 13 A) | LRS-100-5 (18 A) + limiter |
-| 5 m × 144 | 720 | no (1 m / 2 m pieces) | no, ≈ 48 FPS | 25 → 43.2 A | LRS-200-5 (40 A) + limiter |
+| 5 m × 144 | 720 | no (1 m / 2 m pieces) | no, ≈ 38 FPS | 25 → 43.2 A | LRS-200-5 (40 A) + limiter |
 
 - BTF max W/m figures are below measurements (QuinLED 65 W vs BTF 55 W for 300 LEDs); size from measured or 55–60 mA values.
 - Feed points (CALC): 5 m × 60 at ~13–18 A needs both ends + 1–2 middle feeds; 5 m × 144 needs feeds about every 1 m.
