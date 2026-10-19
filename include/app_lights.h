@@ -16,6 +16,7 @@
 #include "app_defines.h"
 #include "app_events.h"
 
+#include "driver/gpio.h"
 #include "driver/rmt_tx.h"
 #include "led_strip_encoder.h"
 

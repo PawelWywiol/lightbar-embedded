@@ -10,6 +10,8 @@ The device runs its own WiFi access point for setup and joins the home network f
 - WS2812B-compatible strip on GPIO 10
 - 5 V supply sized for the strip
 
+Other boards are PlatformIO environments (`pio run -e <env>`, see `platformio.ini`). `esp32-s3-devkitc-1` and `gledopto-gl-c-016wl-d` (data GPIO 16, output relay GPIO 12) build but are not tested on hardware yet.
+
 Strip length, GPIO, color order and network defaults: `pio run -t menuconfig` → App Config.
 
 Choosing controllers, strips and power supplies: [docs](docs/README.md).

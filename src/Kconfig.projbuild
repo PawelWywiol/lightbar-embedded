@@ -101,6 +101,12 @@ menu "App Config"
       help
         GPIO for the lights.
 
+    config APP_LIGHTS_POWER_GPIO
+      int "Lights Power GPIO"
+      default -1
+      help
+        GPIO driven high to enable power on the lights output (board relay), -1 if the board has none.
+
     choice APP_LIGHTS_COLOR_ORDER
       prompt "Lights Color Order"
       default APP_LIGHTS_COLOR_ORDER_GRB
