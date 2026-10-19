@@ -24,55 +24,17 @@ Markers: see [README.md](README.md). Source ids link to the list at the bottom.
 
 ### Data line timing at 60 FPS (CALC)
 
-This firmware's encoder (`lib/led_strip_encoder`): T0H 0.3 / T0L 0.9 / T1H 0.9 / T1L 0.3 µs = 1.2 µs per bit, reset 50 µs. RGB LED = 24 × 1.2 = 28.8 µs. Frame 16.67 ms → max ≈ (16 667 − 50) / 28.8 = **576 LEDs per data line** (no time left for computing).
+This firmware's encoder (`lib/led_strip_encoder`, same values as Espressif `led_strip` for WS2812): bit 0 = T0H 0.3 + T0L 0.9 = 1.2 µs, bit 1 = T1H 0.9 + T1L 0.6 = 1.5 µs, reset 50 µs. RGB LED = 28.8 µs (all bits 0) to 36 µs (all bits 1, full white). Frame 16.67 ms → max **461 LEDs** (full white) to 576 LEDs per data line at 60 FPS, with no time left for computing.
 
-| LEDs | Transfer | 60 FPS |
+| LEDs | Transfer (worst case) | 60 FPS |
 |---|---|---|
-| 90 (3 m × 30) | 2.6 ms | yes |
-| 150 (5 m × 30) | 4.4 ms | yes |
-| 300 (5 m × 60) | 8.7 ms | yes |
-| 432 (3 m × 144) | 12.5 ms | yes, little time left |
-| 720 (5 m × 144) | 20.8 ms | no, max ≈ 48 FPS |
+| 90 (3 m × 30) | 3.3 ms | yes |
+| 150 (5 m × 30) | 5.5 ms | yes |
+| 300 (5 m × 60) | 10.9 ms | yes |
+| 432 (3 m × 144) | 15.6 ms | only just, no time left for computing |
+| 720 (5 m × 144) | 26.0 ms | no, ≈ 38 FPS |
 
-With the datasheet's 1.25 µs per bit and 280 µs reset: ≈ 546 LEDs. RGBW (32 bits) ≈ 410–430 per line.
-
-Encoder vs datasheets: T1L 0.3 µs is at the lower limit of old WS2812B (0.45 ± 0.15) and below WS2812B-V5 (≥ 580 ns); reset 50 µs is below V5's > 280 µs, but the line idles low ~16 ms between frames.
-
-## LED current
-
-- Adafruit: "up to 60 milliamps at maximum brightness white", "20 mA per pixel" as rule of thumb for mixed content [A1].
-- Pololu: "Each RGB LED draws approximately 50 mA at 5 V with red, green, and blue at full brightness" [A4]. Measured full white, fed at one end:
-
-| Strip | Current | Voltage drop |
-|---|---|---|
-| 30 LEDs, 1 m | 1.5 A | 0.2 V |
-| 60 LEDs, 2 m | 2.9 A | 0.8 V |
-| 150 LEDs, 5 m | 4.1 A | 2.0 V |
-| 60 LEDs, 1 m | 3.0 A | 0.6 V |
-| 120 LEDs, 2 m | 4.7 A | 1.4 V |
-
-- Pololu: "As the voltage drops, RGB LEDs tend to look redder and draw less current" [A4].
-- Fab Academy: 10 × WS2812B full white 0.481 A at 5 V; whether the meter included the MCU is not stated [A5].
-- WLED limiter default: "55mA (typ. 5V WS281x)" per LED at full white; "Keep below 1 A if powering LEDs from the ESP's 5V pin" [W1].
-
-## 5 m strips (BTF-Lighting, WS2812B 5 V)
-
-| LEDs/m | LEDs per 5 m (CALC) | BTF max W/m | 5 m reel sold |
-|---|---|---|---|
-| 30 | 150 | 6 | yes |
-| 60 | 300 | 11 | yes |
-| 96 | 480 | 17 | no (1 m, 2 m) |
-| 100 | 500 | 18 | no (1 m, 2 m) |
-| 144 | 720 | 25 | no (1 m, 2 m) |
-
-Variants sold: 1M/2M at 30/60/96/100/144, 4M at 60, 5M at 30/60 [B1]. WS2812B-ECO: same 5 m options [B2]. WS2815 12 V: 5 m at 30/60, W/m not stated (**UNVERIFIED**) [B3].
-
-Per 5 m at full white (**CALC**):
-
-| LEDs/m | BTF rating | 50 mA (Pololu) | 55 mA (WLED) | 60 mA (Adafruit) |
-|---|---|---|---|---|
-| 30 | 30 W = 6 A | 7.5 A | 8.3 A | 9 A |
-| 60 | 55 W = 11 A | 15 A | 16.5 A | 18 A |
+All timings are inside both WS2812B (old) and WS2812B-V5 ranges except reset: 50 µs is below V5's > 280 µs, but the line idles low ~16 ms between frames. RGBW (32 bits) up to 48 µs per LED.
 
 ## RMT channels (ESP-IDF v5.5 `soc_caps.h`)
 

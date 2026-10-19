@@ -39,7 +39,7 @@ A scheme's colors are cached in RAM on the device; a large scheme (many frames �
 Each line points to the data in [facts.md](facts.md).
 
 1. Chip: ESP32 family with 2.4 GHz Wi-Fi and RMT; ≥ 4 MB flash. ESP8266, RP2040, ATtiny85, ATmega328P are out (not ESP-IDF 5.x / no Wi-Fi).
-2. Data line timing: ≤ 576 RGB LEDs per data line at 60 FPS with this firmware's encoder (**CALC**). More LEDs need several data lines (several RMT TX channels) or a lower frame rate (720 LEDs ≈ 48 FPS).
+2. Data line timing: ≤ 461 RGB LEDs (full white) per data line at 60 FPS with this firmware's encoder (**CALC**). More LEDs need several data lines (several RMT TX channels) or a lower frame rate (720 LEDs ≈ 38 FPS).
 3. Long strips on RMT: chips without RMT DMA (ESP32, ESP32-C3) refill RMT memory from interrupts; Espressif warns Wi-Fi interrupts can corrupt the transfer. ESP32-S3 has RMT DMA.
 4. Data level: ESP32 guarantees only 2.64 V high level, below VIH of every 5 V WS2812-type chip (2.7 V to 3.5 V). Use a level shifter (SN74AHCT125 / SN74AHCT1G125 / SN74LV1T34) or a controller with one built in.
 5. Class A power: USB port current minus controller current. USB-C chargers give 5 V only when the board has 5.1 kΩ Rd on CC1/CC2.
@@ -49,5 +49,5 @@ Each line points to the data in [facts.md](facts.md).
 ## Open questions
 
 - LED density of the future 5 m strip (voltage: 5 V decided).
-- Whether class B must keep 60 FPS above ~576 LEDs (needs 2 data lines) or may drop frame rate.
+- Whether class B must keep 60 FPS above ~461 LEDs (needs 2 data lines) or may drop frame rate.
 - Which USB sources class A must support (computer USB 2.0 / 3.x, TV, phone charger, powerbank) and therefore the current budget.
