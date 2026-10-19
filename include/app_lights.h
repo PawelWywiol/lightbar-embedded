@@ -33,7 +33,7 @@ extern "C"
 #define LIGHTS_TEMPO_RESERVED 255
 #define LIGHTS_FRAME_HEADER_SIZE 2
 #define LIGHTS_FRAME_V2_HEADER_SIZE 3
-#define LIGHTS_FRAME_COLORS_MAX 255
+#define LIGHTS_FRAME_COLORS_MAX 720
 #define LIGHTS_FRAME_FLAG_FADE (1 << 0)
 #define LIGHTS_FRAME_FLAG_SHUFFLE (1 << 1)
 #define LIGHTS_FRAME_FLAG_HUE_SHIFT_MASK 0b11111100
@@ -76,7 +76,7 @@ extern "C"
   {
     uint8_t flags;
     uint8_t tempo;
-    uint8_t colors_size;
+    uint16_t colors_size;
     int8_t hue_shift;
     int8_t pixel_shift;
     uint16_t duration_ticks;
@@ -97,7 +97,7 @@ extern "C"
     uint8_t current_colors[CONFIG_APP_LIGHTS_COUNT];
     uint8_t next_colors[CONFIG_APP_LIGHTS_COUNT];
     uint8_t hue_offset;
-    uint8_t pixel_offset;
+    uint16_t pixel_offset;
     uint16_t current_frame_tick;
     lights_status_t status;
   } lights_data_t;

@@ -1,0 +1,1040 @@
+- generic [active] [ref=f18e1]:
+  - link "Skip to main content" [ref=f18e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=f18e6]:
+    - generic:
+      - generic: "esp32 doesn't like wifi channel 11? : r/esp32"
+      - banner [ref=f18e10]:
+        - navigation [ref=f18e11]:
+          - link "Home" [ref=f18e15] [cursor=pointer]:
+            - /url: https://www.reddit.com/
+          - search [ref=f18e34]:
+            - generic [ref=f18e36]:
+              - generic "Remove r/esp32 filter and expand search to all of Reddit" [ref=f18e42] [cursor=pointer]:
+                - button [pressed] [ref=f18e43]:
+                  - generic [aria-hidden] [ref=f18e47]: r/esp32
+              - textbox "Remove r/esp32 filter and expand search to all of Reddit" [ref=f18e53]:
+                - /placeholder: Search in ⁨r/esp32⁩
+          - generic [ref=f18e54]:
+            - link "Sign Up" [ref=f18e60] [cursor=pointer]:
+              - /url: https://www.reddit.com/register/
+            - link "Log In" [ref=f18e66] [cursor=pointer]:
+              - /url: https://www.reddit.com/login/
+            - button "Expand user menu" [ref=f18e73] [cursor=pointer]
+      - generic [ref=f18e79]:
+        - generic [ref=f18e80]:
+          - generic [ref=f18e81]:
+            - generic:
+              - generic:
+                - link "Skip to Sign up" [ref=f18e82] [cursor=pointer]:
+                  - /url: "#left-sidebar-container"
+                - link "Skip to Right Sidebar" [ref=f18e83] [cursor=pointer]:
+                  - /url: "#right-sidebar-container"
+          - generic [ref=f18e84]:
+            - main [ref=f18e85]:
+              - 'generic "esp32 doesn''t like wifi channel 11? : r/esp32"'
+              - generic [ref=f18e86]:
+                - generic [ref=f18e87]:
+                  - generic [ref=f18e88]:
+                    - button "Back" [ref=f18e90] [cursor=pointer]
+                    - link "Go to esp32" [ref=f18e98] [cursor=pointer]:
+                      - /url: https://www.reddit.com/r/esp32/
+                    - group [ref=f18e103]:
+                      - generic [ref=f18e104]:
+                        - link "r/esp32" [ref=f18e108] [cursor=pointer]:
+                          - /url: https://www.reddit.com/r/esp32/
+                        - generic [aria-hidden] [ref=f18e109]: •
+                        - time [ref=f18e111]: 2y ago
+                      - 'link "Author: Dr_Tron" [ref=f18e117] [cursor=pointer]':
+                        - /url: https://www.reddit.com/user/Dr_Tron/
+                        - generic [ref=f18e118]: u/Dr_Tron
+                  - button "Open user actions" [ref=f18e123] [cursor=pointer]
+                - 'heading "Post Title: esp32 doesn''t like wifi channel 11?" [level=1] [ref=f18e130]': esp32 doesn't like wifi channel 11?
+                - generic [ref=f18e133]:
+                  - generic [ref=f18e134]:
+                    - paragraph [ref=f18e135]: All,
+                    - paragraph [ref=f18e136]: I run four wifi AP's in my home, all of them with the same SSID and password, but on different channels, spaced out to get the least overlap.
+                    - paragraph [ref=f18e137]: As the esp32 wifi isn't the strongest, I've placed one AP in the same room where two esp32 live. That SP runs on channel 11 and clearly has the strongest signal.
+                    - paragraph [ref=f18e138]: Still, both esp32 connect to a different AP. In fact, none of the other esp32 in the house connect to that AP. I know that the channel scan starts at 1, and there is one AP on channel 1, but eventually the esp32 should connect to the strongest signal, right?
+                    - paragraph [ref=f18e139]: I know that channels 12/13 aren't a good choice (even if they were legal in the US), but 11 shouldn't be an issue, should it? Of course, I could switch AP/channel locations, but then I'd run into the same issue with a different esp32.
+                    - paragraph [ref=f18e140]: Other devices can connect and communicate fine over that AP.
+                    - paragraph [ref=f18e141]: Any ideas?
+                    - paragraph [ref=f18e142]: Thanks!
+                  - button "Read more" [ref=f18e143] [cursor=pointer]
+                - generic "Actions available for this post" [ref=f18e150]:
+                  - generic [ref=f18e153]:
+                    - button "Upvote" [ref=f18e154] [cursor=pointer]
+                    - generic [ref=f18e159]: "5"
+                    - button "Downvote" [ref=f18e161] [cursor=pointer]
+                  - button "9 Go to comments" [ref=f18e166] [cursor=pointer]:
+                    - generic [ref=f18e167]: "9"
+                    - generic [ref=f18e173]: Go to comments
+                  - button "Share" [ref=f18e177] [cursor=pointer]
+              - generic "Altium Develop gives engineers a complete path from PCB design and review to release." [ref=f18e184]:
+                - generic [ref=f18e185]:
+                  - 'link "Advertisement: Altium Develop gives engineers a complete path from PCB design and review to release." [ref=f18e186] [cursor=pointer]':
+                    - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=E1EmkJMVyjB_4ozknW5BtkoziEZh-I4ktVTXVWCiU6_hSnD3svXDvwfA3URtN7AFWxza_5Vy3sE512EhiWSxnSryWY-4301gGsUTXAjSQyrOLlZpUaCQ5QlVZTL6GNZpjwSuFeJRSAk37_0L1XKJ0mNh1PpUXXAMOBQVJqhPwECqxVKLenhyEGnOAfsMB_v8jGVezZuu41XQ_GVQ8MiBTUfD72UYrKDAFsTgrO2_ue0WdVEMTQHoUSl0j-CtDr8LtwjSvEB2VROK-V5oJuYlNhrYyWXHIIN6Uo6gXpnK51oWYjo1tOxIIiVFyGqK-iqZfQCszcMfrUZl983op3Njo9MXUiqQFsfEQhgN6b9C1J3-L37l5aQpgwKwPlAYhp43cRwlJXZNstQJP9htPLQuLCQ
+                  - generic [ref=f18e187]:
+                    - generic [ref=f18e188]:
+                      - link "Altium_Official" [ref=f18e191] [cursor=pointer]:
+                        - /url: /user/Altium_Official/
+                        - img "u/Altium_Official avatar" [ref=f18e194]
+                      - generic [ref=f18e196]: •
+                      - link "Ad" [ref=f18e198] [cursor=pointer]:
+                        - /url: /user/Altium_Official/
+                      - link [ref=f18e200] [cursor=pointer]:
+                        - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=E1EmkJMVyjB_4ozknW5BtkoziEZh-I4ktVTXVWCiU6_hSnD3svXDvwfA3URtN7AFWxza_5Vy3sE512EhiWSxnSryWY-4301gGsUTXAjSQyrOLlZpUaCQ5QlVZTL6GNZpjwSuFeJRSAk37_0L1XKJ0mNh1PpUXXAMOBQVJqhPwECqxVKLenhyEGnOAfsMB_v8jGVezZuu41XQ_GVQ8MiBTUfD72UYrKDAFsTgrO2_ue0WdVEMTQHoUSl0j-CtDr8LtwjSvEB2VROK-V5oJuYlNhrYyWXHIIN6Uo6gXpnK51oWYjo1tOxIIiVFyGqK-iqZfQCszcMfrUZl983op3Njo9MXUiqQFsfEQhgN6b9C1J3-L37l5aQpgwKwPlAYhp43cRwlJXZNstQJP9htPLQuLCQ
+                    - button "Open user actions" [ref=f18e206] [cursor=pointer]
+                  - generic [ref=f18e211]:
+                    - link "Altium Develop gives engineers a complete path from PCB design and review to release." [ref=f18e213] [cursor=pointer]:
+                      - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=E1EmkJMVyjB_4ozknW5BtkoziEZh-I4ktVTXVWCiU6_hSnD3svXDvwfA3URtN7AFWxza_5Vy3sE512EhiWSxnSryWY-4301gGsUTXAjSQyrOLlZpUaCQ5QlVZTL6GNZpjwSuFeJRSAk37_0L1XKJ0mNh1PpUXXAMOBQVJqhPwECqxVKLenhyEGnOAfsMB_v8jGVezZuu41XQ_GVQ8MiBTUfD72UYrKDAFsTgrO2_ue0WdVEMTQHoUSl0j-CtDr8LtwjSvEB2VROK-V5oJuYlNhrYyWXHIIN6Uo6gXpnK51oWYjo1tOxIIiVFyGqK-iqZfQCszcMfrUZl983op3Njo9MXUiqQFsfEQhgN6b9C1J3-L37l5aQpgwKwPlAYhp43cRwlJXZNstQJP9htPLQuLCQ
+                    - list [ref=f18e217]:
+                      - generic:
+                        - listitem [ref=f18e218]:
+                          - generic [ref=f18e219]:
+                            - link [ref=f18e220] [cursor=pointer]:
+                              - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=E1EmkJMVyjB_4ozknW5BtkoziEZh-I4ktVTXVWCiU6_hSnD3svXDvwfA3URtN7AFWxza_5Vy3sE512EhiWSxnSryWY-4301gGsUTXAjSQyrOLlZpUaCQ5QlVZTL6GNZpjwSuFeJRSAk37_0L1XKJ0mNh1PpUXXAMOBQVJqhPwECqxVKLenhyEGnOAfsMB_v8jGVezZuu41XQ_GVQ8MiBTUfD72UYrKDAFsTgrO2_ue0WdVEMTQHoUSl0j-CtDr8LtwjSvEB2VROK-V5oJuYlNhrYyWXHIIN6Uo6gXpnK51oWYjo1tOxIIiVFyGqK-iqZfQCszcMfrUZl983op3Njo9MXUiqQFsfEQhgN6b9C1J3-L37l5aQpgwKwPlAYhp43cRwlJXZNstQJP9htPLQuLCQ
+                            - link [ref=f18e223] [cursor=pointer]:
+                              - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=E1EmkJMVyjB_4ozknW5BtkoziEZh-I4ktVTXVWCiU6_hSnD3svXDvwfA3URtN7AFWxza_5Vy3sE512EhiWSxnSryWY-4301gGsUTXAjSQyrOLlZpUaCQ5QlVZTL6GNZpjwSuFeJRSAk37_0L1XKJ0mNh1PpUXXAMOBQVJqhPwECqxVKLenhyEGnOAfsMB_v8jGVezZuu41XQ_GVQ8MiBTUfD72UYrKDAFsTgrO2_ue0WdVEMTQHoUSl0j-CtDr8LtwjSvEB2VROK-V5oJuYlNhrYyWXHIIN6Uo6gXpnK51oWYjo1tOxIIiVFyGqK-iqZfQCszcMfrUZl983op3Njo9MXUiqQFsfEQhgN6b9C1J3-L37l5aQpgwKwPlAYhp43cRwlJXZNstQJP9htPLQuLCQ
+                              - img "30 Day Free Trial" [ref=f18e224]
+                        - listitem [ref=f18e225]:
+                          - generic [ref=f18e226]:
+                            - link [ref=f18e227] [cursor=pointer]:
+                              - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=CmHjZmWxpCvBP0pDq7SI2Xb5PMrYXfrx5hDJLpiYITXwqZ9sOub7-LI6JiduHSbkKiPkcqsIYVCi7fDI-vDgJ_HMNDcPHv-IceZQYAZEc8cTRPbULSmBotl55rBxdUpiZ2WJLrsrnsuAYA8agwPxj41BYW0T3wIdSLujAKLlxe-o5fXrgqPWr93sbWCUNiLSU2HElcdtStDR5ad59I2XMy1Wz56y54dSEDFy1NAZeQSq2wZ49lZr908TA57gW1Wc3P11a0WZyDSDa8IlWZ7MKHzogIRgTlTahjQSfArYdywn2RG31OCv8IVS9DJCJD-GBLZVUdvxc5t6trFAr_-XkOouxVOCi624USynTXrdlOc_QbjCRtIsWthSoUhchGvw_jL_cMZT0jr6s9uEGeB5DEEBaj0VmZMCXVH82sD-58PLsQxm3As1H3b4UONfY4JT-rw7q_SJ1uDkPDlRJ-kfQTTD4rFd3nDaYFNZYY90A8J9NrwlqYEZIBJiG5KANX_a-k6UnG3e129L-xOjuf5ExTt4YTfEnIWrgFRbP7kitw22TtbEX50UKt3_X4jq70FYDe0rh8hompfNWUZpSxHBzCAQ3vUVoSbN8JiHWKZ5U4zMBA
+                            - link [ref=f18e230] [cursor=pointer]:
+                              - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=CmHjZmWxpCvBP0pDq7SI2Xb5PMrYXfrx5hDJLpiYITXwqZ9sOub7-LI6JiduHSbkKiPkcqsIYVCi7fDI-vDgJ_HMNDcPHv-IceZQYAZEc8cTRPbULSmBotl55rBxdUpiZ2WJLrsrnsuAYA8agwPxj41BYW0T3wIdSLujAKLlxe-o5fXrgqPWr93sbWCUNiLSU2HElcdtStDR5ad59I2XMy1Wz56y54dSEDFy1NAZeQSq2wZ49lZr908TA57gW1Wc3P11a0WZyDSDa8IlWZ7MKHzogIRgTlTahjQSfArYdywn2RG31OCv8IVS9DJCJD-GBLZVUdvxc5t6trFAr_-XkOouxVOCi624USynTXrdlOc_QbjCRtIsWthSoUhchGvw_jL_cMZT0jr6s9uEGeB5DEEBaj0VmZMCXVH82sD-58PLsQxm3As1H3b4UONfY4JT-rw7q_SJ1uDkPDlRJ-kfQTTD4rFd3nDaYFNZYY90A8J9NrwlqYEZIBJiG5KANX_a-k6UnG3e129L-xOjuf5ExTt4YTfEnIWrgFRbP7kitw22TtbEX50UKt3_X4jq70FYDe0rh8hompfNWUZpSxHBzCAQ3vUVoSbN8JiHWKZ5U4zMBA
+                              - img "Altium Develop gives engineers a complete path from PCB design and review to release." [ref=f18e231]
+                        - listitem [ref=f18e232]:
+                          - generic [ref=f18e233]:
+                            - link [ref=f18e234] [cursor=pointer]:
+                              - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=XfzsU1PyyrwAzVSLVDNT9H0etdgpP1-VWD0fHEg8-YNY2G8G80Ijmksj4IfvId9HfN7abxquseYmUUW37F7-x0YhClNyt3317uL0Ie6iCO1wvc4wOpp1P1JsBl4jpWNcsfCA6D1XfV9rFV-frzDvpDJC4XZojPFB0sGqmiY0_JaK6dMTwanMVT64u-gjgE1jA-3jsfDtl0RYAlfKtmd50rQCjtl64GphCJOkYpjeNoDhojndd_MTVe1_vgexdrCOCmL2ksngqclkTu3tDns6mljiEktTUhLEyAFhFan-MTHefDnH6IgLXh1K6QqNcSms-Qv12m6VQQiaC5QacwR053yEy8z1u3B1BngNzof_4nD3VbwXvbiKj4IKa889jYupdHOckWYU5ftKF1hdHu2co1yMRBXurFjkIJ68qbzmHRPx-r8RDj-qDaPWrDLgwNQ4m9tpWdcfrgcVN10gUlov_JnuvEr76gezudj_OaofJZbLDuEc_18gK82g1O-recH1LDgtXfcvwaw7ogVXEH-ojtgNZqZ27X_nhkypdovt8sXYqJNktm5RCCdNDxTn87iG1Q7vV3TxlFfP94EqGxugcsgfvZIkqKMUQWYbUpU2XKqLrA
+                            - link [ref=f18e237] [cursor=pointer]:
+                              - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=XfzsU1PyyrwAzVSLVDNT9H0etdgpP1-VWD0fHEg8-YNY2G8G80Ijmksj4IfvId9HfN7abxquseYmUUW37F7-x0YhClNyt3317uL0Ie6iCO1wvc4wOpp1P1JsBl4jpWNcsfCA6D1XfV9rFV-frzDvpDJC4XZojPFB0sGqmiY0_JaK6dMTwanMVT64u-gjgE1jA-3jsfDtl0RYAlfKtmd50rQCjtl64GphCJOkYpjeNoDhojndd_MTVe1_vgexdrCOCmL2ksngqclkTu3tDns6mljiEktTUhLEyAFhFan-MTHefDnH6IgLXh1K6QqNcSms-Qv12m6VQQiaC5QacwR053yEy8z1u3B1BngNzof_4nD3VbwXvbiKj4IKa889jYupdHOckWYU5ftKF1hdHu2co1yMRBXurFjkIJ68qbzmHRPx-r8RDj-qDaPWrDLgwNQ4m9tpWdcfrgcVN10gUlov_JnuvEr76gezudj_OaofJZbLDuEc_18gK82g1O-recH1LDgtXfcvwaw7ogVXEH-ojtgNZqZ27X_nhkypdovt8sXYqJNktm5RCCdNDxTn87iG1Q7vV3TxlFfP94EqGxugcsgfvZIkqKMUQWYbUpU2XKqLrA
+                              - img "Altium Develop gives engineers a complete path from PCB design and review to release." [ref=f18e238]
+                        - listitem [ref=f18e239]:
+                          - generic [ref=f18e240]:
+                            - link [ref=f18e241] [cursor=pointer]:
+                              - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=3Ihmrdbg9t7sRHIpNkvpFDClfAybGAktuKPREJoqHiqn65JJNol3PMNlFWQcxaJ_n2622nQgqskuehRhnNy37GWtlnxvibVObCDxTUIAnTvYABJbN7IApJmDSGXkhe_zTk6oTg2j3Dx44kpYVYs13VMxvAp-932caRau-1r5hV_d5ru9N7_naYqppyPR5DE2jRjWuL903WntCUtpRYqe87Uyt9mn3iq5KTnKnuTj9eZgouh-F1HNs36kA0HghKb6-KzsVZz3S42bc_B-Lz2T6MNxQ_KAuPKqQWQJmv_zLZ0-7PfopNBeQ3A9QTxnhbhwTLuU_4dgkeZSlWn4mhwTlr2I1yrtfZDSnZ8auZi6SjrVnWcOl9azmCxktpXvY284Szj6_1GNgIdesxD0Km-DSM4SfzEtnT4lNXh4_UmmqsreiFydkhV-MXt2qG3V67rJk0ytjWwLp7tTjUsxpN5dXR5osgUqxOXlSeZkAh7k0mrsTS4WvLn_azhjyZNMeJVT9qNz1jo5T9yQA_U24uehG3P7TFL2e1Zfhoy1a2vtEbpj47B6tyGc38UEutuB9hfRJ90ybM-hgcQB7Kc8QGGNWxvcPQiB1AP-VqVb2BMjvmTUdw
+                            - link [ref=f18e244] [cursor=pointer]:
+                              - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=3Ihmrdbg9t7sRHIpNkvpFDClfAybGAktuKPREJoqHiqn65JJNol3PMNlFWQcxaJ_n2622nQgqskuehRhnNy37GWtlnxvibVObCDxTUIAnTvYABJbN7IApJmDSGXkhe_zTk6oTg2j3Dx44kpYVYs13VMxvAp-932caRau-1r5hV_d5ru9N7_naYqppyPR5DE2jRjWuL903WntCUtpRYqe87Uyt9mn3iq5KTnKnuTj9eZgouh-F1HNs36kA0HghKb6-KzsVZz3S42bc_B-Lz2T6MNxQ_KAuPKqQWQJmv_zLZ0-7PfopNBeQ3A9QTxnhbhwTLuU_4dgkeZSlWn4mhwTlr2I1yrtfZDSnZ8auZi6SjrVnWcOl9azmCxktpXvY284Szj6_1GNgIdesxD0Km-DSM4SfzEtnT4lNXh4_UmmqsreiFydkhV-MXt2qG3V67rJk0ytjWwLp7tTjUsxpN5dXR5osgUqxOXlSeZkAh7k0mrsTS4WvLn_azhjyZNMeJVT9qNz1jo5T9yQA_U24uehG3P7TFL2e1Zfhoy1a2vtEbpj47B6tyGc38UEutuB9hfRJ90ybM-hgcQB7Kc8QGGNWxvcPQiB1AP-VqVb2BMjvmTUdw
+                              - img "Altium Develop gives engineers a complete path from PCB design and review to release." [ref=f18e245]
+                        - listitem [ref=f18e246]:
+                          - generic [ref=f18e247]:
+                            - link [ref=f18e248] [cursor=pointer]:
+                              - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=DXFKP9huvuq4LYSZm5-mn5WBP-tT6rzcdNV1n07cPyl5qPU89sWvfCDoxLSnpv3HstXN5HQr-tsV3RuY6GPpx8KEn0opEIlS7neo9LYKI72g7IXkjCAWUdQsLPSKtHkYY0llAg9HEn5zsb951iBglechm7YP6Ss8v5FPOEC1MewkifR_ftbp2BDizd6ZPInZrcH1tt0p_ByvN6ddr-jH1E1TkCjEupNe2YJRaDhzgfyQzr9UMFmJtoowvQvcSMHyFA2Q3JTytt-0E8J725j04DPoi_Mbz9M6hMb6bITwsw0gExLYk4E8VDzzl6fyHqmgdmgEqRDzV5TTaP_ecbcR0DLOOajlI9FAlW-bgByFIy6RIsztGbyMXYO3oFCeJVLZDJtW1rIqeot_TVmUPeSOWDd1S_SODqYoZKbUnKePLH93ZfbQc6hxz0GeNGXyWHHFwDiD_bjTGHDsbcKDwDTBZOyFhU7Tu6Cwv_OsVTpeXckZxRwsr3du4SpsVM56uAvHlRKuo03_0EJk8fjuU8-lFFN3SjvsrTEKgprHuMkmqp4zfiRCf9TSDG0PZkiA5SGfZUpR2fmA8PavMVAod9dFu0BpMLr0U6K3YCr4Mp-prm4dBA
+                            - link [ref=f18e251] [cursor=pointer]:
+                              - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=DXFKP9huvuq4LYSZm5-mn5WBP-tT6rzcdNV1n07cPyl5qPU89sWvfCDoxLSnpv3HstXN5HQr-tsV3RuY6GPpx8KEn0opEIlS7neo9LYKI72g7IXkjCAWUdQsLPSKtHkYY0llAg9HEn5zsb951iBglechm7YP6Ss8v5FPOEC1MewkifR_ftbp2BDizd6ZPInZrcH1tt0p_ByvN6ddr-jH1E1TkCjEupNe2YJRaDhzgfyQzr9UMFmJtoowvQvcSMHyFA2Q3JTytt-0E8J725j04DPoi_Mbz9M6hMb6bITwsw0gExLYk4E8VDzzl6fyHqmgdmgEqRDzV5TTaP_ecbcR0DLOOajlI9FAlW-bgByFIy6RIsztGbyMXYO3oFCeJVLZDJtW1rIqeot_TVmUPeSOWDd1S_SODqYoZKbUnKePLH93ZfbQc6hxz0GeNGXyWHHFwDiD_bjTGHDsbcKDwDTBZOyFhU7Tu6Cwv_OsVTpeXckZxRwsr3du4SpsVM56uAvHlRKuo03_0EJk8fjuU8-lFFN3SjvsrTEKgprHuMkmqp4zfiRCf9TSDG0PZkiA5SGfZUpR2fmA8PavMVAod9dFu0BpMLr0U6K3YCr4Mp-prm4dBA
+                              - img "Altium Develop gives engineers a complete path from PCB design and review to release." [ref=f18e252]
+                    - generic [ref=f18e253]:
+                      - link [ref=f18e254] [cursor=pointer]:
+                        - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=E1EmkJMVyjB_4ozknW5BtkoziEZh-I4ktVTXVWCiU6_hSnD3svXDvwfA3URtN7AFWxza_5Vy3sE512EhiWSxnSryWY-4301gGsUTXAjSQyrOLlZpUaCQ5QlVZTL6GNZpjwSuFeJRSAk37_0L1XKJ0mNh1PpUXXAMOBQVJqhPwECqxVKLenhyEGnOAfsMB_v8jGVezZuu41XQ_GVQ8MiBTUfD72UYrKDAFsTgrO2_ue0WdVEMTQHoUSl0j-CtDr8LtwjSvEB2VROK-V5oJuYlNhrYyWXHIIN6Uo6gXpnK51oWYjo1tOxIIiVFyGqK-iqZfQCszcMfrUZl983op3Njo9MXUiqQFsfEQhgN6b9C1J3-L37l5aQpgwKwPlAYhp43cRwlJXZNstQJP9htPLQuLCQ
+                      - generic [ref=f18e255]:
+                        - link "altium.com" [ref=f18e258] [cursor=pointer]:
+                          - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=E1EmkJMVyjB_4ozknW5BtkoziEZh-I4ktVTXVWCiU6_hSnD3svXDvwfA3URtN7AFWxza_5Vy3sE512EhiWSxnSryWY-4301gGsUTXAjSQyrOLlZpUaCQ5QlVZTL6GNZpjwSuFeJRSAk37_0L1XKJ0mNh1PpUXXAMOBQVJqhPwECqxVKLenhyEGnOAfsMB_v8jGVezZuu41XQ_GVQ8MiBTUfD72UYrKDAFsTgrO2_ue0WdVEMTQHoUSl0j-CtDr8LtwjSvEB2VROK-V5oJuYlNhrYyWXHIIN6Uo6gXpnK51oWYjo1tOxIIiVFyGqK-iqZfQCszcMfrUZl983op3Njo9MXUiqQFsfEQhgN6b9C1J3-L37l5aQpgwKwPlAYhp43cRwlJXZNstQJP9htPLQuLCQ
+                        - link "Learn More" [ref=f18e259] [cursor=pointer]:
+                          - /url: https://alb.reddit.com/cr?za=QZEErX51_nYm_SK1UmobdXoCClFpbsC4njgFsQAyKCYMnPYpaTuTmxplchZ4yo8wr0S64WuuuGg4QzXNxNNcCYIbu7VRAydf1Kp9ld_ctgrM6rM_mXUN9ow65toQ6K6A3WbdDeJ_7h8cyaPqL0_mG7qMMJD4Mle2tMAojcXNnrqugXKvn2m5xhLGk6cPn0yUbEX1-ldNtwer6C56H1BxVNXlfG-MmS9Y_TGqwd3hfhPmUfKycGyw4BfBOiRvOflVyjhkqzs1nqght1OTIipIIXgYiOaUiZuGUZUapCweNI3RAppkRH7kvc-1MWijwn8FyxZFQ78o5Dg9td3Ra582x6cN0SrB7G-o4_JrwmNHXn0_A1fzUSR2LVrDkNSk8eecc-saqpd5XpMxxVtN-rB0v_Cc2ukLuqOuUFffDdLtvMiZCptityJubqpZHdWQKYgfrsenswaJqlQR-QmTa-HIbh4K1n-p7hlGWjnzx-vHJYrjNUfvDT8CJeAqjOOgOBbKgOAPGsSw4gi0cPa_nQWXTAloFIs--8XlogUICkI4a57uafD7f6zmdJDt3zg85uAxfp_Akz5Z_Ru87OGO9lBrzFtX0uckDwgUKWsalxSbY5e2c26kWLwhNJpvAk2DDFTWYKPx7yO-c2du7b_-S-2fgD6V6IzhCzpTmnzOHcLOQGwbw16kGwx1j-cblDSmnHuWt_-GMkGEcEzv1pC7LeWzgaEw-rM-B1euSAXRvrsSLdmua4ZnO4L4xf2naF0_kmYCTc0efniLvRAf1yK_OhfGzh_roxS6LSZ4ZLk&zp=E1EmkJMVyjB_4ozknW5BtkoziEZh-I4ktVTXVWCiU6_hSnD3svXDvwfA3URtN7AFWxza_5Vy3sE512EhiWSxnSryWY-4301gGsUTXAjSQyrOLlZpUaCQ5QlVZTL6GNZpjwSuFeJRSAk37_0L1XKJ0mNh1PpUXXAMOBQVJqhPwECqxVKLenhyEGnOAfsMB_v8jGVezZuu41XQ_GVQ8MiBTUfD72UYrKDAFsTgrO2_ue0WdVEMTQHoUSl0j-CtDr8LtwjSvEB2VROK-V5oJuYlNhrYyWXHIIN6Uo6gXpnK51oWYjo1tOxIIiVFyGqK-iqZfQCszcMfrUZl983op3Njo9MXUiqQFsfEQhgN6b9C1J3-L37l5aQpgwKwPlAYhp43cRwlJXZNstQJP9htPLQuLCQ
+              - generic [ref=f18e263]:
+                - generic:
+                  - generic [ref=f18e264]:
+                    - button "Button to add a comment" [disabled]:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic:
+                                - textbox [disabled]:
+                                  - /placeholder: Join the conversation
+                  - generic [ref=f18e269]:
+                    - generic [ref=f18e271]:
+                      - generic [aria-hidden] [ref=f18e272]: "Sort by:"
+                      - button "Sort by Best" [ref=f18e277] [cursor=pointer]:
+                        - generic [ref=f18e278]: Best
+                    - button "Search Comments Expand comment search" [ref=f18e286] [cursor=pointer]:
+                      - generic [ref=f18e287]: Search Comments
+                      - generic [ref=f18e294]: Expand comment search
+              - region "Comments" [ref=f18e297]:
+                - heading "Comments Section" [level=1] [ref=f18e298]
+                - article "Comment from BCsabaDiy 2 years ago" [ref=f18e300]:
+                  - generic [ref=f18e301] [cursor=pointer]:
+                    - link "BCsabaDiy's profile --- avatar" [ref=f18e307]:
+                      - /url: https://www.reddit.com/user/BCsabaDiy/
+                      - img "u/BCsabaDiy avatar" [ref=f18e310]
+                    - generic [ref=f18e314]:
+                      - link "BCsabaDiy's profile" [ref=f18e318]:
+                        - /url: https://www.reddit.com/user/BCsabaDiy/
+                        - generic [ref=f18e319]: BCsabaDiy
+                      - generic [aria-hidden] [ref=f18e321]: •
+                      - link [ref=f18e323]:
+                        - /url: https://www.reddit.com/r/esp32/comments/1cu96tz/comment/l4hxcrp/
+                        - time [ref=f18e325]: 2y ago
+                  - generic [ref=f18e327]:
+                    - paragraph [ref=f18e331]: If I know good, useable channel depends on region settings.
+                    - generic [ref=f18e337]:
+                      - generic [ref=f18e339]:
+                        - button "Upvote" [ref=f18e340] [cursor=pointer]
+                        - generic [ref=f18e345]: "1"
+                        - button "Downvote" [ref=f18e347] [cursor=pointer]
+                      - button "Reply" [ref=f18e353] [cursor=pointer]
+                      - button "Give award" [ref=f18e360] [cursor=pointer]:
+                        - generic [aria-hidden] [ref=f18e368]: Award
+                      - button "Share" [ref=f18e371] [cursor=pointer]
+                      - button "Open user actions" [ref=f18e380] [cursor=pointer]
+                    - 'article "Comment thread level 1: Reply from Dr_Tron 2 years ago" [ref=f18e387]':
+                      - generic [ref=f18e388] [cursor=pointer]:
+                        - link "Dr_Tron's profile --- avatar" [ref=f18e394]:
+                          - /url: https://www.reddit.com/user/Dr_Tron/
+                          - img "u/Dr_Tron avatar" [ref=f18e397]
+                        - generic [ref=f18e401]:
+                          - link "Dr_Tron's profile" [ref=f18e405]:
+                            - /url: https://www.reddit.com/user/Dr_Tron/
+                            - generic [ref=f18e406]: Dr_Tron
+                          - generic "Comment distinguished as the original poster" [ref=f18e410]: OP
+                          - generic [aria-hidden] [ref=f18e411]: •
+                          - link [ref=f18e413]:
+                            - /url: https://www.reddit.com/r/esp32/comments/1cu96tz/comment/l4hzeu3/
+                            - time [ref=f18e415]: 2y ago
+                      - generic [ref=f18e417]:
+                        - paragraph [ref=f18e421]: Correct. My AP's region settings are US, so channels 1-11 are permitted.
+                        - generic [ref=f18e427]:
+                          - generic [ref=f18e429]:
+                            - button "Upvote" [ref=f18e430] [cursor=pointer]
+                            - generic [ref=f18e435]: "1"
+                            - button "Downvote" [ref=f18e437] [cursor=pointer]
+                          - button "Reply" [ref=f18e443] [cursor=pointer]
+                          - button "Give award" [ref=f18e450] [cursor=pointer]:
+                            - generic [aria-hidden] [ref=f18e458]: Award
+                          - button "Share" [ref=f18e461] [cursor=pointer]
+                          - button "Open user actions" [ref=f18e470] [cursor=pointer]
+                        - 'article "Comment thread level 2: Reply from BCsabaDiy 2 years ago" [ref=f18e477]':
+                          - generic [ref=f18e478] [cursor=pointer]:
+                            - link "BCsabaDiy's profile --- avatar" [ref=f18e484]:
+                              - /url: https://www.reddit.com/user/BCsabaDiy/
+                              - img "u/BCsabaDiy avatar" [ref=f18e487]
+                            - generic [ref=f18e491]:
+                              - link "BCsabaDiy's profile" [ref=f18e495]:
+                                - /url: https://www.reddit.com/user/BCsabaDiy/
+                                - generic [ref=f18e496]: BCsabaDiy
+                              - generic [aria-hidden] [ref=f18e498]: •
+                              - link [ref=f18e500]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1cu96tz/comment/l4hzoqf/
+                                - time [ref=f18e502]: 2y ago
+                          - generic [ref=f18e504]:
+                            - paragraph [ref=f18e508]:
+                              - text: But you need to setup esp32 to allow channel11.
+                              - link "https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/wifi.html" [ref=f18e509] [cursor=pointer]:
+                                - /url: https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/wifi.html
+                            - button "1 more reply" [ref=f18e516] [cursor=pointer]:
+                              - generic [ref=f18e521]:
+                                - generic [ref=f18e522]: "1"
+                                - text: more reply
+                - article "Comment from Efficient-While-1871 2 years ago" [ref=f18e524]:
+                  - generic [ref=f18e525] [cursor=pointer]:
+                    - link "Efficient-While-1871's profile --- avatar" [ref=f18e531]:
+                      - /url: https://www.reddit.com/user/Efficient-While-1871/
+                      - img "u/Efficient-While-1871 avatar" [ref=f18e534]
+                    - generic [ref=f18e538]:
+                      - link "Efficient-While-1871's profile" [ref=f18e542]:
+                        - /url: https://www.reddit.com/user/Efficient-While-1871/
+                        - generic [ref=f18e543]: Efficient-While-1871
+                      - generic [aria-hidden] [ref=f18e545]: •
+                      - link [ref=f18e547]:
+                        - /url: https://www.reddit.com/r/esp32/comments/1cu96tz/comment/l4h9e44/
+                        - time [ref=f18e549]: 2y ago
+                  - generic [ref=f18e551]:
+                    - paragraph [ref=f18e555]: Alter your WiFi STA config struct to prefer connecting to the strongest signal rather than the first found.
+                    - 'article "Comment thread level 1: Reply from Dr_Tron 2 years ago" [ref=f18e560]':
+                      - generic [ref=f18e561] [cursor=pointer]:
+                        - link "Dr_Tron's profile --- avatar" [ref=f18e567]:
+                          - /url: https://www.reddit.com/user/Dr_Tron/
+                          - img "u/Dr_Tron avatar" [ref=f18e570]
+                        - generic [ref=f18e574]:
+                          - link "Dr_Tron's profile" [ref=f18e578]:
+                            - /url: https://www.reddit.com/user/Dr_Tron/
+                            - generic [ref=f18e579]: Dr_Tron
+                          - generic "Comment distinguished as the original poster" [ref=f18e583]: OP
+                          - generic [aria-hidden] [ref=f18e584]: •
+                          - link [ref=f18e586]:
+                            - /url: https://www.reddit.com/r/esp32/comments/1cu96tz/comment/l4hu12i/
+                            - time [ref=f18e588]: 2y ago
+                      - generic [ref=f18e590]:
+                        - generic [ref=f18e593]:
+                          - paragraph [ref=f18e594]: Hmm, can you elaborate?
+                          - paragraph [ref=f18e595]: WiFi.mode(WIFI_STA); sets the station mode, but that's the default anyway.
+                          - paragraph [ref=f18e596]: WiFi.config(); allows wifi configuration, such as a static address, but the Expressiv documentation says nothing about a parameter regarding signal strength, just the channel.
+                        - 'article "Comment thread level 2: Reply from Efficient-While-1871 2 years ago" [ref=f18e601]':
+                          - generic [ref=f18e602] [cursor=pointer]:
+                            - link "Efficient-While-1871's profile --- avatar" [ref=f18e608]:
+                              - /url: https://www.reddit.com/user/Efficient-While-1871/
+                              - img "u/Efficient-While-1871 avatar" [ref=f18e611]
+                            - generic [ref=f18e615]:
+                              - link "Efficient-While-1871's profile" [ref=f18e619]:
+                                - /url: https://www.reddit.com/user/Efficient-While-1871/
+                                - generic [ref=f18e620]: Efficient-While-1871
+                              - generic [aria-hidden] [ref=f18e622]: •
+                              - link [ref=f18e624]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1cu96tz/comment/l4jpfi4/
+                                - time [ref=f18e626]: 2y ago
+                          - generic [ref=f18e628]:
+                            - generic [ref=f18e631]:
+                              - paragraph [ref=f18e632]: You're on the right track in your other comment. You need to set WIFI_CONNECT_AP_BY_SIGNAL.
+                              - paragraph [ref=f18e633]: If you're using Arduino you will need to see if it exposes a function to do that, else modify the Arduino WiFi lib (do this imo, it should be simple), else switch to ESP-IDF.
+                            - button "2 more replies" [ref=f18e640] [cursor=pointer]:
+                              - generic [ref=f18e645]:
+                                - generic [ref=f18e646]: "2"
+                                - text: more replies
+            - generic [ref=f18e647]:
+              - generic [ref=f18e648]:
+                - complementary "People also ask about section" [ref=f18e649]:
+                  - heading "People also ask about section" [level=1] [ref=f18e650]
+                  - generic [ref=f18e651]: People also ask about
+                  - generic [ref=f18e656]:
+                    - link "Best wifi channel for esp32" [ref=f18e658] [cursor=pointer]:
+                      - /url: https://www.reddit.com/answers/928f6991-8319-4d90-848d-e1486e6023f8/?q=Best+wifi+channel+for+esp32&source=PDP&ep=pdp_unit&relatedPostId=t3_1cu96tz
+                    - link "Common issues with esp32 wifi" [ref=f18e667] [cursor=pointer]:
+                      - /url: https://www.reddit.com/answers/53f585e7-cf63-4749-a85c-12b3c8f2bfec/?q=Common+issues+with+esp32+wifi&source=PDP&ep=pdp_unit&relatedPostId=t3_1cu96tz
+                    - link "Esp32 wifi channel compatibility" [ref=f18e676] [cursor=pointer]:
+                      - /url: https://www.reddit.com/answers/642153c8-772b-416f-985f-c78530c83921/?q=Esp32+wifi+channel+compatibility&source=PDP&ep=pdp_unit&relatedPostId=t3_1cu96tz
+                    - link "Esp32 performance on channel 11" [ref=f18e685] [cursor=pointer]:
+                      - /url: https://www.reddit.com/answers/fadd1264-8e54-412d-90aa-33b71f45b8b9/?q=Esp32+performance+on+channel+11&source=PDP&ep=pdp_unit&relatedPostId=t3_1cu96tz
+                    - link "Wifi channel selection tips for esp32" [ref=f18e694] [cursor=pointer]:
+                      - /url: https://www.reddit.com/answers/f1806ab6-f235-408e-a516-17b894850a2e/?q=Wifi+channel+selection+tips+for+esp32&source=PDP&ep=pdp_unit&relatedPostId=t3_1cu96tz
+                - generic [ref=f18e702]:
+                  - complementary "Related Posts Section" [ref=f18e703]:
+                    - heading "Related Posts Section" [level=1] [ref=f18e704]: More posts you may like
+                    - generic [ref=f18e705]: Related posts
+                    - list [ref=f18e711]:
+                      - listitem [ref=f18e712]:
+                        - generic [ref=f18e713]:
+                          - generic [ref=f18e714]:
+                            - link "Esp32 c3 mini wifi" [ref=f18e715] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1r9xno8/esp32_c3_mini_wifi/
+                            - generic [ref=f18e717]:
+                              - generic [ref=f18e718]:
+                                - generic [ref=f18e721]:
+                                  - link "r/esp32" [ref=f18e722] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e727]: •
+                                  - time [ref=f18e729]: 8mo ago
+                                - link [ref=f18e731] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1r9xno8/esp32_c3_mini_wifi/
+                                  - heading "List item post - Esp32 c3 mini wifi" [level=3] [ref=f18e734]: Esp32 c3 mini wifi
+                              - link "r/esp32 - Esp32 c3 mini wifi" [ref=f18e737] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1r9xno8/esp32_c3_mini_wifi/
+                                - img "r/esp32 - Esp32 c3 mini wifi" [ref=f18e738]
+                            - generic [ref=f18e740]:
+                              - generic [ref=f18e741]: "490"
+                              - text: upvotes ·
+                              - generic [ref=f18e742]: "96"
+                              - text: comments
+                          - separator [ref=f18e743]
+                      - listitem [ref=f18e744]:
+                        - generic [ref=f18e746]:
+                          - generic:
+                            - 'link "Advertisement: Z mamusią jest coś nie tak. Inna Mamusia – w kinach od 23 października." [ref=f18e747] [cursor=pointer]':
+                              - /url: https://alb.reddit.com/cr?za=VTK-cwGpaV91p2b0osKwV2rk6P6-jo7BN6RAHbpAzTiXSUpo0PJzN1Laqf4Wm5zIUqYva4mHnWzwIz404Kxx0ztaeNjV5KRPL9sTBeVoEB_d-_8E3F0Id3DETe76Uv7_7FyDPkrhU2kTRuIwSD09oCC1NML7bAztMDyMqsujzVFtbXVdC1hK8C0x0w4AdECrgyOgmXprrGDO2UPLFw_mrJDHyvt4VW0RjC99N2519fkulwLpEJtJoSaX5zUv2TVSTxKSHMyoqO1aeKfO5gGInB6z05tKnjoAzmNQlBDbJpXpbLhXPr5_p0QtiqlhkYAQB5UYlYs1aU4CimLSFMP2_RADa31U1ISl2Dwz3bWIO6a2F04vxUwe9VG_cIm85zlJM7U3FnZUzHDlXKUIZHPNpwSB-3_dkawhd9QaOMIx9c-1N_TPvjWEMTjTWGUK8EVz_xCaJfaU8uWfy5JPca5LcZ4L-cgRiRdxPB3B4xxc3plPXbmhL9GbVIRgGN3yk08R_ZgL3w7EZG-dyGIo5DrH2W9yDKBnFzRXArpSuV1FJv6ltvn0h29yr0h_zlpdv3Jh6M2R_hKUIhCRs3BVlybA7gH90185zr1ninGP96xJdEfSp072xJHRPH-bFWb-ZEjykBMPEV9p34VA-r_3bMek7pKVTSmWl0ptuIhwr_xzOWLumEiCkM-BQfOB8zhzGVsw3dqPYvOuuyOioWGQ3bMVLd3mWNaLKwA-NOZoPxBrEY3gTzUIF9U44yMW2lVNdRNh2ukoz6Ax9xbodTa-D0rlmA9tt1Out9-lbhJS1rjW&zp=ixLzQZfuS6MWhrzos4F-0TT275WQESGQ3UmeIxduZL6Y3x7CRon84dsDFF4dixv1LLVelSKZBwl1YoMjJvuO7GwFxyDKpgFSQazkYDEqeaX01a3MDfEOfqZUX1uTCzNQlniQ_tKKQjQ7Svndn7VW-HMYurRQ81ECqUgjdmaBrGnwapC4Vpg4qdltsyHpWzKZGRu1xzOEpdd4hJijSUxMDg-Y6BNcZMS7D6LWTyv2-j4LMSoBTDZhjNbx5X4fm5dRMv4FvA2lfEatb-xdPHYlKNRB4zJxi5nW
+                            - generic [ref=f18e748]:
+                              - generic [ref=f18e749]:
+                                - generic [ref=f18e750]:
+                                  - generic [ref=f18e751]:
+                                    - generic [ref=f18e752]:
+                                      - link "u/TylkoHity avatar TylkoHity" [ref=f18e755] [cursor=pointer]:
+                                        - /url: /user/TylkoHity/
+                                        - img "u/TylkoHity avatar" [ref=f18e758]
+                                        - generic [ref=f18e759]: TylkoHity
+                                      - generic [ref=f18e760]: •
+                                      - link "Ad" [ref=f18e762] [cursor=pointer]:
+                                        - /url: /user/TylkoHity/
+                                      - link [ref=f18e764] [cursor=pointer]:
+                                        - /url: https://alb.reddit.com/cr?za=VTK-cwGpaV91p2b0osKwV2rk6P6-jo7BN6RAHbpAzTiXSUpo0PJzN1Laqf4Wm5zIUqYva4mHnWzwIz404Kxx0ztaeNjV5KRPL9sTBeVoEB_d-_8E3F0Id3DETe76Uv7_7FyDPkrhU2kTRuIwSD09oCC1NML7bAztMDyMqsujzVFtbXVdC1hK8C0x0w4AdECrgyOgmXprrGDO2UPLFw_mrJDHyvt4VW0RjC99N2519fkulwLpEJtJoSaX5zUv2TVSTxKSHMyoqO1aeKfO5gGInB6z05tKnjoAzmNQlBDbJpXpbLhXPr5_p0QtiqlhkYAQB5UYlYs1aU4CimLSFMP2_RADa31U1ISl2Dwz3bWIO6a2F04vxUwe9VG_cIm85zlJM7U3FnZUzHDlXKUIZHPNpwSB-3_dkawhd9QaOMIx9c-1N_TPvjWEMTjTWGUK8EVz_xCaJfaU8uWfy5JPca5LcZ4L-cgRiRdxPB3B4xxc3plPXbmhL9GbVIRgGN3yk08R_ZgL3w7EZG-dyGIo5DrH2W9yDKBnFzRXArpSuV1FJv6ltvn0h29yr0h_zlpdv3Jh6M2R_hKUIhCRs3BVlybA7gH90185zr1ninGP96xJdEfSp072xJHRPH-bFWb-ZEjykBMPEV9p34VA-r_3bMek7pKVTSmWl0ptuIhwr_xzOWLumEiCkM-BQfOB8zhzGVsw3dqPYvOuuyOioWGQ3bMVLd3mWNaLKwA-NOZoPxBrEY3gTzUIF9U44yMW2lVNdRNh2ukoz6Ax9xbodTa-D0rlmA9tt1Out9-lbhJS1rjW&zp=ixLzQZfuS6MWhrzos4F-0TT275WQESGQ3UmeIxduZL6Y3x7CRon84dsDFF4dixv1LLVelSKZBwl1YoMjJvuO7GwFxyDKpgFSQazkYDEqeaX01a3MDfEOfqZUX1uTCzNQlniQ_tKKQjQ7Svndn7VW-HMYurRQ81ECqUgjdmaBrGnwapC4Vpg4qdltsyHpWzKZGRu1xzOEpdd4hJijSUxMDg-Y6BNcZMS7D6LWTyv2-j4LMSoBTDZhjNbx5X4fm5dRMv4FvA2lfEatb-xdPHYlKNRB4zJxi5nW
+                                    - button "Open user actions" [ref=f18e770] [cursor=pointer]
+                                  - link "Z mamusią jest coś nie tak. Inna Mamusia – w kinach od 23 października." [ref=f18e777] [cursor=pointer]:
+                                    - /url: https://alb.reddit.com/cr?za=VTK-cwGpaV91p2b0osKwV2rk6P6-jo7BN6RAHbpAzTiXSUpo0PJzN1Laqf4Wm5zIUqYva4mHnWzwIz404Kxx0ztaeNjV5KRPL9sTBeVoEB_d-_8E3F0Id3DETe76Uv7_7FyDPkrhU2kTRuIwSD09oCC1NML7bAztMDyMqsujzVFtbXVdC1hK8C0x0w4AdECrgyOgmXprrGDO2UPLFw_mrJDHyvt4VW0RjC99N2519fkulwLpEJtJoSaX5zUv2TVSTxKSHMyoqO1aeKfO5gGInB6z05tKnjoAzmNQlBDbJpXpbLhXPr5_p0QtiqlhkYAQB5UYlYs1aU4CimLSFMP2_RADa31U1ISl2Dwz3bWIO6a2F04vxUwe9VG_cIm85zlJM7U3FnZUzHDlXKUIZHPNpwSB-3_dkawhd9QaOMIx9c-1N_TPvjWEMTjTWGUK8EVz_xCaJfaU8uWfy5JPca5LcZ4L-cgRiRdxPB3B4xxc3plPXbmhL9GbVIRgGN3yk08R_ZgL3w7EZG-dyGIo5DrH2W9yDKBnFzRXArpSuV1FJv6ltvn0h29yr0h_zlpdv3Jh6M2R_hKUIhCRs3BVlybA7gH90185zr1ninGP96xJdEfSp072xJHRPH-bFWb-ZEjykBMPEV9p34VA-r_3bMek7pKVTSmWl0ptuIhwr_xzOWLumEiCkM-BQfOB8zhzGVsw3dqPYvOuuyOioWGQ3bMVLd3mWNaLKwA-NOZoPxBrEY3gTzUIF9U44yMW2lVNdRNh2ukoz6Ax9xbodTa-D0rlmA9tt1Out9-lbhJS1rjW&zp=ixLzQZfuS6MWhrzos4F-0TT275WQESGQ3UmeIxduZL6Y3x7CRon84dsDFF4dixv1LLVelSKZBwl1YoMjJvuO7GwFxyDKpgFSQazkYDEqeaX01a3MDfEOfqZUX1uTCzNQlniQ_tKKQjQ7Svndn7VW-HMYurRQ81ECqUgjdmaBrGnwapC4Vpg4qdltsyHpWzKZGRu1xzOEpdd4hJijSUxMDg-Y6BNcZMS7D6LWTyv2-j4LMSoBTDZhjNbx5X4fm5dRMv4FvA2lfEatb-xdPHYlKNRB4zJxi5nW
+                                    - generic "Z mamusią jest coś nie tak. Inna Mamusia – w kinach od 23 października." [ref=f18e778]
+                                - link [ref=f18e781] [cursor=pointer]:
+                                  - /url: /user/TylkoHity/comments/1x5m7et/z_mamusi%C4%85_jest_co%C5%9B_nie_tak_inna_mamusia_w_kinach/?p=1&impressionid=5740722410903048380
+                                  - generic:
+                                    - 'img "Thumbnail image: Z mamusią jest coś nie tak. Inna Mamusia – w kinach od 23 października." [ref=f18e782]'
+                                    - generic "Play video"
+                              - generic [ref=f18e783]:
+                                - link [ref=f18e784] [cursor=pointer]:
+                                  - /url: https://alb.reddit.com/cr?za=VTK-cwGpaV91p2b0osKwV2rk6P6-jo7BN6RAHbpAzTiXSUpo0PJzN1Laqf4Wm5zIUqYva4mHnWzwIz404Kxx0ztaeNjV5KRPL9sTBeVoEB_d-_8E3F0Id3DETe76Uv7_7FyDPkrhU2kTRuIwSD09oCC1NML7bAztMDyMqsujzVFtbXVdC1hK8C0x0w4AdECrgyOgmXprrGDO2UPLFw_mrJDHyvt4VW0RjC99N2519fkulwLpEJtJoSaX5zUv2TVSTxKSHMyoqO1aeKfO5gGInB6z05tKnjoAzmNQlBDbJpXpbLhXPr5_p0QtiqlhkYAQB5UYlYs1aU4CimLSFMP2_RADa31U1ISl2Dwz3bWIO6a2F04vxUwe9VG_cIm85zlJM7U3FnZUzHDlXKUIZHPNpwSB-3_dkawhd9QaOMIx9c-1N_TPvjWEMTjTWGUK8EVz_xCaJfaU8uWfy5JPca5LcZ4L-cgRiRdxPB3B4xxc3plPXbmhL9GbVIRgGN3yk08R_ZgL3w7EZG-dyGIo5DrH2W9yDKBnFzRXArpSuV1FJv6ltvn0h29yr0h_zlpdv3Jh6M2R_hKUIhCRs3BVlybA7gH90185zr1ninGP96xJdEfSp072xJHRPH-bFWb-ZEjykBMPEV9p34VA-r_3bMek7pKVTSmWl0ptuIhwr_xzOWLumEiCkM-BQfOB8zhzGVsw3dqPYvOuuyOioWGQ3bMVLd3mWNaLKwA-NOZoPxBrEY3gTzUIF9U44yMW2lVNdRNh2ukoz6Ax9xbodTa-D0rlmA9tt1Out9-lbhJS1rjW&zp=ixLzQZfuS6MWhrzos4F-0TT275WQESGQ3UmeIxduZL6Y3x7CRon84dsDFF4dixv1LLVelSKZBwl1YoMjJvuO7GwFxyDKpgFSQazkYDEqeaX01a3MDfEOfqZUX1uTCzNQlniQ_tKKQjQ7Svndn7VW-HMYurRQ81ECqUgjdmaBrGnwapC4Vpg4qdltsyHpWzKZGRu1xzOEpdd4hJijSUxMDg-Y6BNcZMS7D6LWTyv2-j4LMSoBTDZhjNbx5X4fm5dRMv4FvA2lfEatb-xdPHYlKNRB4zJxi5nW
+                                - generic [ref=f18e785]:
+                                  - link "tylkohity.pl" [ref=f18e787] [cursor=pointer]:
+                                    - /url: https://alb.reddit.com/cr?za=VTK-cwGpaV91p2b0osKwV2rk6P6-jo7BN6RAHbpAzTiXSUpo0PJzN1Laqf4Wm5zIUqYva4mHnWzwIz404Kxx0ztaeNjV5KRPL9sTBeVoEB_d-_8E3F0Id3DETe76Uv7_7FyDPkrhU2kTRuIwSD09oCC1NML7bAztMDyMqsujzVFtbXVdC1hK8C0x0w4AdECrgyOgmXprrGDO2UPLFw_mrJDHyvt4VW0RjC99N2519fkulwLpEJtJoSaX5zUv2TVSTxKSHMyoqO1aeKfO5gGInB6z05tKnjoAzmNQlBDbJpXpbLhXPr5_p0QtiqlhkYAQB5UYlYs1aU4CimLSFMP2_RADa31U1ISl2Dwz3bWIO6a2F04vxUwe9VG_cIm85zlJM7U3FnZUzHDlXKUIZHPNpwSB-3_dkawhd9QaOMIx9c-1N_TPvjWEMTjTWGUK8EVz_xCaJfaU8uWfy5JPca5LcZ4L-cgRiRdxPB3B4xxc3plPXbmhL9GbVIRgGN3yk08R_ZgL3w7EZG-dyGIo5DrH2W9yDKBnFzRXArpSuV1FJv6ltvn0h29yr0h_zlpdv3Jh6M2R_hKUIhCRs3BVlybA7gH90185zr1ninGP96xJdEfSp072xJHRPH-bFWb-ZEjykBMPEV9p34VA-r_3bMek7pKVTSmWl0ptuIhwr_xzOWLumEiCkM-BQfOB8zhzGVsw3dqPYvOuuyOioWGQ3bMVLd3mWNaLKwA-NOZoPxBrEY3gTzUIF9U44yMW2lVNdRNh2ukoz6Ax9xbodTa-D0rlmA9tt1Out9-lbhJS1rjW&zp=ixLzQZfuS6MWhrzos4F-0TT275WQESGQ3UmeIxduZL6Y3x7CRon84dsDFF4dixv1LLVelSKZBwl1YoMjJvuO7GwFxyDKpgFSQazkYDEqeaX01a3MDfEOfqZUX1uTCzNQlniQ_tKKQjQ7Svndn7VW-HMYurRQ81ECqUgjdmaBrGnwapC4Vpg4qdltsyHpWzKZGRu1xzOEpdd4hJijSUxMDg-Y6BNcZMS7D6LWTyv2-j4LMSoBTDZhjNbx5X4fm5dRMv4FvA2lfEatb-xdPHYlKNRB4zJxi5nW
+                                  - link "View More" [ref=f18e788] [cursor=pointer]:
+                                    - /url: https://alb.reddit.com/cr?za=VTK-cwGpaV91p2b0osKwV2rk6P6-jo7BN6RAHbpAzTiXSUpo0PJzN1Laqf4Wm5zIUqYva4mHnWzwIz404Kxx0ztaeNjV5KRPL9sTBeVoEB_d-_8E3F0Id3DETe76Uv7_7FyDPkrhU2kTRuIwSD09oCC1NML7bAztMDyMqsujzVFtbXVdC1hK8C0x0w4AdECrgyOgmXprrGDO2UPLFw_mrJDHyvt4VW0RjC99N2519fkulwLpEJtJoSaX5zUv2TVSTxKSHMyoqO1aeKfO5gGInB6z05tKnjoAzmNQlBDbJpXpbLhXPr5_p0QtiqlhkYAQB5UYlYs1aU4CimLSFMP2_RADa31U1ISl2Dwz3bWIO6a2F04vxUwe9VG_cIm85zlJM7U3FnZUzHDlXKUIZHPNpwSB-3_dkawhd9QaOMIx9c-1N_TPvjWEMTjTWGUK8EVz_xCaJfaU8uWfy5JPca5LcZ4L-cgRiRdxPB3B4xxc3plPXbmhL9GbVIRgGN3yk08R_ZgL3w7EZG-dyGIo5DrH2W9yDKBnFzRXArpSuV1FJv6ltvn0h29yr0h_zlpdv3Jh6M2R_hKUIhCRs3BVlybA7gH90185zr1ninGP96xJdEfSp072xJHRPH-bFWb-ZEjykBMPEV9p34VA-r_3bMek7pKVTSmWl0ptuIhwr_xzOWLumEiCkM-BQfOB8zhzGVsw3dqPYvOuuyOioWGQ3bMVLd3mWNaLKwA-NOZoPxBrEY3gTzUIF9U44yMW2lVNdRNh2ukoz6Ax9xbodTa-D0rlmA9tt1Out9-lbhJS1rjW&zp=ixLzQZfuS6MWhrzos4F-0TT275WQESGQ3UmeIxduZL6Y3x7CRon84dsDFF4dixv1LLVelSKZBwl1YoMjJvuO7GwFxyDKpgFSQazkYDEqeaX01a3MDfEOfqZUX1uTCzNQlniQ_tKKQjQ7Svndn7VW-HMYurRQ81ECqUgjdmaBrGnwapC4Vpg4qdltsyHpWzKZGRu1xzOEpdd4hJijSUxMDg-Y6BNcZMS7D6LWTyv2-j4LMSoBTDZhjNbx5X4fm5dRMv4FvA2lfEatb-xdPHYlKNRB4zJxi5nW
+                        - separator [ref=f18e791]
+                      - listitem [ref=f18e792]:
+                        - generic [ref=f18e793]:
+                          - generic [ref=f18e794]:
+                            - link "My First Esp32" [ref=f18e795] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1u9f86p/my_first_esp32/
+                            - generic [ref=f18e797]:
+                              - generic [ref=f18e798]:
+                                - generic [ref=f18e801]:
+                                  - link "r/esp32" [ref=f18e802] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e807]: •
+                                  - time [ref=f18e809]: 4mo ago
+                                - link [ref=f18e811] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1u9f86p/my_first_esp32/
+                                  - heading "List item post - My First Esp32" [level=3] [ref=f18e814]: My First Esp32
+                              - link "r/esp32 - My First Esp32" [ref=f18e817] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1u9f86p/my_first_esp32/
+                                - img "r/esp32 - My First Esp32" [ref=f18e818]
+                            - generic [ref=f18e820]:
+                              - generic [ref=f18e821]: 1.1K
+                              - text: upvotes ·
+                              - generic [ref=f18e822]: "125"
+                              - text: comments
+                          - separator [ref=f18e823]
+                      - listitem [ref=f18e824]:
+                        - generic [ref=f18e825]:
+                          - generic [ref=f18e826]:
+                            - link "Esp32 as a web server (realy)" [ref=f18e827] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1t7sql3/esp32_as_a_web_server_realy/
+                            - generic [ref=f18e829]:
+                              - generic [ref=f18e830]:
+                                - generic [ref=f18e833]:
+                                  - link "r/esp32" [ref=f18e834] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e839]: •
+                                  - time [ref=f18e841]: 5mo ago
+                                - link [ref=f18e843] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1t7sql3/esp32_as_a_web_server_realy/
+                                  - heading "List item post - Esp32 as a web server (realy)" [level=3] [ref=f18e846]: Esp32 as a web server (realy)
+                              - link "r/esp32 - Esp32 as a web server (realy)" [ref=f18e849] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1t7sql3/esp32_as_a_web_server_realy/
+                                - img "r/esp32 - Esp32 as a web server (realy)" [ref=f18e850]
+                            - generic [ref=f18e852]:
+                              - generic [ref=f18e853]: "73"
+                              - text: upvotes ·
+                              - generic [ref=f18e854]: "21"
+                              - text: comments
+                          - separator [ref=f18e855]
+                      - listitem
+                      - listitem [ref=f18e856]:
+                        - generic [ref=f18e857]:
+                          - generic [ref=f18e858]:
+                            - link "[IoT/Hardware] Is the ESP32 reliable for long-term production use to trigger multiple power relays simultaneously?" [ref=f18e859] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1tyw64b/iothardware_is_the_esp32_reliable_for_longterm/
+                            - generic [ref=f18e861]:
+                              - generic [ref=f18e862]:
+                                - generic [ref=f18e865]:
+                                  - link "r/esp32" [ref=f18e866] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e871]: •
+                                  - time [ref=f18e873]: 4mo ago
+                                - link [ref=f18e875] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1tyw64b/iothardware_is_the_esp32_reliable_for_longterm/
+                                  - heading "List item post - [IoT/Hardware] Is the ESP32 reliable for long-term producti..." [level=3] [ref=f18e878]: "[IoT/Hardware] Is the ESP32 reliable for long-term production use to trigger multiple power relays simultaneously?"
+                              - link "r/esp32 - [IoT/Hardware] Is the ESP32 reliable for long-term production use to trigger multiple power relays simultaneously?" [ref=f18e881] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1tyw64b/iothardware_is_the_esp32_reliable_for_longterm/
+                                - img "r/esp32 - [IoT/Hardware] Is the ESP32 reliable for long-term production use to trigger multiple power relays simultaneously?" [ref=f18e882]
+                            - generic [ref=f18e884]:
+                              - generic [ref=f18e885]: "68"
+                              - text: upvotes ·
+                              - generic [ref=f18e886]: "29"
+                              - text: comments
+                          - separator [ref=f18e887]
+                      - listitem [ref=f18e888]:
+                        - generic [ref=f18e889]:
+                          - generic [ref=f18e890]:
+                            - link "ESP32 WiFi Virtual HID" [ref=f18e891] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/arduino/comments/1vm9o1r/esp32_wifi_virtual_hid/
+                            - generic [ref=f18e893]:
+                              - generic [ref=f18e894]:
+                                - generic [ref=f18e897]:
+                                  - link "r/arduino" [ref=f18e898] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/arduino/
+                                  - generic [aria-hidden] [ref=f18e903]: •
+                                  - time [ref=f18e905]: 2mo ago
+                                - link [ref=f18e907] [cursor=pointer]:
+                                  - /url: /r/arduino/comments/1vm9o1r/esp32_wifi_virtual_hid/
+                                  - heading "List item post - ESP32 WiFi Virtual HID" [level=3] [ref=f18e910]: ESP32 WiFi Virtual HID
+                              - link "r/arduino - ESP32 WiFi Virtual HID" [ref=f18e913] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/arduino/comments/1vm9o1r/esp32_wifi_virtual_hid/
+                                - img "r/arduino - ESP32 WiFi Virtual HID" [ref=f18e914]
+                            - generic [ref=f18e916]:
+                              - generic [ref=f18e917]: "46"
+                              - text: upvotes ·
+                              - generic [ref=f18e918]: "23"
+                              - text: comments
+                          - separator [ref=f18e919]
+                      - listitem [ref=f18e920]:
+                        - generic [ref=f18e921]:
+                          - generic [ref=f18e922]:
+                            - link "Why doesn't Windows 11 include wifi drivers anymore?" [ref=f18e923] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/PcBuildHelp/comments/1qhcn8e/why_doesnt_windows_11_include_wifi_drivers_anymore/
+                            - generic [ref=f18e925]:
+                              - generic [ref=f18e926]:
+                                - generic [ref=f18e929]:
+                                  - link "r/PcBuildHelp" [ref=f18e930] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/PcBuildHelp/
+                                  - generic [aria-hidden] [ref=f18e935]: •
+                                  - time [ref=f18e937]: 9mo ago
+                                - link [ref=f18e939] [cursor=pointer]:
+                                  - /url: /r/PcBuildHelp/comments/1qhcn8e/why_doesnt_windows_11_include_wifi_drivers_anymore/
+                                  - heading "List item post - Why doesn't Windows 11 include wifi drivers anymore?" [level=3] [ref=f18e942]: Why doesn't Windows 11 include wifi drivers anymore?
+                              - link "r/PcBuildHelp - Why doesn't Windows 11 include wifi drivers anymore?" [ref=f18e945] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/PcBuildHelp/comments/1qhcn8e/why_doesnt_windows_11_include_wifi_drivers_anymore/
+                                - img "r/PcBuildHelp - Why doesn't Windows 11 include wifi drivers anymore?" [ref=f18e946]
+                            - generic [ref=f18e948]:
+                              - generic [ref=f18e949]: "54"
+                              - text: upvotes ·
+                              - generic [ref=f18e950]: "60"
+                              - text: comments
+                          - separator [ref=f18e951]
+                      - listitem [ref=f18e952]:
+                        - generic [ref=f18e953]:
+                          - generic [ref=f18e954]:
+                            - link "The ESP32-S3 Wi-Fi radio is now listening to the FM broadcast band." [ref=f18e955] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1wykmwh/the_esp32s3_wifi_radio_is_now_listening_to_the_fm/
+                            - generic [ref=f18e957]:
+                              - generic [ref=f18e958]:
+                                - generic [ref=f18e961]:
+                                  - link "r/esp32" [ref=f18e962] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e967]: •
+                                  - time [ref=f18e969]: 13d ago
+                                - link [ref=f18e971] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1wykmwh/the_esp32s3_wifi_radio_is_now_listening_to_the_fm/
+                                  - heading "List item post - The ESP32-S3 Wi-Fi radio is now listening to the FM broadca..." [level=3] [ref=f18e974]: The ESP32-S3 Wi-Fi radio is now listening to the FM broadcast band.
+                              - link "r/esp32 - The ESP32-S3 Wi-Fi radio is now listening to the FM broadcast band." [ref=f18e977] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1wykmwh/the_esp32s3_wifi_radio_is_now_listening_to_the_fm/
+                                - img "r/esp32 - The ESP32-S3 Wi-Fi radio is now listening to the FM broadcast band." [ref=f18e978]
+                            - generic [ref=f18e980]:
+                              - generic [ref=f18e981]: "241"
+                              - text: upvotes ·
+                              - generic [ref=f18e982]: "28"
+                              - text: comments
+                          - separator [ref=f18e983]
+                      - listitem [ref=f18e984]:
+                        - generic [ref=f18e985]:
+                          - generic [ref=f18e986]:
+                            - link "ESP 32 Button Connection" [ref=f18e987] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1oh2g91/esp_32_button_connection/
+                            - generic [ref=f18e989]:
+                              - generic [ref=f18e990]:
+                                - generic [ref=f18e993]:
+                                  - link "r/esp32" [ref=f18e994] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e999]: •
+                                  - time [ref=f18e1001]: 1y ago
+                                - link [ref=f18e1003] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1oh2g91/esp_32_button_connection/
+                                  - heading "List item post - ESP 32 Button Connection" [level=3] [ref=f18e1006]: ESP 32 Button Connection
+                              - link "r/esp32 - ESP 32 Button Connection" [ref=f18e1009] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1oh2g91/esp_32_button_connection/
+                                - img "r/esp32 - ESP 32 Button Connection" [ref=f18e1010]
+                            - generic [ref=f18e1012]:
+                              - generic [ref=f18e1013]: "18"
+                              - text: upvotes ·
+                              - generic [ref=f18e1014]: "16"
+                              - text: comments
+                          - separator [ref=f18e1015]
+                      - listitem
+                      - listitem [ref=f18e1016]:
+                        - generic [ref=f18e1017]:
+                          - generic [ref=f18e1018]:
+                            - link "MLO on TP-Link Deco Wifi 7" [ref=f18e1019] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/HomeNetworking/comments/1blk41h/mlo_on_tplink_deco_wifi_7/
+                            - generic [ref=f18e1022]:
+                              - generic [ref=f18e1025]:
+                                - link "r/HomeNetworking" [ref=f18e1026] [cursor=pointer]:
+                                  - /url: https://www.reddit.com/r/HomeNetworking/
+                                - generic [aria-hidden] [ref=f18e1033]: •
+                                - time [ref=f18e1035]: 3y ago
+                              - link [ref=f18e1037] [cursor=pointer]:
+                                - /url: /r/HomeNetworking/comments/1blk41h/mlo_on_tplink_deco_wifi_7/
+                                - heading "List item post - MLO on TP-Link Deco Wifi 7" [level=3] [ref=f18e1040]: MLO on TP-Link Deco Wifi 7
+                            - generic [ref=f18e1042]:
+                              - generic [ref=f18e1043]: "2"
+                              - text: upvotes ·
+                              - generic [ref=f18e1044]: "5"
+                              - text: comments
+                          - separator [ref=f18e1045]
+                      - listitem [ref=f18e1046]:
+                        - generic [ref=f18e1047]:
+                          - generic [ref=f18e1048]:
+                            - link "My ESP32 network-decoy project is finally becoming real hardware" [ref=f18e1049] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1wd26zi/my_esp32_networkdecoy_project_is_finally_becoming/
+                            - generic [ref=f18e1051]:
+                              - generic [ref=f18e1052]:
+                                - generic [ref=f18e1055]:
+                                  - link "r/esp32" [ref=f18e1056] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e1061]: •
+                                  - time [ref=f18e1063]: 1mo ago
+                                - link [ref=f18e1065] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1wd26zi/my_esp32_networkdecoy_project_is_finally_becoming/
+                                  - heading "List item post - My ESP32 network-decoy project is finally becoming real har..." [level=3] [ref=f18e1068]: My ESP32 network-decoy project is finally becoming real hardware
+                              - link "r/esp32 - My ESP32 network-decoy project is finally becoming real hardware" [ref=f18e1071] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1wd26zi/my_esp32_networkdecoy_project_is_finally_becoming/
+                                - img "r/esp32 - My ESP32 network-decoy project is finally becoming real hardware" [ref=f18e1072]
+                            - generic [ref=f18e1074]:
+                              - generic [ref=f18e1075]: "46"
+                              - text: upvotes ·
+                              - generic [ref=f18e1076]: "39"
+                              - text: comments
+                          - separator [ref=f18e1077]
+                      - listitem [ref=f18e1078]:
+                        - generic [ref=f18e1079]:
+                          - generic [ref=f18e1080]:
+                            - link "Is this ridiculous? Am I ridiculous? ESP32 wifi speaker for local radio stream." [ref=f18e1081] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1s975ds/is_this_ridiculous_am_i_ridiculous_esp32_wifi/
+                            - generic [ref=f18e1083]:
+                              - generic [ref=f18e1084]:
+                                - generic [ref=f18e1087]:
+                                  - link "r/esp32" [ref=f18e1088] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e1093]: •
+                                  - time [ref=f18e1095]: 7mo ago
+                                - link [ref=f18e1097] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1s975ds/is_this_ridiculous_am_i_ridiculous_esp32_wifi/
+                                  - heading "List item post - Is this ridiculous? Am I ridiculous? ESP32 wifi speaker for..." [level=3] [ref=f18e1100]: Is this ridiculous? Am I ridiculous? ESP32 wifi speaker for local radio stream.
+                              - link "r/esp32 - Is this ridiculous? Am I ridiculous? ESP32 wifi speaker for local radio stream." [ref=f18e1103] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1s975ds/is_this_ridiculous_am_i_ridiculous_esp32_wifi/
+                                - img "r/esp32 - Is this ridiculous? Am I ridiculous? ESP32 wifi speaker for local radio stream." [ref=f18e1104]
+                            - generic [ref=f18e1106]:
+                              - generic [ref=f18e1107]: "98"
+                              - text: upvotes ·
+                              - generic [ref=f18e1108]: "16"
+                              - text: comments
+                          - separator [ref=f18e1109]
+                      - listitem [ref=f18e1110]:
+                        - generic [ref=f18e1111]:
+                          - generic [ref=f18e1112]:
+                            - link "How I bypassed ESP32’s closed-source Wi-Fi binary (libnet80211.a) to inject raw SAE Commit frames" [ref=f18e1113] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/embedded/comments/1wwiufv/how_i_bypassed_esp32s_closedsource_wifi_binary/
+                            - generic [ref=f18e1115]:
+                              - generic [ref=f18e1116]:
+                                - generic [ref=f18e1119]:
+                                  - link "r/embedded" [ref=f18e1120] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/embedded/
+                                  - generic [aria-hidden] [ref=f18e1125]: •
+                                  - time [ref=f18e1127]: 16d ago
+                                - link [ref=f18e1129] [cursor=pointer]:
+                                  - /url: /r/embedded/comments/1wwiufv/how_i_bypassed_esp32s_closedsource_wifi_binary/
+                                  - heading "List item post - How I bypassed ESP32’s closed-source Wi-Fi binary (libnet80..." [level=3] [ref=f18e1132]: How I bypassed ESP32’s closed-source Wi-Fi binary (libnet80211.a) to inject raw SAE Commit frames
+                              - link "r/embedded - How I bypassed ESP32’s closed-source Wi-Fi binary (libnet80211.a) to inject raw SAE Commit frames" [ref=f18e1135] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/embedded/comments/1wwiufv/how_i_bypassed_esp32s_closedsource_wifi_binary/
+                                - img "r/embedded - How I bypassed ESP32’s closed-source Wi-Fi binary (libnet80211.a) to inject raw SAE Commit frames" [ref=f18e1136]
+                            - generic [ref=f18e1138]:
+                              - generic [ref=f18e1139]: "486"
+                              - text: upvotes ·
+                              - generic [ref=f18e1140]: "42"
+                              - text: comments
+                          - separator [ref=f18e1141]
+                      - listitem [ref=f18e1142]:
+                        - generic [ref=f18e1143]:
+                          - generic [ref=f18e1144]:
+                            - link "[Fix] Windows 11 WiFi connected but still shows \"No Internet\" on every network" [ref=f18e1145] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/computerhelp/comments/1sd18qo/fix_windows_11_wifi_connected_but_still_shows_no/
+                            - generic [ref=f18e1148]:
+                              - generic [ref=f18e1151]:
+                                - link "r/computerhelp" [ref=f18e1152] [cursor=pointer]:
+                                  - /url: https://www.reddit.com/r/computerhelp/
+                                - generic [aria-hidden] [ref=f18e1157]: •
+                                - time [ref=f18e1159]: 7mo ago
+                              - link [ref=f18e1161] [cursor=pointer]:
+                                - /url: /r/computerhelp/comments/1sd18qo/fix_windows_11_wifi_connected_but_still_shows_no/
+                                - heading "List item post - [Fix] Windows 11 WiFi connected but still shows \"No Interne..." [level=3] [ref=f18e1164]: "[Fix] Windows 11 WiFi connected but still shows \"No Internet\" on every network"
+                            - generic [ref=f18e1166]:
+                              - generic [ref=f18e1167]: "8"
+                              - text: upvotes ·
+                              - generic [ref=f18e1168]: "13"
+                              - text: comments
+                          - separator [ref=f18e1169]
+                      - listitem [ref=f18e1170]:
+                        - generic [ref=f18e1171]:
+                          - generic [ref=f18e1172]:
+                            - link "Esp32 phone" [ref=f18e1173] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1v1hb3u/esp32_phone/
+                            - generic [ref=f18e1175]:
+                              - generic [ref=f18e1176]:
+                                - generic [ref=f18e1179]:
+                                  - link "r/esp32" [ref=f18e1180] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e1185]: •
+                                  - time [ref=f18e1187]: 3mo ago
+                                - link [ref=f18e1189] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1v1hb3u/esp32_phone/
+                                  - heading "List item post - Esp32 phone" [level=3] [ref=f18e1192]: Esp32 phone
+                              - link "r/esp32 - Esp32 phone" [ref=f18e1195] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1v1hb3u/esp32_phone/
+                                - img "r/esp32 - Esp32 phone" [ref=f18e1196]
+                            - generic [ref=f18e1198]:
+                              - generic [ref=f18e1199]: "146"
+                              - text: upvotes ·
+                              - generic [ref=f18e1200]: "20"
+                              - text: comments
+                          - separator [ref=f18e1201]
+                      - listitem [ref=f18e1202]:
+                        - generic [ref=f18e1203]:
+                          - generic [ref=f18e1204]:
+                            - link "Is my cAP ax slowing down 1 stream TCP connections over WiFi 6???" [ref=f18e1205] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/mikrotik/comments/1cqj6su/is_my_cap_ax_slowing_down_1_stream_tcp/
+                            - generic [ref=f18e1208]:
+                              - generic [ref=f18e1211]:
+                                - link "r/mikrotik" [ref=f18e1212] [cursor=pointer]:
+                                  - /url: https://www.reddit.com/r/mikrotik/
+                                - generic [aria-hidden] [ref=f18e1219]: •
+                                - time [ref=f18e1221]: 2y ago
+                              - link [ref=f18e1223] [cursor=pointer]:
+                                - /url: /r/mikrotik/comments/1cqj6su/is_my_cap_ax_slowing_down_1_stream_tcp/
+                                - heading "List item post - Is my cAP ax slowing down 1 stream TCP connections over WiF..." [level=3] [ref=f18e1226]: Is my cAP ax slowing down 1 stream TCP connections over WiFi 6???
+                            - generic [ref=f18e1228]:
+                              - generic [ref=f18e1229]: "7"
+                              - text: comments
+                          - separator [ref=f18e1230]
+                      - listitem [ref=f18e1231]:
+                        - generic [ref=f18e1232]:
+                          - generic [ref=f18e1233]:
+                            - link "Esp32 based wifi sensing" [ref=f18e1234] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/embedded/comments/1svhott/esp32_based_wifi_sensing/
+                            - generic [ref=f18e1236]:
+                              - generic [ref=f18e1237]:
+                                - generic [ref=f18e1240]:
+                                  - link "r/embedded" [ref=f18e1241] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/embedded/
+                                  - generic [aria-hidden] [ref=f18e1246]: •
+                                  - time [ref=f18e1248]: 6mo ago
+                                - link [ref=f18e1250] [cursor=pointer]:
+                                  - /url: /r/embedded/comments/1svhott/esp32_based_wifi_sensing/
+                                  - heading "List item post - Esp32 based wifi sensing" [level=3] [ref=f18e1253]: Esp32 based wifi sensing
+                              - link "r/embedded - Esp32 based wifi sensing" [ref=f18e1256] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/embedded/comments/1svhott/esp32_based_wifi_sensing/
+                                - img "r/embedded - Esp32 based wifi sensing" [ref=f18e1257]
+                            - generic [ref=f18e1259]:
+                              - generic [ref=f18e1260]: "38"
+                              - text: upvotes ·
+                              - generic [ref=f18e1261]: "10"
+                              - text: comments
+                          - separator [ref=f18e1262]
+                      - listitem [ref=f18e1263]:
+                        - generic [ref=f18e1264]:
+                          - generic [ref=f18e1265]:
+                            - link "Strange WIFI issues on ESP32-C3s... signal strength goes up when sun goes down?!" [ref=f18e1266] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1pu9b53/strange_wifi_issues_on_esp32c3s_signal_strength/
+                            - generic [ref=f18e1268]:
+                              - generic [ref=f18e1269]:
+                                - generic [ref=f18e1272]:
+                                  - link "r/esp32" [ref=f18e1273] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e1278]: •
+                                  - time [ref=f18e1280]: 10mo ago
+                                - link [ref=f18e1282] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1pu9b53/strange_wifi_issues_on_esp32c3s_signal_strength/
+                                  - heading "List item post - Strange WIFI issues on ESP32-C3s... signal strength goes up..." [level=3] [ref=f18e1285]: Strange WIFI issues on ESP32-C3s... signal strength goes up when sun goes down?!
+                              - link "r/esp32 - Strange WIFI issues on ESP32-C3s... signal strength goes up when sun goes down?!" [ref=f18e1288] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1pu9b53/strange_wifi_issues_on_esp32c3s_signal_strength/
+                                - img "r/esp32 - Strange WIFI issues on ESP32-C3s... signal strength goes up when sun goes down?!" [ref=f18e1289]
+                            - generic [ref=f18e1291]:
+                              - generic [ref=f18e1292]: "20"
+                              - text: comments
+                          - separator [ref=f18e1293]
+                      - listitem [ref=f18e1294]:
+                        - generic [ref=f18e1295]:
+                          - generic [ref=f18e1296]:
+                            - link "Windows 11 decided Wi-Fi was not an option today" [ref=f18e1297] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/softwaregore/comments/1sfncpd/windows_11_decided_wifi_was_not_an_option_today/
+                            - generic [ref=f18e1299]:
+                              - generic [ref=f18e1300]:
+                                - generic [ref=f18e1303]:
+                                  - link "r/softwaregore" [ref=f18e1304] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/softwaregore/
+                                  - generic [aria-hidden] [ref=f18e1309]: •
+                                  - time [ref=f18e1311]: 6mo ago
+                                - link [ref=f18e1313] [cursor=pointer]:
+                                  - /url: /r/softwaregore/comments/1sfncpd/windows_11_decided_wifi_was_not_an_option_today/
+                                  - heading "List item post - Windows 11 decided Wi-Fi was not an option today" [level=3] [ref=f18e1316]: Windows 11 decided Wi-Fi was not an option today
+                              - link "r/softwaregore - Windows 11 decided Wi-Fi was not an option today" [ref=f18e1319] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/softwaregore/comments/1sfncpd/windows_11_decided_wifi_was_not_an_option_today/
+                                - img "r/softwaregore - Windows 11 decided Wi-Fi was not an option today" [ref=f18e1320]
+                            - generic [ref=f18e1322]:
+                              - generic [ref=f18e1323]: "197"
+                              - text: upvotes ·
+                              - generic [ref=f18e1324]: "53"
+                              - text: comments
+                          - separator [ref=f18e1325]
+                      - listitem [ref=f18e1326]:
+                        - generic [ref=f18e1327]:
+                          - generic [ref=f18e1328]:
+                            - link "MBP ‘14 cant detect any wifi signals?" [ref=f18e1329] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/mac/comments/1blgqwl/mbp_14_cant_detect_any_wifi_signals/
+                            - generic [ref=f18e1332]:
+                              - generic [ref=f18e1335]:
+                                - link "r/mac" [ref=f18e1336] [cursor=pointer]:
+                                  - /url: https://www.reddit.com/r/mac/
+                                - generic [aria-hidden] [ref=f18e1341]: •
+                                - time [ref=f18e1343]: 3y ago
+                              - link [ref=f18e1345] [cursor=pointer]:
+                                - /url: /r/mac/comments/1blgqwl/mbp_14_cant_detect_any_wifi_signals/
+                                - heading "List item post - MBP ‘14 cant detect any wifi signals?" [level=3] [ref=f18e1348]: MBP ‘14 cant detect any wifi signals?
+                            - generic [ref=f18e1350]:
+                              - generic [ref=f18e1351]: "1"
+                              - text: upvote ·
+                              - generic [ref=f18e1352]: "1"
+                              - text: comment
+                          - separator [ref=f18e1353]
+                      - listitem [ref=f18e1354]:
+                        - generic [ref=f18e1355]:
+                          - generic [ref=f18e1356]:
+                            - link "ESP32 reboots on trying to access WiFi" [ref=f18e1357] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1uucn9m/esp32_reboots_on_trying_to_access_wifi/
+                            - generic [ref=f18e1359]:
+                              - generic [ref=f18e1360]:
+                                - generic [ref=f18e1363]:
+                                  - link "r/esp32" [ref=f18e1364] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/esp32/
+                                  - generic [aria-hidden] [ref=f18e1369]: •
+                                  - time [ref=f18e1371]: 3mo ago
+                                - link [ref=f18e1373] [cursor=pointer]:
+                                  - /url: /r/esp32/comments/1uucn9m/esp32_reboots_on_trying_to_access_wifi/
+                                  - heading "List item post - ESP32 reboots on trying to access WiFi" [level=3] [ref=f18e1376]: ESP32 reboots on trying to access WiFi
+                              - link "r/esp32 - ESP32 reboots on trying to access WiFi" [ref=f18e1379] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/esp32/comments/1uucn9m/esp32_reboots_on_trying_to_access_wifi/
+                                - img "r/esp32 - ESP32 reboots on trying to access WiFi" [ref=f18e1380]
+                            - generic [ref=f18e1382]:
+                              - generic [ref=f18e1383]: "49"
+                              - text: upvotes ·
+                              - generic [ref=f18e1384]: "26"
+                              - text: comments
+                          - separator [ref=f18e1385]
+                      - listitem [ref=f18e1386]:
+                        - generic [ref=f18e1387]:
+                          - generic [ref=f18e1388]:
+                            - link "Wifi disappeared in windows 11 solving the problem" [ref=f18e1389] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/pchelp/comments/1woyosa/wifi_disappeared_in_windows_11_solving_the_problem/
+                            - generic [ref=f18e1391]:
+                              - generic [ref=f18e1392]:
+                                - generic [ref=f18e1395]:
+                                  - link "r/pchelp" [ref=f18e1396] [cursor=pointer]:
+                                    - /url: https://www.reddit.com/r/pchelp/
+                                  - generic [aria-hidden] [ref=f18e1403]: •
+                                  - time [ref=f18e1405]: 25d ago
+                                - link [ref=f18e1407] [cursor=pointer]:
+                                  - /url: /r/pchelp/comments/1woyosa/wifi_disappeared_in_windows_11_solving_the_problem/
+                                  - heading "List item post - Wifi disappeared in windows 11 solving the problem" [level=3] [ref=f18e1410]: Wifi disappeared in windows 11 solving the problem
+                              - link "r/pchelp - Wifi disappeared in windows 11 solving the problem" [ref=f18e1413] [cursor=pointer]:
+                                - /url: https://www.reddit.com/r/pchelp/comments/1woyosa/wifi_disappeared_in_windows_11_solving_the_problem/
+                                - img "r/pchelp - Wifi disappeared in windows 11 solving the problem" [ref=f18e1414]
+                            - generic [ref=f18e1416]:
+                              - generic [ref=f18e1417]: "4"
+                              - text: upvotes ·
+                              - generic [ref=f18e1418]: "13"
+                              - text: comments
+                          - separator [ref=f18e1419]
+                      - listitem [ref=f18e1420]:
+                        - generic [ref=f18e1421]:
+                          - generic [ref=f18e1422]:
+                            - link "I got Linux 6.11 running natively on an ESP32-S3 with wifi and ble" [ref=f18e1423] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/esp32/comments/1v4li6g/i_got_linux_611_running_natively_on_an_esp32s3/
+                            - generic [ref=f18e1426]:
+                              - generic [ref=f18e1429]:
+                                - link "r/esp32" [ref=f18e1430] [cursor=pointer]:
+                                  - /url: https://www.reddit.com/r/esp32/
+                                - generic [aria-hidden] [ref=f18e1435]: •
+                                - time [ref=f18e1437]: 3mo ago
+                              - link [ref=f18e1439] [cursor=pointer]:
+                                - /url: /r/esp32/comments/1v4li6g/i_got_linux_611_running_natively_on_an_esp32s3/
+                                - heading "List item post - I got Linux 6.11 running natively on an ESP32-S3 with wifi ..." [level=3] [ref=f18e1442]: I got Linux 6.11 running natively on an ESP32-S3 with wifi and ble
+                            - generic [ref=f18e1444]:
+                              - generic [ref=f18e1445]: "252"
+                              - text: upvotes ·
+                              - generic [ref=f18e1446]: "31"
+                              - text: comments
+                          - separator [ref=f18e1447]
+                      - listitem [ref=f18e1448]:
+                        - generic [ref=f18e1449]:
+                          - generic [ref=f18e1450]:
+                            - link "Dropout Won't Connect To Wifi?" [ref=f18e1451] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/dropout/comments/1c8raqr/dropout_wont_connect_to_wifi/
+                            - generic [ref=f18e1454]:
+                              - generic [ref=f18e1457]:
+                                - link "r/dropout" [ref=f18e1458] [cursor=pointer]:
+                                  - /url: https://www.reddit.com/r/dropout/
+                                - generic [aria-hidden] [ref=f18e1463]: •
+                                - time [ref=f18e1465]: 3y ago
+                              - link [ref=f18e1467] [cursor=pointer]:
+                                - /url: /r/dropout/comments/1c8raqr/dropout_wont_connect_to_wifi/
+                                - heading "List item post - Dropout Won't Connect To Wifi?" [level=3] [ref=f18e1470]: Dropout Won't Connect To Wifi?
+                            - generic [ref=f18e1472]:
+                              - generic [ref=f18e1473]: "3"
+                              - text: upvotes ·
+                              - generic [ref=f18e1474]: "2"
+                              - text: comments
+                          - separator [ref=f18e1475]
+                      - listitem [ref=f18e1476]:
+                        - generic [ref=f18e1477]:
+                          - generic [ref=f18e1478]:
+                            - link "TP-LINK AX3000's wifi acting strange and not loading certain media unless VPN is used." [ref=f18e1479] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/techsupport/comments/1chf31r/tplink_ax3000s_wifi_acting_strange_and_not/
+                            - generic [ref=f18e1482]:
+                              - generic [ref=f18e1485]:
+                                - link "r/techsupport" [ref=f18e1486] [cursor=pointer]:
+                                  - /url: https://www.reddit.com/r/techsupport/
+                                - generic [aria-hidden] [ref=f18e1491]: •
+                                - time [ref=f18e1493]: 3y ago
+                              - link [ref=f18e1495] [cursor=pointer]:
+                                - /url: /r/techsupport/comments/1chf31r/tplink_ax3000s_wifi_acting_strange_and_not/
+                                - heading "List item post - TP-LINK AX3000's wifi acting strange and not loading certai..." [level=3] [ref=f18e1498]: TP-LINK AX3000's wifi acting strange and not loading certain media unless VPN is used.
+                          - separator [ref=f18e1499]
+                      - listitem [ref=f18e1500]:
+                        - generic [ref=f18e1502]:
+                          - link "FortiAP won't broadcast wifi" [ref=f18e1503] [cursor=pointer]:
+                            - /url: https://www.reddit.com/r/fortinet/comments/1bu1n2s/fortiap_wont_broadcast_wifi/
+                          - generic [ref=f18e1505]:
+                            - generic [ref=f18e1506]:
+                              - generic [ref=f18e1509]:
+                                - link "r/fortinet" [ref=f18e1510] [cursor=pointer]:
+                                  - /url: https://www.reddit.com/r/fortinet/
+                                - generic [aria-hidden] [ref=f18e1515]: •
+                                - time [ref=f18e1517]: 3y ago
+                              - link [ref=f18e1519] [cursor=pointer]:
+                                - /url: /r/fortinet/comments/1bu1n2s/fortiap_wont_broadcast_wifi/
+                                - heading "List item post - FortiAP won't broadcast wifi" [level=3] [ref=f18e1522]: FortiAP won't broadcast wifi
+                            - link "r/fortinet - FortiAP won't broadcast wifi" [ref=f18e1525] [cursor=pointer]:
+                              - /url: https://www.reddit.com/r/fortinet/comments/1bu1n2s/fortiap_wont_broadcast_wifi/
+                              - img "r/fortinet - FortiAP won't broadcast wifi" [ref=f18e1526]
+                          - generic [ref=f18e1528]:
+                            - generic [ref=f18e1529]: "2"
+                            - text: upvotes ·
+                            - generic [ref=f18e1530]: "12"
+                            - text: comments
+                  - generic [ref=f18e1531]:
+                    - heading "View Post in" [level=2] [ref=f18e1533]
+                    - generic [ref=f18e1535]:
+                      - link "Français" [ref=f18e1537] [cursor=pointer]:
+                        - /url: https://www.reddit.com/r/esp32/comments/1cu96tz/esp32_doesnt_like_wifi_channel_11/?tl=fr
+                      - group [ref=f18e1538]:
+                        - generic "See more" [ref=f18e1539] [cursor=pointer]
+                  - complementary "Community information" [ref=f18e1544]:
+                    - generic [ref=f18e1546]:
+                      - heading "Community Info Section" [level=1] [ref=f18e1547]
+                      - generic [ref=f18e1548]:
+                        - generic [ref=f18e1549]:
+                          - link "r/esp32" [ref=f18e1550] [cursor=pointer]:
+                            - /url: /r/esp32/
+                          - 'button "Community status: New AI Flair added for posts or code generated primarily by AI or with AI themes." [ref=f18e1554] [cursor=pointer]':
+                            - img "illuminati" [ref=f18e1555]
+                        - button "Join" [ref=f18e1559] [cursor=pointer]
+                      - generic [ref=f18e1560]:
+                        - generic [ref=f18e1561]: ESP32 - WiFi-enabled microcontrollers from Espressif
+                        - generic [ref=f18e1563]: ESP32 is a series of low cost, low power system on a chip microcontrollers with integrated Wi-Fi and dual-mode Bluetooth. The ESP32 series employs either a Tensilica Xtensa LX6, Xtensa LX7 or a RiscV processor, and both dual-core and single-core variations are available. It includes in-built antenna switches, RF balun, power amplifier, low-noise receive amplifier, filters, and power management modules as well.
+                        - button "Show more" [ref=f18e1564] [cursor=pointer]
+                        - generic: Public
+                  - generic [ref=f18e1572]:
+                    - heading "Top Posts" [level=2] [ref=f18e1573]
+                    - list [ref=f18e1574]:
+                      - listitem [ref=f18e1575]:
+                        - 'link "Reddit reReddit: Top posts of May 17, 2024" [ref=f18e1576] [cursor=pointer]':
+                          - /url: https://www.reddit.com/posts/2024/may-17-1/global/
+                          - generic [ref=f18e1577]: Reddit
+                          - generic [ref=f18e1592]: "reReddit: Top posts of May 17, 2024"
+                          - separator [ref=f18e1593]
+                      - listitem [ref=f18e1594]:
+                        - 'link "Reddit reReddit: Top posts of May 2024" [ref=f18e1595] [cursor=pointer]':
+                          - /url: https://www.reddit.com/posts/2024/may/global/
+                          - generic [ref=f18e1596]: Reddit
+                          - generic [ref=f18e1611]: "reReddit: Top posts of May 2024"
+                          - separator [ref=f18e1612]
+                      - listitem [ref=f18e1613]:
+                        - 'link "Reddit reReddit: Top posts of 2024" [ref=f18e1614] [cursor=pointer]':
+                          - /url: https://www.reddit.com/posts/2024/global/
+                          - generic [ref=f18e1615]: Reddit
+                          - generic [ref=f18e1630]: "reReddit: Top posts of 2024"
+                          - separator [ref=f18e1631]
+              - list [ref=f18e1633]:
+                - listitem [ref=f18e1634]:
+                  - link "Home" [ref=f18e1636] [cursor=pointer]:
+                    - /url: /?feed=home
+                - listitem [ref=f18e1637]:
+                  - link "Popular" [ref=f18e1639] [cursor=pointer]:
+                    - /url: /r/popular/
+                - listitem [ref=f18e1640]:
+                  - link "News" [ref=f18e1642] [cursor=pointer]:
+                    - /url: /news/
+                - listitem [ref=f18e1643]:
+                  - link "Explore" [ref=f18e1645] [cursor=pointer]:
+                    - /url: /explore/
+                - listitem [ref=f18e1646]:
+                  - link "Best of Reddit" [ref=f18e1648] [cursor=pointer]:
+                    - /url: https://www.reddit.com/posts/2026/global/
+                - listitem [ref=f18e1649]:
+                  - link "Best of Reddit in Portuguese" [ref=f18e1651] [cursor=pointer]:
+                    - /url: https://www.reddit.com/posts/2026/tl-pt-BR/
+                - listitem [ref=f18e1652]:
+                  - link "Best of Reddit in German" [ref=f18e1654] [cursor=pointer]:
+                    - /url: https://www.reddit.com/posts/2026/tl-de/
+                - listitem [ref=f18e1655]:
+                  - link "Reddit Rules" [ref=f18e1657] [cursor=pointer]:
+                    - /url: https://www.redditinc.com/policies/content-policy
+                - listitem [ref=f18e1658]:
+                  - link "Privacy Policy" [ref=f18e1660] [cursor=pointer]:
+                    - /url: https://www.reddit.com/policies/privacy-policy
+                - listitem [ref=f18e1661]:
+                  - link "User Agreement" [ref=f18e1663] [cursor=pointer]:
+                    - /url: https://www.redditinc.com/policies/user-agreement
+                - listitem [ref=f18e1664]:
+                  - link "Accessibility" [ref=f18e1666] [cursor=pointer]:
+                    - /url: https://support.reddithelp.com/hc/sections/38303584022676-Accessibility
+                - listitem [ref=f18e1667]:
+                  - link "Reddit, Inc. © 2026. All rights reserved." [ref=f18e1668] [cursor=pointer]:
+                    - /url: https://redditinc.com
+        - generic [ref=f18e1671]:
+          - paragraph [ref=f18e1672]: Join the most real place on the internet
+          - generic [ref=f18e1674]:
+            - generic [ref=f18e1677]:
+              - generic [ref=f18e1681]:
+                - button "Kontynuuj przy użyciu konta Google. Otwiera się w nowej karcie" [ref=f18e1683] [cursor=pointer]:
+                  - generic [ref=f18e1685]: Kontynuuj przy użyciu konta Google
+                - iframe
+              - generic [ref=f18e1696] [cursor=pointer]:
+                - generic [ref=f18e1697]: Continue with Apple
+                - button "Sign in with Apple" [ref=f18e1703]:
+                  - generic [ref=f18e1704]:
+                    - img:
+                      - generic:
+                        - img:
+                          - generic:  Sign in with Apple
+            - link "Continue with Phone Number" [ref=f18e1709] [cursor=pointer]:
+              - /url: https://www.reddit.com/login/
+            - link "Continue with Email" [ref=f18e1718] [cursor=pointer]:
+              - /url: https://www.reddit.com/register/
+          - paragraph [ref=f18e1725]:
+            - text: By continuing, you agree to our
+            - link "User Agreement" [ref=f18e1726] [cursor=pointer]:
+              - /url: https://www.redditinc.com/policies/user-agreement
+            - text: and acknowledge that you understand the
+            - link "Privacy Policy" [ref=f18e1727] [cursor=pointer]:
+              - /url: https://www.redditinc.com/policies/privacy-policy
+            - text: .
+      - dialog "Data Protection Consent" [ref=f18e1729]:
+        - generic [ref=f18e1730]:
+          - generic [ref=f18e1732]:
+            - generic:
+              - button "Close" [ref=f18e1736] [cursor=pointer]
+              - generic [ref=f18e1741]:
+                - generic [ref=f18e1742]: Let us know your cookie preferences
+                - generic [ref=f18e1745]:
+                  - paragraph [ref=f18e1746]: "Reddit uses cookies and similar technologies to:"
+                  - list [ref=f18e1747]:
+                    - listitem [ref=f18e1748]: Keep the website operational and running properly
+                    - listitem [ref=f18e1749]: Prevent fraud and abuse
+                    - listitem [ref=f18e1750]: Monitor site usage and performance metrics
+                  - paragraph [ref=f18e1751]: "If you choose “Accept All” we’ll also use cookies to:"
+                  - list [ref=f18e1752]:
+                    - listitem [ref=f18e1753]: Personalize your recommendations and ads
+                    - listitem [ref=f18e1754]: Measure the performance of ads
+                    - listitem [ref=f18e1755]: Develop and improve new features and services
+                  - paragraph [ref=f18e1756]: If you choose “Reject Optional Cookies” we won’t use cookies for these additional uses. You can update your cookie preference from your settings.
+                  - paragraph [ref=f18e1757]:
+                    - text: Learn more about
+                    - link "how Reddit uses cookies" [ref=f18e1758] [cursor=pointer]:
+                      - /url: /en-us/policies/cookies
+                    - text: .
+          - generic [ref=f18e1760]:
+            - button "Reject Optional Cookies" [ref=f18e1761] [cursor=pointer]
+            - button "Accept All" [ref=f18e1764] [cursor=pointer]

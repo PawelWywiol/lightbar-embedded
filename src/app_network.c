@@ -183,7 +183,6 @@ static esp_err_t init_sta(const wifi_credentials_t *ap_credentials, const wifi_c
   copy_ssid(wifi_config.sta.ssid, wifi_credentials->ssid);
   strlcpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
 
-
   GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set STA config", error);
 
   esp_netif_set_default_netif(esp_netif_sta);
@@ -229,7 +228,6 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
 
     copy_ssid(wifi_config.sta.ssid, wifi_credentials->ssid);
     strlcpy((char *)wifi_config.sta.password, wifi_credentials->password, sizeof(wifi_config.sta.password));
-
 
     GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set STA config", error);
   }

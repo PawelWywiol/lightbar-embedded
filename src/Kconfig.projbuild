@@ -90,7 +90,7 @@ menu "App Config"
 
     config APP_LIGHTS_COUNT
       int "Lights Count"
-      range 1 255
+      range 1 720
       default 16
       help
         Number of lights.
