@@ -77,6 +77,24 @@ LED count at full white, 55 mA/LED (**CALC**):
 - 144 LED/m over 5 m is above 100 W, where WLED says to add fuses.
 - 720 LEDs at 60 FPS needs 2 data lines (2 RMT TX channels); firmware drives one line today.
 
+## Test strip: WS2811 string (connected now)
+
+Seller data (**SELLER**): DC 5 V, WS2811 protocol, color order GRB, SMD3240, 0.1 W per LED, 5.5 mA per R/G/B output, 26 AWG 3-wire, 1.5 cm spacing = 66 LED/m, IP67, "add voltage at every 300 LED".
+
+| Item | Value | Note |
+|---|---|---|
+| LEDs on 5 m | 330 (**CALC**) | 66 × 5 |
+| Current per LED, full white | 16.5 mA (3 × 5.5) or 20 mA (0.1 W / 5 V) | seller figures disagree; measure |
+| 330 LEDs, full white | 5.4–6.6 A (**CALC**) | LRS-50-5 (10 A) |
+| Limiter | set `APP_LIGHTS_LED_CURRENT_MA` to ~20 | default 55 mA is for WS2812B and would dim this strip ~3× too early |
+| LEDs per feed, ≤ 0.5 V drop, one end | ≈ 110–120 (**CALC**) | `N = √(0.5 / (R·s·i))`, 26 AWG R = 0.1339 Ω/m, s = 0.015 m; real wire between LEDs is longer, so fewer |
+| Seller's 300 LEDs per feed | ≈ 3 V drop (**CALC**) | `R·s·i·N²` at 16.5 mA; QuinLED: ≤ 4 A per strip end |
+| Data level | level shifter | WS2811 IC VIH 0.7·VDD = 3.5 V |
+| Timing | **UNVERIFIED**, test | WS2811 IC: 400 kHz mode T0H 0.5 / T1H 1.2 / T0L 2.0 / T1L 1.3 µs ±150 ns, 800 kHz mode "one half"; firmware sends WS2812 timing (T1H 0.9 µs, outside 800 kHz 0.6 ± 0.15 µs). Which IC sits in the SMD3240 package is unknown |
+| Color order | test | seller GRB (firmware default); WS2811 IC datasheet sends RGB |
+
+At 400 kHz, transfer doubles: 60 µs per LED → 330 LEDs ≈ 20 ms ≈ 50 FPS (**CALC**). Espressif `led_strip` uses the 400 kHz timings for its `LED_MODEL_WS2811`.
+
 ## Inventory (from earlier notes)
 
 Identified from photos in an earlier session, not re-checked here.
