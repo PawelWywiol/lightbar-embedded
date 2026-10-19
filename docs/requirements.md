@@ -17,7 +17,7 @@
 - Partition table needs 4 MB flash: 1.5 MB app + 2 MB LittleFS (`sdkconfig.esp32-c3-devkitm-1-partisions.csv`).
 - LEDs driven by the RMT peripheral, one data GPIO (`APP_LIGHTS_GPIO`), WS2812-type 800 kHz protocol, GRB or RGB order.
 - Renderer runs at 60 FPS; each tick ends with a blocking `rmt_tx_wait_all_done`, so the strip transfer must fit in one 16.7 ms tick together with color computation.
-- No software current / brightness limiter. Maximum color is 100 % lightness on all three channels (full white).
+- Software current limiter: estimated frame current = sum of channels / 765 × `APP_LIGHTS_LED_CURRENT_MA` (55 mA, WLED default); above `APP_LIGHTS_MAX_CURRENT_MA` the whole frame is scaled down. Model assumes current proportional to channel value; calibrate with a meter.
 
 ## LED count limit (255) in code
 
@@ -44,7 +44,7 @@ Each line points to the data in [facts.md](facts.md).
 4. Data level: ESP32 guarantees only 2.64 V high level, below VIH of every 5 V WS2812-type chip (2.7 V to 3.5 V). Use a level shifter (SN74AHCT125 / SN74AHCT1G125 / SN74LV1T34) or a controller with one built in.
 5. Class A power: USB port current minus controller current. USB-C chargers give 5 V only when the board has 5.1 kΩ Rd on CC1/CC2.
 6. Class B power: PSU sized from LED current, fused per strip, power injected so no LED is far from a feed point; common ground between PSU, strip and controller.
-7. Software current limiter (like WLED ABL) is needed for both classes, because the firmware can request full white on every LED.
+7. Set `APP_LIGHTS_MAX_CURRENT_MA` per device to its power source budget (power source current minus board current).
 
 ## Open questions
 
