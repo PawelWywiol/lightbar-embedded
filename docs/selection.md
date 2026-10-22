@@ -37,6 +37,7 @@ Recommendations are conclusions drawn from [facts.md](facts.md) and [opinions.md
 - **Gledopto GL-C-016WL-D**: 5–24 V, 2 outputs, relay, mic, enclosure; users praise relay and support. Data output called weak ("weak level shifter which limits cable distance", one 016-specific opinion); other Gledopto models had 1 kΩ data resistor / weak shifter (vendor: fixed in 2024). Keep the controller-to-strip data wire short.
 - **Athom**: polarised; one user 22 controllers, 59 % success; others report 5–20 units fine; units arriving bricked.
 - **Waveshare ESP32-S3-RS485-WLED**: S3, level shifting, fuse, 8 A max; no user opinions found.
+- **DOMRAEM DOM-ETH-806DM ("WLED Pro MAX")**: ESP32 (classic; vendor firmware image header chip id 0, WLED 16.0.1 `ESP32_Ethernet` build, [jacker-25/DOM-ETH-806DM](https://github.com/jacker-25/DOM-ETH-806DM)). **SELLER**: 6 outputs on GPIO 18/16/14/13/4/2, Ethernet + Wi-Fi, PDM mic, relay, 5–24 V, 15 A, 20 A fuse, USB-C UART. **UNVERIFIED**: level shifter, relay / mic GPIOs, Ethernet PHY, no schematic. No user opinions found. Here: one output used (firmware drives one line), Ethernet unused (firmware is Wi-Fi only); new env needed once relay GPIO is known.
 
 ## Sizing formulas
 
