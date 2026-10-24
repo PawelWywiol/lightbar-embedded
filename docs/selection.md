@@ -85,14 +85,17 @@ Seller data (**SELLER**): DC 5 V, WS2811 protocol, color order GRB, SMD3240, 0.1
 | Item | Value | Note |
 |---|---|---|
 | LEDs on 5 m | 330 (**CALC**) | 66 × 5 |
-| Current per LED, full white | 16.5 mA (3 × 5.5) or 20 mA (0.1 W / 5 V) | seller figures disagree; measure |
-| 330 LEDs, full white | 5.4–6.6 A (**CALC**) | LRS-50-5 (10 A) |
-| Limiter | set `APP_LIGHTS_LED_CURRENT_MA` to ~20 | default 55 mA is for WS2812B and would dim this strip ~3× too early |
+| Current per LED, full white | **measured** ≈ 15.7 mA for the first 30 LEDs, falling to ≈ 7 mA per added LED at 70–86 LEDs | seller: 16.5 mA (3 × 5.5) or 20 mA (0.1 W / 5 V); cause of the fall **UNVERIFIED** (voltage drop along the string suspected) |
+| 86 LEDs, full white, USB powered | **measured** 0.99 A at 4.85 V (board idle 0.02 A) | powerbank; linear 15.7 mA model gives 1.37 A |
+| 330 LEDs, full white | ≤ 5.2 A (**CALC**, 15.7 mA) | LRS-50-5 (10 A) |
+| Limiter | set `APP_LIGHTS_LED_CURRENT_MA` to 15 | default 55 mA is for WS2812B and would dim this strip ~3.5× too early; linear model overestimates long runs (safe side) |
 | LEDs per feed, ≤ 0.5 V drop, one end | ≈ 110–120 (**CALC**) | `N = √(0.5 / (R·s·i))`, 26 AWG R = 0.1339 Ω/m, s = 0.015 m; real wire between LEDs is longer, so fewer |
 | Seller's 300 LEDs per feed | ≈ 3 V drop (**CALC**) | `R·s·i·N²` at 16.5 mA; QuinLED: ≤ 4 A per strip end |
 | Data level | level shifter | WS2811 IC VIH 0.7·VDD = 3.5 V |
 | Timing | **UNVERIFIED**, test | WS2811 IC: 400 kHz mode T0H 0.5 / T1H 1.2 / T0L 2.0 / T1L 1.3 µs ±150 ns, 800 kHz mode "one half"; firmware sends WS2812 timing (T1H 0.9 µs, outside 800 kHz 0.6 ± 0.15 µs). Which IC sits in the SMD3240 package is unknown |
 | Color order | test | seller GRB (firmware default); WS2811 IC datasheet sends RGB |
+
+Measurement: USB meter between source and board, LEDs lit one by one at 255/255/255, Wi-Fi off, 1–50 LEDs from a MacBook (via USB hub), 0–86 LEDs from a 10000 mAh powerbank. Neither source cut out (MacBook 0.76 A, powerbank 0.99 A); the USB 2.0 500 mA figure is what a device may draw by spec, not where a port cuts off. Supply voltage at the meter fell 5.21 → 5.04 V (MacBook, 0.74 A) and 5.07 → 4.85 V (powerbank, 0.97 A).
 
 At 400 kHz, transfer doubles: 60 µs per LED → 330 LEDs ≈ 20 ms ≈ 50 FPS (**CALC**). Espressif `led_strip` uses the 400 kHz timings for its `LED_MODEL_WS2811`.
 
