@@ -106,23 +106,23 @@ Wiring as tested: strip + to board 5V, − to G next to it, data straight to GPI
 
 Settings per LED count (`pio run -t menuconfig` → Lightbar; local `sdkconfig.<env>`, not tracked). Always `APP_LIGHTS_LED_CURRENT_MA` = 15, `APP_LIGHTS_GPIO` = 10, `APP_LIGHTS_COUNT` = LED count.
 
-| LEDs | Full white, LEDs only | + board Wi-Fi RX / TX peak | 500 mA port: `MAX_CURRENT_MA` 380, scale at full white | ≥ 1 A port: `MAX_CURRENT_MA` 650, scale at full white |
-|---|---|---|---|---|
-| 8 | 0.12 A | 0.20 / 0.46 A | 100 % | 100 % |
-| 16 | 0.27 A | 0.35 / 0.60 A | 100 % | 100 % |
-| 32 | 0.50 A | 0.58 / 0.83 A | 79 % | 100 % |
-| 48 | 0.68 A | 0.76 / 1.02 A | 53 % | 90 % |
-| 64 | 0.82 A | 0.90 / 1.16 A | 40 % | 68 % |
-| 86 | 0.97 A | 1.05 / 1.30 A | 29 % | 50 % |
-| 92 | 1.01 A (**CALC**, extrapolated) | 1.09 / 1.34 A | 28 % | 47 % |
+| LEDs | Full white, LEDs only | + board Wi-Fi RX / TX peak | Scale at full white (`MAX_CURRENT_MA` 650) |
+|---|---|---|---|
+| 8 | 0.12 A | 0.20 / 0.46 A | 100 % |
+| 16 | 0.27 A | 0.35 / 0.60 A | 100 % |
+| 32 | 0.50 A | 0.58 / 0.83 A | 100 % |
+| 48 | 0.68 A | 0.76 / 1.02 A | 90 % |
+| 64 | 0.82 A | 0.90 / 1.16 A | 68 % |
+| 86 | 0.97 A | 1.05 / 1.30 A | 50 % |
+| 92 | 1.01 A (**CALC**, extrapolated) | 1.09 / 1.34 A | 47 % |
 
 - LEDs only: **measured** (powerbank run, minus 0.02 A idle board); 92 extrapolated with the last measured 6.7 mA per LED. Board: ESP32-C3 datasheet RX 84 mA, TX peak 335 mA, not measured with Wi-Fi.
 - Scale: factor the limiter applies to every channel, `min(1, MAX_CURRENT_MA / (LEDs × 15))` (**CALC**). It is channel value, not perceived brightness. Darker schemes are scaled less or not at all.
-- 380 mA for a 500 mA port (USB 2.0 spec draw): measured 0.52 A total at 400 → ~120 mA above the limit (board + model error) → 500 − 120 (**CALC**). 400 slightly exceeds 500 mA.
-- 650 mA for a ≥ 1 A port: WLED "never try to draw more than 1A through a board's USB port"; 1000 − 335 TX peak (**CALC**). Check the port rating printed on the powerbank / charger.
-- USB-C charger with C-to-C cable: needs 5.1 kΩ Rd on CC1 / CC2; not verified on Super Mini. USB-A to USB-C cable works without it. A 3 A USB-C source does not lift the 1 A limit through the board.
+- Power sources: only ≥ 1 A (1 A charger, 10 000 mAh / 1.5 A powerbank, USB-C fast charger); 500 mA sources are not planned. At 400 the total measured 0.52 A, i.e. ~120 mA above the limit (board + model error).
+- 650 mA (Kconfig default): WLED "never try to draw more than 1A through a board's USB port"; 1000 − 335 TX peak (**CALC**). Expected total at full white above the limit ≈ 0.65 + 0.12 = 0.77 A (**CALC**). Check the port rating printed on the powerbank / charger.
+- USB-C charger with C-to-C cable: needs 5.1 kΩ Rd on CC1 / CC2; not verified on Super Mini. USB-A to USB-C cable works without it. Quick Charge raises voltage only when both sides support it, otherwise 5 V ([facts.md](facts.md)); this firmware negotiates nothing; a 3 A USB-C source does not lift the 1 A limit through the board.
 - Above ~1 A full-white demand (≥ 48 LEDs) more brightness needs the strip powered straight from the source, board in parallel (WLED); then the source limit and voltage drop (≈ 110–120 LEDs per feed, **CALC**) apply.
-- Powerbank 10 000 mAh: 6290–6660 mAh at 5 V (**CALC**, [facts.md](facts.md)) → ~12 h at 0.52 A. A powerbank may switch off at low current (dark schemes, few LEDs); not tested.
+- Powerbank 10 000 mAh: 6290–6660 mAh at 5 V (**CALC**, [facts.md](facts.md)) → ~8 h at 0.77 A (**CALC**). A powerbank may switch off at low current (dark schemes, few LEDs); not tested.
 
 Extra parts, same for every count above:
 
