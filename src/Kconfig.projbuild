@@ -78,11 +78,23 @@ menu "App Config"
       help
         Maximum number of retries for the STA.
 
-    config APP_STA_CONNECT_TIMEOUT
-      int "STA Connect Timeout"
-      default 15
+    config APP_STA_RETRY_INTERVAL
+      int "STA Retry Interval"
+      default 30
       help
-        Timeout for the STA connection in seconds.
+        Seconds between STA reconnect attempts for the first APP_STA_RETRY_FAST_COUNT attempts.
+
+    config APP_STA_RETRY_FAST_COUNT
+      int "STA Retry Fast Count"
+      default 6
+      help
+        Number of reconnect attempts at APP_STA_RETRY_INTERVAL before switching to APP_STA_RETRY_SLOW_INTERVAL.
+
+    config APP_STA_RETRY_SLOW_INTERVAL
+      int "STA Retry Slow Interval"
+      default 60
+      help
+        Seconds between STA reconnect attempts after the fast attempts; the counter resets once an IP is obtained.
 
   endmenu
 
