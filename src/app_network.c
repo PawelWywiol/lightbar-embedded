@@ -2,7 +2,8 @@
 
 static const char *TAG = "APP_NETWORK";
 
-static esp_timer_handle_t sta_check_timer = NULL;
+static esp_timer_handle_t sta_retry_timer = NULL;
+static uint32_t sta_retry_count = 0;
 
 // esp_wifi reads up to 32 SSID bytes without null terminator (802.11 max length)
 static size_t copy_ssid(uint8_t *destination, const char *source)
@@ -12,19 +13,26 @@ static size_t copy_ssid(uint8_t *destination, const char *source)
   return length;
 }
 
-static void check_sta_info(void *arg)
+static bool has_sta_credentials(void)
 {
-  wifi_ap_record_t ap_info;
-  esp_err_t err = esp_wifi_sta_get_ap_info(&ap_info);
+  wifi_config_t wifi_config = {0};
+  return esp_wifi_get_config(WIFI_IF_STA, &wifi_config) == ESP_OK && wifi_config.sta.ssid[0] != '\0';
+}
 
-  if (err != ESP_OK)
-  {
-    ESP_LOGW(TAG, "Failed to get AP info");
-    reconnect_sta(NULL);
-    return;
-  }
+static void schedule_sta_retry(void)
+{
+  uint32_t interval = sta_retry_count < CONFIG_APP_STA_RETRY_FAST_COUNT ? CONFIG_APP_STA_RETRY_INTERVAL
+                                                                        : CONFIG_APP_STA_RETRY_SLOW_INTERVAL;
+  esp_timer_start_once(sta_retry_timer, (uint64_t)interval * 1000 * 1000);
+}
 
-  ESP_LOGI(TAG, "STA is connected to AP %s", ap_info.ssid);
+static void retry_sta(void *arg)
+{
+  sta_retry_count++;
+  ESP_LOGI(TAG, "STA reconnect attempt %lu", (unsigned long)sta_retry_count);
+
+  schedule_sta_retry();
+  reconnect_sta(NULL);
 }
 
 static void wifi_on_sta_connected_handler(void)
@@ -32,22 +40,24 @@ static void wifi_on_sta_connected_handler(void)
   ESP_LOGI(TAG, "STA connected to AP");
 }
 
-static void wifi_on_sta_disconnected_handler(void)
+static void wifi_on_sta_got_ip_handler(void)
 {
-  ESP_LOGI(TAG, "STA disconnected from AP");
+  ESP_LOGI(TAG, "STA got IP");
 
-  if (sta_check_timer == NULL)
+  sta_retry_count = 0;
+  esp_timer_stop(sta_retry_timer);
+}
+
+static void wifi_on_sta_disconnected_handler(const wifi_event_sta_disconnected_t *event)
+{
+  ESP_LOGI(TAG, "STA disconnected from AP, reason %u", event->reason);
+
+  if (!has_sta_credentials() || esp_timer_is_active(sta_retry_timer))
   {
-    const esp_timer_create_args_t timer_args = {.callback = &check_sta_info, .arg = NULL, .name = "wifi_check_timer"};
-
-    if (esp_timer_create(&timer_args, &sta_check_timer) != ESP_OK)
-    {
-      return;
-    }
+    return;
   }
 
-  esp_timer_stop(sta_check_timer);
-  esp_timer_start_once(sta_check_timer, CONFIG_APP_STA_CONNECT_TIMEOUT * 1000 * 1000);
+  schedule_sta_retry();
 }
 
 static void wifi_on_sta_start_handler(void)
@@ -71,7 +81,12 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t e
 
   if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
   {
-    wifi_on_sta_disconnected_handler();
+    wifi_on_sta_disconnected_handler((const wifi_event_sta_disconnected_t *)event_data);
+  }
+
+  if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
+  {
+    wifi_on_sta_got_ip_handler();
   }
 }
 
@@ -116,6 +131,9 @@ static esp_err_t init_wifi(void)
 
   GOTO_CHECK(esp_event_handler_instance_register(IP_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL), TAG,
              "Failed to register IP event handler", error);
+
+  const esp_timer_create_args_t timer_args = {.callback = &retry_sta, .name = "sta_retry_timer"};
+  GOTO_CHECK(esp_timer_create(&timer_args, &sta_retry_timer), TAG, "Failed to create STA retry timer", error);
 
   wifi_init_config_t config = WIFI_INIT_CONFIG_DEFAULT();
   GOTO_CHECK(esp_wifi_init(&config), TAG, "Failed to initialize WiFi", error);
