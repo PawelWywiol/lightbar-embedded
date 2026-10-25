@@ -59,6 +59,7 @@ LED count at full white, 55 mA/LED (**CALC**):
 
 - Board current is the ESP32-C3 chip figure; offline (no radio) the chip draws 23–28 mA, leaving more for LEDs.
 - More LEDs only below full white, with the software current limiter.
+- Table above is for WS2812B at 55 mA. Measured settings for the WS2811 test strip (~15 mA): [USB only](#usb-only-this-strip-on-the-esp32-c3-super-mini).
 - USB-C chargers (C-to-C cable) need 5.1 kΩ on CC1/CC2 on the board; USB-A to USB-C cable avoids this.
 - Powerbanks may shut off at low current (dark schemes).
 
@@ -98,6 +99,42 @@ Seller data (**SELLER**): DC 5 V, WS2811 protocol, color order GRB, SMD3240, 0.1
 Measurement: USB meter between source and board, LEDs lit one by one at 255/255/255, Wi-Fi off, 1–50 LEDs from a MacBook (via USB hub), 0–86 LEDs from a 10000 mAh powerbank. Neither source cut out (MacBook 0.76 A, powerbank 0.99 A); the USB 2.0 500 mA figure is what a device may draw by spec, not where a port cuts off. Supply voltage at the meter fell 5.21 → 5.04 V (MacBook, 0.74 A) and 5.07 → 4.85 V (powerbank, 0.97 A).
 
 At 400 kHz, transfer doubles: 60 µs per LED → 330 LEDs ≈ 20 ms ≈ 50 FPS (**CALC**). Espressif `led_strip` uses the 400 kHz timings for its `LED_MODEL_WS2811`.
+
+### USB only: this strip on the ESP32-C3 Super Mini
+
+Wiring as tested: strip + to board 5V, − to G next to it, data straight to GPIO10, first LED ~2 cm from the board, board on USB (powerbank / charger / computer). With `APP_LIGHTS_MAX_CURRENT_MA` = 400, 86 LEDs, Wi-Fi connected: **measured** 0.52 A at 5.05 V both at full white and with a rainbow scheme (both above the limit, both scaled to it).
+
+Settings per LED count (`pio run -t menuconfig` → Lightbar; local `sdkconfig.<env>`, not tracked). Always `APP_LIGHTS_LED_CURRENT_MA` = 15, `APP_LIGHTS_GPIO` = 10, `APP_LIGHTS_COUNT` = LED count.
+
+| LEDs | Full white, LEDs only | + board Wi-Fi RX / TX peak | 500 mA port: `MAX_CURRENT_MA` 380, scale at full white | ≥ 1 A port: `MAX_CURRENT_MA` 650, scale at full white |
+|---|---|---|---|---|
+| 8 | 0.12 A | 0.20 / 0.46 A | 100 % | 100 % |
+| 16 | 0.27 A | 0.35 / 0.60 A | 100 % | 100 % |
+| 32 | 0.50 A | 0.58 / 0.83 A | 79 % | 100 % |
+| 48 | 0.68 A | 0.76 / 1.02 A | 53 % | 90 % |
+| 64 | 0.82 A | 0.90 / 1.16 A | 40 % | 68 % |
+| 86 | 0.97 A | 1.05 / 1.30 A | 29 % | 50 % |
+| 92 | 1.01 A (**CALC**, extrapolated) | 1.09 / 1.34 A | 28 % | 47 % |
+
+- LEDs only: **measured** (powerbank run, minus 0.02 A idle board); 92 extrapolated with the last measured 6.7 mA per LED. Board: ESP32-C3 datasheet RX 84 mA, TX peak 335 mA, not measured with Wi-Fi.
+- Scale: factor the limiter applies to every channel, `min(1, MAX_CURRENT_MA / (LEDs × 15))` (**CALC**). It is channel value, not perceived brightness. Darker schemes are scaled less or not at all.
+- 380 mA for a 500 mA port (USB 2.0 spec draw): measured 0.52 A total at 400 → ~120 mA above the limit (board + model error) → 500 − 120 (**CALC**). 400 slightly exceeds 500 mA.
+- 650 mA for a ≥ 1 A port: WLED "never try to draw more than 1A through a board's USB port"; 1000 − 335 TX peak (**CALC**). Check the port rating printed on the powerbank / charger.
+- USB-C charger with C-to-C cable: needs 5.1 kΩ Rd on CC1 / CC2; not verified on Super Mini. USB-A to USB-C cable works without it. A 3 A USB-C source does not lift the 1 A limit through the board.
+- Above ~1 A full-white demand (≥ 48 LEDs) more brightness needs the strip powered straight from the source, board in parallel (WLED); then the source limit and voltage drop (≈ 110–120 LEDs per feed, **CALC**) apply.
+- Powerbank 10 000 mAh: 6290–6660 mAh at 5 V (**CALC**, [facts.md](facts.md)) → ~12 h at 0.52 A. A powerbank may switch off at low current (dark schemes, few LEDs); not tested.
+
+Extra parts, same for every count above:
+
+| Part | Needed | Why |
+|---|---|---|
+| Level shifter SN74AHCT1G125 / SN74LV1T34 from 5V + 100 nF | recommended, not required to work | WS2811 VIH 0.7 × 5.05 V ≈ 3.5 V, ESP32 VOH ≥ 2.64 V: out of spec; works in practice. Add if wrong colors / flashes / flicker during Wi-Fi traffic appear |
+| Series resistor in data | no at ~2 cm data wire (no source gives a length limit) | reflections matter on longer wires; values disputed (300–500 Ω at strip / 33–50 Ω at driver) |
+| Bulk capacitor | no; if added, ≤ 10 µF | USB 2.0 limit on VBUS |
+| Fuse | no | USB port is current limited |
+
+Flashing a new board: `make upload` and once `pio run -t uploadfs` (device page lives in LittleFS; without it the page shows "Failed to read existing file").
+
 
 ## Inventory (from earlier notes)
 
