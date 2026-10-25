@@ -110,10 +110,10 @@ menu "App Config"
     config APP_LIGHTS_MAX_CURRENT_MA
       int "Lights Max Current (mA)"
       range 0 65000
-      default 400
+      default 650
       help
         Estimated LED current limit; brightness of the whole frame is scaled down above it, 0 disables the limit.
-        Set to the power source current minus the board's own current (USB 2.0: 500 mA port).
+        Set to the power source current minus the board's own current (USB: 1 A max through the board minus Wi-Fi TX peak).
 
     config APP_LIGHTS_LED_CURRENT_MA
       int "Lights LED Current (mA)"
