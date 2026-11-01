@@ -7,5 +7,6 @@ managed_components
 /sdkconfig.esp32-c3-devkitm-1-debug
 /sdkconfig.esp32-s3-devkitc-1
 /sdkconfig.gledopto-gl-c-016wl-d
+/sdkconfig.gledopto-gl-c-016wl-d-ws2811-256
 .playwright-mcp
 dependencies.lock

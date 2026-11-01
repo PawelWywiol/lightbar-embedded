@@ -71,7 +71,7 @@ Status: **OK** confirmed, **FIX** wrong or misquoted, **?** not verifiable, **N/
 | Claim | Status | Note |
 |---|---|---|
 | GL-C-016WL-D: 5–24 V, 10 A/ch, 15 A total | OK | manual |
-| Data GPIO16 default, GPIO2 standby, relay GPIO12, mic SD 26 / WS 5 / SCK 21, spare 18/19/25/33 | OK | manual |
+| Data GPIO16 default, GPIO2 standby, relay GPIO12, mic SD 26 / WS 5 / SCK 21, spare 18/19/25/33 | relay and spare 18 WRONG on tested unit, relay is GPIO18 | manual; hardware test |
 | Relay does not cut extra injected power | OK | manual |
 | UART upload over USB-C | OK | manual |
 | USB-UART chip CH341 | ? | not in manual |
