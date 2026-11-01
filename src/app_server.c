@@ -223,6 +223,12 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   cJSON_AddNumberToObject(data, "leds", CONFIG_APP_LIGHTS_COUNT);
   cJSON_AddNumberToObject(data, "proto", LIGHTS_SCHEMA_PROTO_VERSION);
 
+  lights_adjust_t lights_adjust = get_lights_adjust();
+  cJSON *adjust = cJSON_AddObjectToObject(data, "adjust");
+  cJSON_AddNumberToObject(adjust, "brightness", lights_adjust.brightness);
+  cJSON_AddNumberToObject(adjust, "speed", lights_adjust.speed);
+  cJSON_AddNumberToObject(adjust, "hue", lights_adjust.hue);
+
   if (message != NULL)
   {
     cJSON_AddStringToObject(root, "message", message);

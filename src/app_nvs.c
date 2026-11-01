@@ -73,6 +73,10 @@ esp_err_t nvs_write_data(const char *key, void *data, size_t length)
   {
     ESP_LOGE(TAG, "Failed to write data to NVS");
   }
+  else
+  {
+    err = nvs_commit(handle);
+  }
 
   nvs_close(handle);
 

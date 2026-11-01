@@ -89,6 +89,13 @@ extern "C"
 
 #define LIGHTS_MIN_FREE_HEAP 32768
 
+#define LIGHTS_ADJUST_BRIGHTNESS_MAX 100
+#define LIGHTS_ADJUST_SPEED_MIN 25
+#define LIGHTS_ADJUST_SPEED_MAX 200
+#define LIGHTS_ADJUST_SPEED_DEFAULT 100
+#define LIGHTS_ADJUST_HUE_MIN -32
+#define LIGHTS_ADJUST_HUE_MAX 31
+
   typedef struct lights_data
   {
     char file_path[FILE_SYSTEM_PATH_MAX_LENGTH];
@@ -105,6 +112,16 @@ extern "C"
     uint16_t current_frame_tick;
     lights_status_t status;
   } lights_data_t;
+
+  typedef struct __attribute__((packed)) lights_adjust
+  {
+    uint8_t brightness;
+    uint8_t speed;
+    int8_t hue;
+  } lights_adjust_t;
+
+  lights_adjust_t get_lights_adjust(void);
+  esp_err_t set_lights_adjust(const void *data, size_t size);
 
   uint16_t calculate_frame_ticks(uint8_t tempo);
   esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, uint8_t *colors,

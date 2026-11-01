@@ -1,4 +1,5 @@
 #include "app_lights.h"
+#include "app_nvs.h"
 #include "soc/soc_caps.h"
 
 static const char *TAG = "APP_LIGHTS";
@@ -24,6 +25,54 @@ rmt_transmit_config_t tx_config = {
 esp_timer_handle_t lights_loop_timer;
 static TaskHandle_t lights_loop_task;
 lights_data_t lights_data = {0};
+static lights_adjust_t lights_adjust = {
+  .brightness = LIGHTS_ADJUST_BRIGHTNESS_MAX,
+  .speed = LIGHTS_ADJUST_SPEED_DEFAULT,
+  .hue = 0,
+};
+
+static bool is_lights_adjust_valid(const lights_adjust_t *adjust)
+{
+  return adjust->brightness <= LIGHTS_ADJUST_BRIGHTNESS_MAX && adjust->speed >= LIGHTS_ADJUST_SPEED_MIN &&
+         adjust->speed <= LIGHTS_ADJUST_SPEED_MAX && adjust->hue >= LIGHTS_ADJUST_HUE_MIN &&
+         adjust->hue <= LIGHTS_ADJUST_HUE_MAX;
+}
+
+lights_adjust_t get_lights_adjust(void)
+{
+  return lights_adjust;
+}
+
+esp_err_t set_lights_adjust(const void *data, size_t size)
+{
+  if (size != sizeof(lights_adjust_t))
+  {
+    return ESP_ERR_INVALID_SIZE;
+  }
+
+  lights_adjust_t next;
+  memcpy(&next, data, sizeof(next));
+
+  if (!is_lights_adjust_valid(&next))
+  {
+    return ESP_ERR_INVALID_ARG;
+  }
+
+  lights_adjust = next;
+
+  return nvs_write_data(CONFIG_APP_NVS_LIGHTS_ADJUST_KEY, &next, sizeof(next));
+}
+
+static void load_lights_adjust(void)
+{
+  lights_adjust_t saved;
+
+  if (nvs_read_data(CONFIG_APP_NVS_LIGHTS_ADJUST_KEY, &saved, sizeof(saved)) == ESP_OK &&
+      is_lights_adjust_valid(&saved))
+  {
+    lights_adjust = saved;
+  }
+}
 
 uint32_t resolveColorHue(uint8_t color)
 {
@@ -457,6 +506,17 @@ error:
   return ESP_FAIL;
 }
 
+static uint32_t resolve_adjusted_frame_ticks(const frame_data_t *frame)
+{
+  uint32_t ticks = (uint32_t)frame->duration_ticks * LIGHTS_ADJUST_SPEED_DEFAULT / lights_adjust.speed;
+  return ticks > 0 ? ticks : 1;
+}
+
+static uint8_t adjust_color_hue(uint8_t color)
+{
+  return shift_color_hue(color, add_hue_offset(0, lights_adjust.hue));
+}
+
 esp_err_t resolve_current_light_schema_frame(void)
 {
   if (lights_data.status != LIGHTS_STATUS_RUNNING || lights_data.cached_frame_count == 0)
@@ -465,7 +525,7 @@ esp_err_t resolve_current_light_schema_frame(void)
   }
 
   const frame_data_t *frame = &lights_data.cached_frames[lights_data.current_frame_index];
-  if (++lights_data.current_frame_tick < frame->duration_ticks)
+  if (++lights_data.current_frame_tick < resolve_adjusted_frame_ticks(frame))
   {
     return ESP_OK;
   }
@@ -506,9 +566,9 @@ static void resolve_interpolated_color(uint8_t color_from, uint8_t color_to, flo
 static void set_led_strip_pixel(int index, const uint8_t *rgb)
 {
   uint8_t *pixel = &led_strip_pixels[index * 3];
-  pixel[LIGHTS_PIXEL_RED_INDEX] = rgb[0];
-  pixel[LIGHTS_PIXEL_GREEN_INDEX] = rgb[1];
-  pixel[LIGHTS_PIXEL_BLUE_INDEX] = rgb[2];
+  pixel[LIGHTS_PIXEL_RED_INDEX] = rgb[0] * lights_adjust.brightness / LIGHTS_ADJUST_BRIGHTNESS_MAX;
+  pixel[LIGHTS_PIXEL_GREEN_INDEX] = rgb[1] * lights_adjust.brightness / LIGHTS_ADJUST_BRIGHTNESS_MAX;
+  pixel[LIGHTS_PIXEL_BLUE_INDEX] = rgb[2] * lights_adjust.brightness / LIGHTS_ADJUST_BRIGHTNESS_MAX;
 }
 
 static void limit_led_strip_current(void)
@@ -545,12 +605,13 @@ esp_err_t show_current_light_schema_frame(void)
   const frame_data_t *frame = &lights_data.cached_frames[lights_data.current_frame_index];
   if (frame->flags & LIGHTS_FRAME_FLAG_FADE)
   {
-    float t = (float)lights_data.current_frame_tick / (float)frame->duration_ticks;
+    float t = (float)lights_data.current_frame_tick / (float)resolve_adjusted_frame_ticks(frame);
 
     for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
     {
       uint8_t rgb[3];
-      resolve_interpolated_color(lights_data.current_colors[i], lights_data.next_colors[i], t, rgb);
+      resolve_interpolated_color(adjust_color_hue(lights_data.current_colors[i]),
+                                 adjust_color_hue(lights_data.next_colors[i]), t, rgb);
       set_led_strip_pixel(i, rgb);
     }
   }
@@ -559,7 +620,7 @@ esp_err_t show_current_light_schema_frame(void)
     for (int i = 0; i < CONFIG_APP_LIGHTS_COUNT; i++)
     {
       uint8_t rgb[3];
-      resolve_binary_color(lights_data.current_colors[i], rgb);
+      resolve_binary_color(adjust_color_hue(lights_data.current_colors[i]), rgb);
       set_led_strip_pixel(i, rgb);
     }
   }
@@ -638,6 +699,8 @@ error:
 esp_err_t init_lights_events(void)
 {
   ESP_LOGI(TAG, "Initializing lights events");
+
+  load_lights_adjust();
 
   GOTO_CHECK(esp_event_handler_instance_register(APP_EVENTS, APP_EVENT_INIT_LIGHTS_SCHEMA, on_init_light_schema_handler,
                                                  NULL, NULL),
