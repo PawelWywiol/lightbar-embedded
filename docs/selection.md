@@ -17,7 +17,7 @@ Recommendations are conclusions drawn from [facts.md](facts.md) and [opinions.md
 
 - **ESP32-C3** (current target): single core, 2 RMT TX, no RMT DMA. Espressif: without DMA a delayed RMT interrupt (e.g. Wi-Fi on the same core) corrupts the LED data. WLED maintainers confirm C3 flicker under Wi-Fi / web load as a known C3-only issue. Fine where the transfer is short or Wi-Fi is off; weakest choice for long strips online.
 - **ESP32-S3**: dual core, 4 RMT TX, the only checked chip with RMT DMA. Best technical fit for long strips with Wi-Fi. Build env exists (`esp32-s3-devkitc-1`), not tested on hardware.
-- **ESP32** (Gledopto, QuinLED): dual core, 8 RMT channels, no RMT DMA. WLED developers report occasional RMT flicker on ESP32 under load too, less than on C3. Build env exists (`gledopto-gl-c-016wl-d`), not tested on hardware.
+- **ESP32** (Gledopto, QuinLED): dual core, 8 RMT channels, no RMT DMA. WLED developers report occasional RMT flicker on ESP32 under load too, less than on C3. Tested on hardware: GL-C-016WL-D, [KTRLIGHT strip](#ktrlight-ws2811-string-gledopto-gl-c-016wl-d).
 - **ESP32-C6 / H2**: 2 RMT TX, no DMA, single core; H2 has no Wi-Fi; no PlatformIO board file for H2. No advantage here.
 - **ESP32-C2**: no RMT (LEDs only via SPI backend), no PlatformIO board file. Not for this firmware.
 - **ESP32-S2**: single core, no RMT DMA, clone S2 Mini boards with Wi-Fi faults. No advantage over C3.
@@ -79,7 +79,7 @@ LED count at full white, 55 mA/LED (**CALC**):
 - 144 LED/m over 5 m is above 100 W, where WLED says to add fuses.
 - 720 LEDs at 60 FPS needs 2 data lines (2 RMT TX channels); firmware drives one line today.
 
-## Test strip: WS2811 string (connected now)
+## Test strip: WS2811 string (ESP32-C3 Super Mini)
 
 Seller data (**SELLER**): DC 5 V, WS2811 protocol, color order GRB, SMD3240, 0.1 W per LED, 5.5 mA per R/G/B output, 26 AWG 3-wire, 1.5 cm spacing = 66 LED/m, IP67, "add voltage at every 300 LED".
 
@@ -135,6 +135,22 @@ Extra parts, same for every count above:
 
 Flashing a new board: `make upload` and once `pio run -t uploadfs` (device page lives in LittleFS; without it the page shows "Failed to read existing file").
 
+## KTRLIGHT WS2811 string (Gledopto GL-C-016WL-D)
+
+Label (**SELLER**): KTR-5V5MA-4832RGB-D-2.5-3C-CM, WS2811, 5 V, 5 mA, 3 wire, 2.5 cm pitch = 40 LED/m, 10 m / 400 pcs. Env `gledopto-gl-c-016wl-d-ws2811-256`: 256 LEDs (6.4 m, **CALC**), 5 V 6 A supply on the controller input, strip on the controller output.
+
+| Item | Value | Note |
+|---|---|---|
+| Color order | **measured** RGB | not the GRB of the other string |
+| Data | **measured** works on GPIO16 through the controller's level shifter, firmware's WS2812 timing | no extra parts |
+| Current per LED, full white | 15 mA (**CALC**, not measured) | assumes the label's 5 mA is per R/G/B output |
+| 256 LEDs, full white | ≤ 3.84 A (**CALC**) | below `APP_LIGHTS_MAX_CURRENT_MA` 5500, the limiter does not act at this model value |
+| 400 LEDs, full white | ≤ 6 A (**CALC**) | no margin on a 6 A supply; lower the limit |
+| Data line time | 9.3 ms at 256 LEDs (**CALC**) | under 16.7 ms, 60 FPS fits |
+| Supply voltage | **measured** 5.22 V one color, 5.11 V mixed, 5.0 V full white | measuring point not recorded |
+| Voltage drop along the string | not measured, wire gauge unknown | the other string's figures do not apply; check that the far end does not dim at full white |
+| Flicker with Wi-Fi | none seen with RMT memory 512 symbols | visible flashes at 64 symbols, every 4th LED in a rainbow; judged by eye |
+
 
 ## Inventory (from earlier notes)
 
@@ -143,7 +159,7 @@ Identified from photos in an earlier session, not re-checked here.
 | Board | Chip | Usable here |
 |---|---|---|
 | ESP32-C3 Super Mini | ESP32-C3 FN4 | class A offline; online only if its Wi-Fi works (test, lower TX power) |
-| Gledopto GL-C-016WL-D | ESP32 | class B (env `gledopto-gl-c-016wl-d`, untested) |
+| Gledopto GL-C-016WL-D | ESP32-D0WD-V3 (esptool), 4 MB flash | class B, tested (env `gledopto-gl-c-016wl-d-ws2811-256`) |
 | Wemos/Lolin S2 Mini | ESP32-S2FN4R2 | not recommended |
 | Wemos D1 mini, ProMicro RP2040, Pro Mini, Digispark, LilyTiny | ESP8266, RP2040, ATmega328P, ATtiny85 | no |
 
@@ -152,4 +168,3 @@ Identified from photos in an earlier session, not re-checked here.
 1. Decide 5 m strip density.
 2. Flash the firmware on the chosen board, run the target LED count with Wi-Fi traffic (open the device page repeatedly), watch for wrong colors.
 3. Measure current at full white and at a typical scheme; size PSU / USB source from the measurement.
-4. On the Gledopto, read the ESP32 variant from esptool on first flash (`Chip is ...`).
