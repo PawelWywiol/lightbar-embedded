@@ -15,6 +15,7 @@
 
 #include "app_defines.h"
 #include "app_events.h"
+#include "app_network.h"
 #include "app_utils.h"
 #include "app_vfs.h"
 

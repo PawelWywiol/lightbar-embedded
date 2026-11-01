@@ -4,6 +4,8 @@ static const char *TAG = "APP_NETWORK";
 
 static esp_timer_handle_t sta_retry_timer = NULL;
 static uint32_t sta_retry_count = 0;
+static sta_state_t sta_state = STA_STATE_CONNECTING;
+static uint16_t sta_last_reason = 0;
 
 // esp_wifi reads up to 32 SSID bytes without null terminator (802.11 max length)
 static size_t copy_ssid(uint8_t *destination, const char *source)
@@ -38,12 +40,16 @@ static void retry_sta(void *arg)
 static void wifi_on_sta_connected_handler(void)
 {
   ESP_LOGI(TAG, "STA connected to AP");
+
+  sta_state = STA_STATE_WAITING_FOR_IP;
 }
 
 static void wifi_on_sta_got_ip_handler(void)
 {
   ESP_LOGI(TAG, "STA got IP");
 
+  sta_state = STA_STATE_CONNECTED;
+  sta_last_reason = 0;
   sta_retry_count = 0;
   esp_timer_stop(sta_retry_timer);
 }
@@ -51,6 +57,14 @@ static void wifi_on_sta_got_ip_handler(void)
 static void wifi_on_sta_disconnected_handler(const wifi_event_sta_disconnected_t *event)
 {
   ESP_LOGI(TAG, "STA disconnected from AP, reason %u", event->reason);
+
+  sta_state = STA_STATE_CONNECTING;
+
+  // every reconnect starts with esp_wifi_disconnect, which must not hide the real failure
+  if (event->reason != WIFI_REASON_ASSOC_LEAVE)
+  {
+    sta_last_reason = event->reason;
+  }
 
   if (!has_sta_credentials() || esp_timer_is_active(sta_retry_timer))
   {
@@ -236,6 +250,11 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
 
   if (wifi_credentials != NULL)
   {
+    esp_timer_stop(sta_retry_timer);
+    sta_retry_count = 0;
+    sta_last_reason = 0;
+    sta_state = STA_STATE_CONNECTING;
+
     wifi_config_t wifi_config = {
       .sta =
         {
@@ -255,4 +274,16 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
   return ESP_OK;
 error:
   return ESP_FAIL;
+}
+
+void get_sta_status(sta_status_t *status)
+{
+  wifi_config_t wifi_config = {0};
+  esp_wifi_get_config(WIFI_IF_STA, &wifi_config);
+
+  memset(status, 0, sizeof(sta_status_t));
+  memcpy(status->ssid, wifi_config.sta.ssid, MAX_SSID_LEN);
+  status->state = status->ssid[0] == '\0' ? STA_STATE_NO_CREDENTIALS : sta_state;
+  status->reason = sta_last_reason;
+  status->attempt = sta_retry_count + 1;
 }

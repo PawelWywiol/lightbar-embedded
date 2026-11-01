@@ -240,6 +240,15 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   if (network_type == NETWORK_TYPE_AP)
   {
     cJSON_AddStringToObject(data, "host", _host_ip);
+
+    sta_status_t sta_status;
+    get_sta_status(&sta_status);
+
+    cJSON *wifi = cJSON_AddObjectToObject(data, "wifi");
+    cJSON_AddNumberToObject(wifi, "state", sta_status.state);
+    cJSON_AddStringToObject(wifi, "ssid", sta_status.ssid);
+    cJSON_AddNumberToObject(wifi, "reason", sta_status.reason);
+    cJSON_AddNumberToObject(wifi, "attempt", sta_status.attempt);
   }
 
   const char *info = cJSON_PrintUnformatted(root);
