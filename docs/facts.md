@@ -145,7 +145,7 @@ GPIO2, 8, 9 are strapping pins on ESP32-C3 [D3].
 | Waveshare ESP32-S3-RS485-WLED | ESP32-S3 N16R8 | 5–24 V | 2 (GPIO2, GPIO16) | 5 V level shifting | blade fuse | 8 A |
 | Athom ESP32-C3 WLED controllers | ESP32-C3 | 5–24 V | 1 digital | **UNVERIFIED** | **UNVERIFIED** | — |
 
-[G1]–[G4][Q1]–[Q3][C1][W6][T1]. GL-C-016WL-D details [G1]: relay GPIO12 cuts only the controller output ("cannot switch off the additional added power input"), I2S mic SD 26 / WS 5 / SCK 21, spare IO18/19/25/33, firmware upload by UART over USB-C, −20–45 °C, max 800 ICs [G2]. GL-C-017WL-D [G3]: relay GPIO18 inverted, PDM mic SD 32 / WS 15. Gledopto ESP32-C3 models: none found.
+[G1]–[G4][Q1]–[Q3][C1][W6][T1]. GL-C-016WL-D details [G1]: relay GPIO12 per manual, but **tested unit uses GPIO18** (factory WLED config `relay.pin` 18; firmware output dark with GPIO12 high, powered with GPIO18 high). Relay cuts only the controller output ("cannot switch off the additional added power input"), I2S mic SD 26 / WS 5 / SCK 21, spare IO19/25/33 (manual also lists 18), firmware upload by UART over USB-C, −20–45 °C, max 800 ICs [G2]. GL-C-017WL-D [G3]: relay GPIO18 inverted, PDM mic SD 32 / WS 15. Gledopto ESP32-C3 models: none found.
 
 ## IR receivers
 

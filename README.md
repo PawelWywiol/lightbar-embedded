@@ -10,7 +10,11 @@ The device runs its own WiFi access point for setup and joins the home network f
 - WS2812B-compatible strip on GPIO 10
 - 5 V supply sized for the strip
 
-Other boards are PlatformIO environments (`pio run -e <env>`, see `platformio.ini`). `esp32-s3-devkitc-1` and `gledopto-gl-c-016wl-d` (data GPIO 16, output relay GPIO 12) build but are not tested on hardware yet.
+Other boards are PlatformIO environments (`pio run -e <env>`, see `platformio.ini`). `esp32-s3-devkitc-1` builds but is not tested on hardware yet. `gledopto-gl-c-016wl-d` (data GPIO 16, output relay GPIO 18) is tested on hardware; the manual says relay GPIO 12, but only GPIO 18 powered the output on the tested unit, matching its factory WLED config.
+
+Each board + strip pair is one environment, its `SDKCONFIG_DEFAULTS` stacks one file per layer: common, board (`sdkconfig.gledopto`), strip and power supply (`sdkconfig.ws2811-256-6a`). Values in a generated `sdkconfig.<env>` win over these files, so delete it after changing a layer.
+
+GL-C-016WL-D on macOS: its USB chip (CH340K, `1a86:7522`) needs the [WCH driver](https://github.com/WCHSoftGroup/ch34xser_macos); reading flash above 115200 baud returned corrupted data.
 
 Strip length, GPIO, color order and network defaults: `pio run -t menuconfig` → App Config.
 
