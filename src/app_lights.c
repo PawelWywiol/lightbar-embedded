@@ -1,4 +1,5 @@
 #include "app_lights.h"
+#include "soc/soc_caps.h"
 
 static const char *TAG = "APP_LIGHTS";
 
@@ -12,7 +13,8 @@ rmt_channel_handle_t led_channel = NULL;
 rmt_tx_channel_config_t tx_chan_config = {
   .clk_src = RMT_CLK_SRC_DEFAULT, //
   .gpio_num = RMT_LED_STRIP_GPIO_NUM,
-  .mem_block_symbols = 64,
+  // without DMA a late refill interrupt sends stale bits; more memory tolerates longer Wi-Fi delays
+  .mem_block_symbols = SOC_RMT_MEM_WORDS_PER_CHANNEL * SOC_RMT_TX_CANDIDATES_PER_GROUP,
   .resolution_hz = RMT_LED_STRIP_RESOLUTION_HZ,
   .trans_queue_depth = 4,
 };
