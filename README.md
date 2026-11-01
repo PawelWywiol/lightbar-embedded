@@ -34,7 +34,8 @@ cd ui && DEVICE_URL=http://1.2.3.4 pnpm dev
 
 1. Join the `lightbar-…` WiFi (password `lightbar`) and open http://1.2.3.4.
 2. Submit the home network SSID (max 31 chars) and password (required, open networks not supported).
-3. Get the device IP in the home network from `host` in `GET http://1.2.3.4/api/lightbar` (or the router, or the scan in Lightbar Web) and add it in Lightbar Web.
+3. The page shows connection progress, the problem if it fails, and the device IP in the home network. Connecting can move the device to another WiFi channel and drop the page's connection; rejoin the `lightbar-…` WiFi if the page reports no response.
+4. Add the device IP in Lightbar Web.
 
 ## API
 
@@ -47,7 +48,8 @@ Contract shared with Lightbar Web.
 ```
 
 - `uid`: AP SSID
-- `network`: 1 = request came over the home network, 2 = over the AP (then `host` = home network IP)
+- `network`: 1 = request came over the home network, 2 = over the AP (then `host` = home network IP, and `wifi` = home network connection)
+- `wifi`: `{ "state", "ssid", "reason", "attempt" }`; state 0 = no credentials, 1 = connecting, 2 = waiting for IP, 3 = connected; `reason` = last ESP-IDF `wifi_err_reason_t` since the last success or credentials change, 0 = none
 
 `POST /api/lightbar`: binary body of chunks, each: type (4 B), payload size (4 B), payload, `EOL\0` (little-endian `uint32`). Responds `{"ok":true}` once the body is stored; processing runs afterwards.
 

@@ -3,6 +3,7 @@
   --foreground: hsl(213 31% 91%);
   --border: hsl(216 34% 17%);
   --muted: hsl(215 16% 57%);
+  --problem: hsl(0 84% 70%);
   color-scheme: dark;
   font-family: system-ui, sans-serif;
 }
@@ -39,6 +40,20 @@ h1 {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 400;
+}
+
+p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+a {
+  color: inherit;
+  font-weight: 700;
+}
+
+.problem {
+  color: var(--problem);
 }
 
 input,

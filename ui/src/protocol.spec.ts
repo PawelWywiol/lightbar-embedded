@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { encodeWifiRequest, parseDeviceInfo } from './protocol';
+import { describeWifi, encodeWifiRequest, parseDeviceInfo, WIFI_STATE_CONNECTING } from './protocol';
 
 describe('encodeWifiRequest', () => {
   it('encodes header, zero padded credentials and EOL', () => {
@@ -34,10 +34,45 @@ describe('parseDeviceInfo', () => {
     });
   });
 
+  it('keeps host and wifi status', () => {
+    const wifi = { state: 3, ssid: 'home', reason: 0, attempt: 1 };
+    const data = { uid: 'a1', leds: 16, network: 2, host: '192.168.0.2', wifi };
+
+    expect(parseDeviceInfo({ type: 'info', data })).toEqual(data);
+  });
+
+  it('drops malformed wifi status', () => {
+    const data = { uid: 'a1', leds: 16, network: 2, wifi: { state: '3' } };
+
+    expect(parseDeviceInfo({ type: 'info', data })?.wifi).toBeUndefined();
+  });
+
   it.each([null, 1, {}, { type: 'info' }, { type: 'info', data: { uid: 'a1', leds: '16', network: 2 } }])(
     'returns undefined for %j',
     (value) => {
       expect(parseDeviceInfo(value)).toBeUndefined();
     },
   );
+});
+
+describe('describeWifi', () => {
+  const wifi = { state: WIFI_STATE_CONNECTING, ssid: 'home', reason: 0, attempt: 1 };
+
+  it('reports progress without a failure', () => {
+    expect(describeWifi(wifi)).toBe('Connecting to home…');
+  });
+
+  it('explains a known failure', () => {
+    expect(describeWifi({ ...wifi, reason: 201, attempt: 3 })).toBe(
+      'Cannot connect to home. Network not found, check its name. The device sees 2.4 GHz networks only. Retrying automatically, attempt 3.',
+    );
+  });
+
+  it('shows the code of an unknown failure', () => {
+    expect(describeWifi({ ...wifi, reason: 99 })).toContain('Connection failed (reason 99).');
+  });
+
+  it('ignores an old failure once connected', () => {
+    expect(describeWifi({ ...wifi, state: 3, reason: 201 })).toBe('Connected to home.');
+  });
 });
