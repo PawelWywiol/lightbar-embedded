@@ -75,6 +75,7 @@ extern "C"
     CONNECTION_REQUEST_HEAD_INFO = 0x68656164,
     CONNECTION_REQUEST_FRAME_INFO = 0x6672616d,
     CONNECTION_REQUEST_FRAME_V2_INFO = 0x66726d32,
+    CONNECTION_REQUEST_ADJUST_INFO = 0x6374726c,
     CONNECTION_REQUEST_EOL_INFO = 0x454f4c00
   } connection_request_type_info_t;
 
@@ -95,6 +96,7 @@ extern "C"
     ssize_t processed;
     char uid[UID_MAX_LENGTH];
     bool has_head;
+    uint32_t sequence;
   } request_chunk_data_t;
 
 #ifdef __cplusplus

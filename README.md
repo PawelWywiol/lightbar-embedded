@@ -14,6 +14,8 @@ Other boards are PlatformIO environments (`pio run -e <env>`, see `platformio.in
 
 Each board + strip pair is one environment, its `SDKCONFIG_DEFAULTS` stacks one file per layer: common, board (`sdkconfig.gledopto`), strip and power supply (`sdkconfig.ws2811-256-6a`). Values in a generated `sdkconfig.<env>` win over these files, so delete it after changing a layer.
 
+ESP32-C3 Super Mini: env `c3-super-mini-ws2811-86-usb`. The tested unit got `AUTH_EXPIRE` (reason 2) at default and 11 dBm and connected at 8.5 dBm (`APP_WIFI_MAX_TX_POWER`), still with some failed attempts.
+
 GL-C-016WL-D on macOS: its USB chip (CH340K, `1a86:7522`) needs the [WCH driver](https://github.com/WCHSoftGroup/ch34xser_macos); reading flash above 115200 baud returned corrupted data.
 
 Strip length, GPIO, color order and network defaults: `pio run -t menuconfig` → App Config.
@@ -47,7 +49,8 @@ Contract shared with Lightbar Web.
 { "type": "info", "data": { "leds": 16, "proto": 1, "uid": "lightbar-…", "network": 2, "host": "…" } }
 ```
 
-- `uid`: AP SSID
+- `adjust`: `{ "brightness", "speed", "hue" }`, see `ctrl`
+- `uid`: AP SSID, ends with the last 3 bytes of the AP MAC address
 - `network`: 1 = request came over the home network, 2 = over the AP (then `host` = home network IP, and `wifi` = home network connection)
 - `wifi`: `{ "state", "ssid", "reason", "attempt" }`; state 0 = no credentials, 1 = connecting, 2 = waiting for IP, 3 = connected; `reason` = last ESP-IDF `wifi_err_reason_t` since the last success or credentials change, 0 = none
 
@@ -59,6 +62,7 @@ Contract shared with Lightbar Web.
 | `head` | `[version=1, nameLength, name…]` (ignored by firmware, marks the scheme to be saved) |
 | `fram` | `[flags, tempo, colors…]` (legacy) |
 | `frm2` | `[flags, pixelShift (int8), tempo, colors…]` |
+| `ctrl` | `[brightness (0–100), speed (25–200, % of tempo), hue (int8, −32..31)]`, applied at once and kept across schemes and reboots (saved 3 s after the last change); brightness follows a gamma 2.2 curve; invalid values are ignored |
 
 - flags: bit 0 fade, bit 1 shuffle, bits 2–7 hue shift (signed, −32..31)
 - tempo: 1–240 BPM, 241–254 = 255 − value ticks at 60 FPS, 255 = 1 tick
@@ -66,7 +70,7 @@ Contract shared with Lightbar Web.
 - frames shorter than the strip repeat along it; shuffle permutes each repeated segment
 - hue shift and pixel shift accumulate per frame for the whole scheme, reset on scheme load
 
-A body with frames and no other chunk types is played right away; with a `head` chunk it is also saved and restored on boot.
+A body with frames and no other chunk types is played right away; with a `head` chunk it is also saved and restored on boot. A `ctrl` chunk may accompany frames.
 
 ## Web app bridge
 

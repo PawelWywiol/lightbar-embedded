@@ -223,6 +223,12 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   cJSON_AddNumberToObject(data, "leds", CONFIG_APP_LIGHTS_COUNT);
   cJSON_AddNumberToObject(data, "proto", LIGHTS_SCHEMA_PROTO_VERSION);
 
+  lights_adjust_t lights_adjust = get_lights_adjust();
+  cJSON *adjust = cJSON_AddObjectToObject(data, "adjust");
+  cJSON_AddNumberToObject(adjust, "brightness", lights_adjust.brightness);
+  cJSON_AddNumberToObject(adjust, "speed", lights_adjust.speed);
+  cJSON_AddNumberToObject(adjust, "hue", lights_adjust.hue);
+
   if (message != NULL)
   {
     cJSON_AddStringToObject(root, "message", message);
@@ -266,6 +272,33 @@ static esp_err_t api_get_handler(httpd_req_t *req)
   return set_api_response(req, NULL);
 }
 
+// settings alone skip the temp file and the event queue, so frequent changes never pile up
+static bool apply_adjust_request(const uint8_t *data, size_t size)
+{
+  uint32_t type = 0;
+  uint32_t payload_size = 0;
+  uint32_t end = 0;
+
+  if (size != CONNECTION_REQUEST_INFO_LENGTH + sizeof(lights_adjust_t))
+  {
+    return false;
+  }
+
+  memcpy(&type, data, sizeof(type));
+  memcpy(&payload_size, data + CONNECTION_REQUEST_TYPE_INFO_LENGTH, sizeof(payload_size));
+  memcpy(&end, data + size - CONNECTION_REQUEST_EOL_INFO_LENGTH, sizeof(end));
+
+  if (type != CONNECTION_REQUEST_ADJUST_INFO || payload_size != sizeof(lights_adjust_t) ||
+      end != CONNECTION_REQUEST_EOL_INFO)
+  {
+    return false;
+  }
+
+  set_lights_adjust(data + CONNECTION_REQUEST_TYPE_INFO_LENGTH + CONNECTION_REQUEST_SIZE_INFO_LENGTH,
+                    sizeof(lights_adjust_t));
+  return true;
+}
+
 static esp_err_t api_post_handler(httpd_req_t *req)
 {
   size_t content_length = req->content_len;
@@ -281,20 +314,32 @@ static esp_err_t api_post_handler(httpd_req_t *req)
 
   do
   {
-    chunk.size = httpd_req_recv(req, req->user_ctx, content_length);
-    chunk.processed += chunk.size;
+    size_t remaining = content_length - chunk.processed;
+    chunk.size =
+      httpd_req_recv(req, req->user_ctx, remaining < CONTEXT_BUFFER_MAX_LENGTH ? remaining : CONTEXT_BUFFER_MAX_LENGTH);
 
     if (chunk.size <= 0)
     {
+      unlink(path);
       return send_api_error(req, "Failed to read request content");
+    }
+
+    chunk.processed += chunk.size;
+
+    if (chunk.size == content_length && apply_adjust_request(chunk.data, chunk.size))
+    {
+      return send_api_ok(req);
     }
 
     if (vfs_append_file(path, chunk.data, chunk.size) != ESP_OK)
     {
+      unlink(path);
       return send_api_error(req, "Failed to write chunk to file");
     }
 
-  } while (chunk.size > 0 && chunk.processed < content_length);
+  } while (chunk.processed < content_length);
+
+  chunk.sequence = next_lights_request_sequence();
 
   esp_event_post(APP_EVENTS, APP_EVENT_PROCESS_REQUEST_COMPLETE, &chunk, sizeof(request_chunk_data_t), portMAX_DELAY);
 
