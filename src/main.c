@@ -135,7 +135,8 @@ error_close_file:
 error_free_context:
   free(context);
 error_unlink:
-  if (available_frames > 0 && available_frames + head_chunks + adjust_chunks == count_frames)
+  if (available_frames > 0 && available_frames + head_chunks + adjust_chunks == count_frames &&
+      is_latest_lights_request(chunk->sequence))
   {
     ESP_LOGI(TAG, "All frames [%d] are available", available_frames);
 

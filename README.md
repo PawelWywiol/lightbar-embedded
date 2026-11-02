@@ -62,7 +62,7 @@ Contract shared with Lightbar Web.
 | `head` | `[version=1, nameLength, name…]` (ignored by firmware, marks the scheme to be saved) |
 | `fram` | `[flags, tempo, colors…]` (legacy) |
 | `frm2` | `[flags, pixelShift (int8), tempo, colors…]` |
-| `ctrl` | `[brightness (0–100), speed (25–200, % of tempo), hue (int8, −32..31)]`, applied at once and kept across schemes and reboots; invalid values are ignored |
+| `ctrl` | `[brightness (0–100), speed (25–200, % of tempo), hue (int8, −32..31)]`, applied at once and kept across schemes and reboots (saved 3 s after the last change); brightness follows a gamma 2.2 curve; invalid values are ignored |
 
 - flags: bit 0 fade, bit 1 shuffle, bits 2–7 hue shift (signed, −32..31)
 - tempo: 1–240 BPM, 241–254 = 255 − value ticks at 60 FPS, 255 = 1 tick

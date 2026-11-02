@@ -96,6 +96,7 @@ extern "C"
     ssize_t processed;
     char uid[UID_MAX_LENGTH];
     bool has_head;
+    uint32_t sequence;
   } request_chunk_data_t;
 
 #ifdef __cplusplus
