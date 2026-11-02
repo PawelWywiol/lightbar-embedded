@@ -1,4 +1,5 @@
 #include "app_utils.h"
+#include "esp_mac.h"
 
 static const char uid_chars[] = "0123456789abcdefghhilmnopqrstuvwxyz";
 
@@ -60,16 +61,18 @@ void reset_ap_credentials(wifi_credentials_t *ap_credentials)
 
   memset(ap_credentials, 0, sizeof(wifi_credentials_t));
 
-  uid(ap_credentials->ssid, AP_SSID_MAX_LENGTH);
-
-  strncpy(ap_credentials->ssid, CONFIG_APP_AP_SSID_PREFIX, strlen(CONFIG_APP_AP_SSID_PREFIX));
-  ap_credentials->ssid[strlen(CONFIG_APP_AP_SSID_PREFIX)] = '-';
-  ap_credentials->ssid[AP_SSID_MAX_LENGTH] = '\0';
-
   strncpy(ap_credentials->password, CONFIG_APP_AP_PASSWORD, strlen(CONFIG_APP_AP_PASSWORD));
   ap_credentials->password[strlen(CONFIG_APP_AP_PASSWORD)] = '\0';
+}
 
-  ESP_LOGI(TAG, "New AP ssid : %s", ap_credentials->ssid);
+// derived on every boot, not stored: older firmware saved the same name on every board
+static void set_ap_ssid_from_mac(wifi_credentials_t *ap_credentials)
+{
+  uint8_t mac[6] = {0};
+  esp_read_mac(mac, ESP_MAC_WIFI_SOFTAP);
+
+  snprintf(ap_credentials->ssid, sizeof(ap_credentials->ssid), "%s-%02x%02x%02x", CONFIG_APP_AP_SSID_PREFIX, mac[3],
+           mac[4], mac[5]);
 }
 
 esp_err_t write_ap_credentials(const wifi_credentials_t *ap_credentials)
@@ -96,6 +99,8 @@ esp_err_t read_ap_credentials(wifi_credentials_t *ap_credentials)
       return ESP_FAIL;
     }
   }
+
+  set_ap_ssid_from_mac(ap_credentials);
 
   ESP_LOGI(TAG, "AP ssid : %s", ap_credentials->ssid);
 

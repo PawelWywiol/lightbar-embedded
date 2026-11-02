@@ -50,7 +50,7 @@ Contract shared with Lightbar Web.
 ```
 
 - `adjust`: `{ "brightness", "speed", "hue" }`, see `ctrl`
-- `uid`: AP SSID
+- `uid`: AP SSID, ends with the last 3 bytes of the AP MAC address
 - `network`: 1 = request came over the home network, 2 = over the AP (then `host` = home network IP, and `wifi` = home network connection)
 - `wifi`: `{ "state", "ssid", "reason", "attempt" }`; state 0 = no credentials, 1 = connecting, 2 = waiting for IP, 3 = connected; `reason` = last ESP-IDF `wifi_err_reason_t` since the last success or credentials change, 0 = none
 
