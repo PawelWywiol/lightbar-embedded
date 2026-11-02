@@ -236,6 +236,9 @@ esp_err_t init_network(const wifi_credentials_t *ap_credentials, const wifi_cred
 
   GOTO_CHECK(esp_wifi_start(), TAG, "Failed to start WiFi", error);
   GOTO_CHECK(esp_wifi_set_ps(WIFI_PS_NONE), TAG, "Failed to disable WiFi power save", error);
+#if CONFIG_APP_WIFI_MAX_TX_POWER > 0
+  GOTO_CHECK(esp_wifi_set_max_tx_power(CONFIG_APP_WIFI_MAX_TX_POWER), TAG, "Failed to set WiFi TX power", error);
+#endif
 
   return ESP_OK;
 error:

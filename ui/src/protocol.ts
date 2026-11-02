@@ -16,7 +16,7 @@ export const WIFI_STATE_CONNECTED = 3;
 const CHECK_PASSWORD = 'The network rejected the connection, check the password.';
 
 const WIFI_PROBLEMS: Record<number, string> = {
-  2: CHECK_PASSWORD,
+  2: 'The router did not answer. Move the device closer, or check the password.',
   14: CHECK_PASSWORD,
   15: CHECK_PASSWORD,
   200: 'Signal lost, the device may be too far from the router.',

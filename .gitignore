@@ -9,5 +9,7 @@ managed_components
 /sdkconfig.gledopto-gl-c-016wl-d
 /sdkconfig.gledopto-gl-c-016wl-d-ws2811-256
 /sdkconfig.gledopto-gl-c-016wl-d-ws2811-86-usb
+/sdkconfig.c3-super-mini-ws2811-86-usb
+/sdkconfig.c3-super-mini-debug
 .playwright-mcp
 dependencies.lock

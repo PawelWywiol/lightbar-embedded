@@ -14,6 +14,8 @@ Other boards are PlatformIO environments (`pio run -e <env>`, see `platformio.in
 
 Each board + strip pair is one environment, its `SDKCONFIG_DEFAULTS` stacks one file per layer: common, board (`sdkconfig.gledopto`), strip and power supply (`sdkconfig.ws2811-256-6a`). Values in a generated `sdkconfig.<env>` win over these files, so delete it after changing a layer.
 
+ESP32-C3 Super Mini: env `c3-super-mini-ws2811-86-usb`. The tested unit got `AUTH_EXPIRE` (reason 2) at default and 11 dBm and connected at 8.5 dBm (`APP_WIFI_MAX_TX_POWER`), still with some failed attempts.
+
 GL-C-016WL-D on macOS: its USB chip (CH340K, `1a86:7522`) needs the [WCH driver](https://github.com/WCHSoftGroup/ch34xser_macos); reading flash above 115200 baud returned corrupted data.
 
 Strip length, GPIO, color order and network defaults: `pio run -t menuconfig` → App Config.

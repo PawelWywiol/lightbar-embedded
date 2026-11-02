@@ -102,6 +102,13 @@ menu "App Config"
       help
         Seconds between STA reconnect attempts after the fast attempts; the counter resets once an IP is obtained.
 
+    config APP_WIFI_MAX_TX_POWER
+      int "WiFi Max TX Power (0.25 dBm)"
+      range 0 84
+      default 0
+      help
+        Limit set after WiFi start, in 0.25 dBm units, valid from 8; 0 keeps the default. Some boards with a poor antenna or regulator connect only at low power.
+
   endmenu
 
   menu "Lights"
