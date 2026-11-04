@@ -9,6 +9,7 @@ all:
 	@echo "  make clean    clean build artifacts"
 	@echo "  make format   clang-format src/ include/"
 	@echo "  make ui       lint, test, build device web UI into data/public_html"
+	@echo "  make presets  export presets from lightbar-web migrations"
 
 .PHONY: format
 format:
@@ -45,6 +46,10 @@ flash: upload monitor
 .PHONY: clean
 clean:
 	pio run -t clean
+
+.PHONY: presets
+presets:
+	python3 scripts/export_presets.py
 
 .PHONY: ui
 ui:
