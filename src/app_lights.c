@@ -1,5 +1,6 @@
 #include "app_lights.h"
 #include "app_nvs.h"
+#include "app_presets.h"
 #include "freertos/semphr.h"
 #include "soc/soc_caps.h"
 #include <math.h>
@@ -230,6 +231,7 @@ static void on_init_light_schema_handler(void *handler_args, esp_event_base_t ba
   GOTO_CHECK(stat(path, &file_stat), TAG, "Failed to get file stat", error_cleanup);
   GOTO_CHECK(file_stat.st_size != chunk->total, TAG, "File size mismatch", error_cleanup);
   GOTO_CHECK(load_light_schema_file(path), TAG, "Failed to cache lights schema frames", error_cleanup);
+  presets_on_lights_request(chunk->has_head);
 
   if (chunk->has_head && rename(path, LIGHTS_CURRENT_FILE_PATH) == 0)
   {

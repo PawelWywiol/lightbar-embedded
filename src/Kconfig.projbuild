@@ -44,6 +44,12 @@ menu "App Config"
       help
         Key for the NVS to store the brightness, speed and hue adjustments.
 
+    config APP_NVS_PRESETS_STATE_KEY
+      string "NVS Presets State Key"
+      default "app_presets"
+      help
+        Key for the NVS to store the last preset and auto cycling.
+
   endmenu
 
   menu "Network"
@@ -157,5 +163,21 @@ menu "App Config"
 
   endmenu
 
+  menu "Button"
+
+    config APP_BUTTON_GPIO
+      int "Button GPIO"
+      default -1
+      help
+        Active low GPIO of the button that changes presets, -1 if the board has none.
+
+    config APP_PRESETS_AUTO_INTERVAL
+      int "Presets Auto Interval (s)"
+      range 1 86400
+      default 30
+      help
+        Seconds between presets when auto cycling is on.
+
+  endmenu
 
 endmenu
