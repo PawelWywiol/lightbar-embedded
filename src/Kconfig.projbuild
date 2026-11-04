@@ -84,23 +84,17 @@ menu "App Config"
       help
         Maximum number of retries for the STA.
 
-    config APP_STA_RETRY_INTERVAL
-      int "STA Retry Interval"
+    config APP_STA_ATTEMPT_TIMEOUT
+      int "STA Attempt Timeout"
       default 30
       help
-        Seconds between STA reconnect attempts for the first APP_STA_RETRY_FAST_COUNT attempts.
+        Seconds one connection attempt, including DHCP, may take before it is restarted.
 
-    config APP_STA_RETRY_FAST_COUNT
-      int "STA Retry Fast Count"
-      default 6
-      help
-        Number of reconnect attempts at APP_STA_RETRY_INTERVAL before switching to APP_STA_RETRY_SLOW_INTERVAL.
-
-    config APP_STA_RETRY_SLOW_INTERVAL
-      int "STA Retry Slow Interval"
+    config APP_STA_RETRY_MAX_DELAY
+      int "STA Retry Max Delay"
       default 60
       help
-        Seconds between STA reconnect attempts after the fast attempts; the counter resets once an IP is obtained.
+        Upper limit in seconds of the pause after a failed attempt; the pause starts at 1 s and doubles until an IP is obtained.
 
     config APP_WIFI_MAX_TX_POWER
       int "WiFi Max TX Power (0.25 dBm)"

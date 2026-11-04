@@ -14,7 +14,7 @@ Other boards are PlatformIO environments (`pio run -e <env>`, see `platformio.in
 
 Each board + strip pair is one environment, its `SDKCONFIG_DEFAULTS` stacks one file per layer: common, board (`sdkconfig.gledopto`), strip and power supply (`sdkconfig.ws2811-256-6a`). Values in a generated `sdkconfig.<env>` win over these files, so delete it after changing a layer.
 
-ESP32-C3 Super Mini: env `c3-super-mini-ws2811-86-usb`. The tested unit got `AUTH_EXPIRE` (reason 2) at default and 11 dBm and connected at 8.5 dBm (`APP_WIFI_MAX_TX_POWER`), still with some failed attempts.
+ESP32-C3 Super Mini: env `c3-super-mini-ws2811-86-usb`. The tested unit got `AUTH_EXPIRE` (reason 2) at default power and connects at 11 dBm (`APP_WIFI_MAX_TX_POWER`); `CONFIG_ESP_PHY_MAX_WIFI_TX_POWER=11` did not help. Weak range: [wire antenna](docs/c3-super-mini-antenna.md).
 
 GL-C-016WL-D on macOS: its USB chip (CH340K, `1a86:7522`) needs the [WCH driver](https://github.com/WCHSoftGroup/ch34xser_macos); reading flash above 115200 baud returned corrupted data.
 
@@ -52,6 +52,7 @@ Contract shared with Lightbar Web.
 - `adjust`: `{ "brightness", "speed", "hue" }`, see `ctrl`
 - `uid`: AP SSID, ends with the last 3 bytes of the AP MAC address
 - `network`: 1 = request came over the home network, 2 = over the AP (then `host` = home network IP, and `wifi` = home network connection)
+- `link`: `{ "rssi", "drops", "dropReason", "uptime", "resetReason" }`; `rssi` in dBm, 0 = not connected; `drops` = lost connections since boot; `dropReason` = `wifi_err_reason_t` of the last one; `uptime` in seconds; `resetReason` = `esp_reset_reason_t`
 - `wifi`: `{ "state", "ssid", "reason", "attempt" }`; state 0 = no credentials, 1 = connecting, 2 = waiting for IP, 3 = connected; `reason` = last ESP-IDF `wifi_err_reason_t` since the last success or credentials change, 0 = none
 
 `POST /api/lightbar`: binary body of chunks, each: type (4 B), payload size (4 B), payload, `EOL\0` (little-endian `uint32`). Responds `{"ok":true}` once the body is stored; processing runs afterwards.

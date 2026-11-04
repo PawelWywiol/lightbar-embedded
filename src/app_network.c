@@ -6,6 +6,10 @@ static esp_timer_handle_t sta_retry_timer = NULL;
 static uint32_t sta_retry_count = 0;
 static sta_state_t sta_state = STA_STATE_CONNECTING;
 static uint16_t sta_last_reason = 0;
+static uint32_t sta_drops = 0;
+static uint16_t sta_last_drop_reason = 0;
+static bool sta_is_attempting = false;
+static bool sta_is_leaving = false;
 
 // esp_wifi reads up to 32 SSID bytes without null terminator (802.11 max length)
 static size_t copy_ssid(uint8_t *destination, const char *source)
@@ -21,11 +25,16 @@ static bool has_sta_credentials(void)
   return esp_wifi_get_config(WIFI_IF_STA, &wifi_config) == ESP_OK && wifi_config.sta.ssid[0] != '\0';
 }
 
-static void schedule_sta_retry(void)
+static void start_sta_retry_timer(uint32_t seconds)
 {
-  uint32_t interval = sta_retry_count < CONFIG_APP_STA_RETRY_FAST_COUNT ? CONFIG_APP_STA_RETRY_INTERVAL
-                                                                        : CONFIG_APP_STA_RETRY_SLOW_INTERVAL;
-  esp_timer_start_once(sta_retry_timer, (uint64_t)interval * 1000 * 1000);
+  esp_timer_stop(sta_retry_timer);
+  esp_timer_start_once(sta_retry_timer, (uint64_t)seconds * 1000 * 1000);
+}
+
+static uint32_t get_sta_retry_delay(void)
+{
+  uint32_t delay = sta_retry_count < 8 ? 1U << sta_retry_count : CONFIG_APP_STA_RETRY_MAX_DELAY;
+  return delay < CONFIG_APP_STA_RETRY_MAX_DELAY ? delay : CONFIG_APP_STA_RETRY_MAX_DELAY;
 }
 
 static void retry_sta(void *arg)
@@ -33,7 +42,7 @@ static void retry_sta(void *arg)
   sta_retry_count++;
   ESP_LOGI(TAG, "STA reconnect attempt %lu", (unsigned long)sta_retry_count);
 
-  schedule_sta_retry();
+  start_sta_retry_timer(CONFIG_APP_STA_ATTEMPT_TIMEOUT);
   reconnect_sta(NULL);
 }
 
@@ -42,6 +51,7 @@ static void wifi_on_sta_connected_handler(void)
   ESP_LOGI(TAG, "STA connected to AP");
 
   sta_state = STA_STATE_WAITING_FOR_IP;
+  start_sta_retry_timer(CONFIG_APP_STA_ATTEMPT_TIMEOUT);
 }
 
 static void wifi_on_sta_got_ip_handler(void)
@@ -58,20 +68,34 @@ static void wifi_on_sta_disconnected_handler(const wifi_event_sta_disconnected_t
 {
   ESP_LOGI(TAG, "STA disconnected from AP, reason %u", event->reason);
 
-  sta_state = STA_STATE_CONNECTING;
-
-  // every reconnect starts with esp_wifi_disconnect, which must not hide the real failure
-  if (event->reason != WIFI_REASON_ASSOC_LEAVE)
+  if (sta_is_leaving)
   {
-    sta_last_reason = event->reason;
-  }
+    sta_is_leaving = false;
+    sta_state = STA_STATE_CONNECTING;
 
-  if (!has_sta_credentials() || esp_timer_is_active(sta_retry_timer))
-  {
+    if (!esp_timer_is_active(sta_retry_timer))
+    {
+      start_sta_retry_timer(CONFIG_APP_STA_ATTEMPT_TIMEOUT);
+    }
+
     return;
   }
 
-  schedule_sta_retry();
+  sta_is_attempting = false;
+  sta_last_reason = event->reason;
+
+  if (sta_state == STA_STATE_CONNECTED)
+  {
+    sta_drops++;
+    sta_last_drop_reason = event->reason;
+  }
+
+  sta_state = STA_STATE_CONNECTING;
+
+  if (has_sta_credentials())
+  {
+    start_sta_retry_timer(get_sta_retry_delay());
+  }
 }
 
 static void wifi_on_sta_start_handler(void)
@@ -249,7 +273,12 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
 {
   ESP_LOGI(TAG, "Reconnecting STA");
 
-  GOTO_CHECK(esp_wifi_disconnect(), TAG, "Failed to disconnect WiFi", error);
+  // a disconnect here reports its own event, which must not hide the real failure
+  if (sta_is_attempting)
+  {
+    sta_is_leaving = true;
+    GOTO_CHECK(esp_wifi_disconnect(), TAG, "Failed to disconnect WiFi", error);
+  }
 
   if (wifi_credentials != NULL)
   {
@@ -272,6 +301,7 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
     GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set STA config", error);
   }
 
+  sta_is_attempting = true;
   GOTO_CHECK(esp_wifi_connect(), TAG, "Failed to connect WiFi", error);
 
   return ESP_OK;
@@ -289,4 +319,11 @@ void get_sta_status(sta_status_t *status)
   status->state = status->ssid[0] == '\0' ? STA_STATE_NO_CREDENTIALS : sta_state;
   status->reason = sta_last_reason;
   status->attempt = sta_retry_count + 1;
+  status->drops = sta_drops;
+  status->drop_reason = sta_last_drop_reason;
+
+  if (sta_state != STA_STATE_CONNECTED || esp_wifi_sta_get_rssi(&status->rssi) != ESP_OK)
+  {
+    status->rssi = 0;
+  }
 }

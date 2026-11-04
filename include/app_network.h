@@ -32,6 +32,9 @@ extern "C"
     sta_state_t state;
     uint16_t reason;
     uint32_t attempt;
+    uint32_t drops;
+    uint16_t drop_reason;
+    int rssi;
     char ssid[MAX_SSID_LEN + 1];
   } sta_status_t;
 

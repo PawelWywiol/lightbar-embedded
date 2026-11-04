@@ -243,12 +243,19 @@ static esp_err_t set_api_response(httpd_req_t *req, char *message)
   request_network_type_t network_type = get_request_network_type(req);
   cJSON_AddNumberToObject(data, "network", network_type);
 
+  sta_status_t sta_status;
+  get_sta_status(&sta_status);
+
+  cJSON *link = cJSON_AddObjectToObject(data, "link");
+  cJSON_AddNumberToObject(link, "rssi", sta_status.rssi);
+  cJSON_AddNumberToObject(link, "drops", sta_status.drops);
+  cJSON_AddNumberToObject(link, "dropReason", sta_status.drop_reason);
+  cJSON_AddNumberToObject(link, "uptime", esp_timer_get_time() / 1000000);
+  cJSON_AddNumberToObject(link, "resetReason", esp_reset_reason());
+
   if (network_type == NETWORK_TYPE_AP)
   {
     cJSON_AddStringToObject(data, "host", _host_ip);
-
-    sta_status_t sta_status;
-    get_sta_status(&sta_status);
 
     cJSON *wifi = cJSON_AddObjectToObject(data, "wifi");
     cJSON_AddNumberToObject(wifi, "state", sta_status.state);
