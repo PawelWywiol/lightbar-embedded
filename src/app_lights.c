@@ -1,5 +1,6 @@
 #include "app_lights.h"
 #include "app_nvs.h"
+#include "freertos/semphr.h"
 #include "soc/soc_caps.h"
 #include <math.h>
 
@@ -25,6 +26,7 @@ rmt_transmit_config_t tx_config = {
 };
 esp_timer_handle_t lights_loop_timer;
 static TaskHandle_t lights_loop_task;
+static SemaphoreHandle_t lights_schema_mutex;
 lights_data_t lights_data = {0};
 static lights_adjust_t lights_adjust = {
   .brightness = LIGHTS_ADJUST_BRIGHTNESS_MAX,
@@ -199,55 +201,47 @@ static void lights_loop_task_handler(void *arg)
   while (true)
   {
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+    xSemaphoreTake(lights_schema_mutex, portMAX_DELAY);
     resolve_current_light_schema_frame();
 
     if (lights_data.status == LIGHTS_STATUS_RUNNING)
     {
       show_current_light_schema_frame();
     }
+    xSemaphoreGive(lights_schema_mutex);
   }
 }
 
 static void on_init_light_schema_handler(void *handler_args, esp_event_base_t base, int32_t id, void *event_data)
 {
   request_chunk_data_t *chunk = (request_chunk_data_t *)event_data;
+  char path[FILE_SYSTEM_PATH_MAX_LENGTH];
+  snprintf(path, FILE_SYSTEM_PATH_MAX_LENGTH, "%s/%s", FILE_SYSTEM_TEMP_BASE_PATH, chunk->uid);
 
   if (!is_latest_lights_request(chunk->sequence))
   {
-    char stale_path[FILE_SYSTEM_PATH_MAX_LENGTH];
-    snprintf(stale_path, FILE_SYSTEM_PATH_MAX_LENGTH, "%s/%s", FILE_SYSTEM_TEMP_BASE_PATH, chunk->uid);
-    unlink(stale_path);
+    unlink(path);
     return;
   }
 
-  lights_data.status = LIGHTS_STATUS_STOPPED;
-
   ESP_LOGI(TAG, "Processing lights schema file [%s]", chunk->uid);
 
-  snprintf(lights_data.file_path, FILE_SYSTEM_PATH_MAX_LENGTH, "%s/%s", FILE_SYSTEM_TEMP_BASE_PATH, chunk->uid);
-
   struct stat file_stat = {0};
-  GOTO_CHECK(stat(lights_data.file_path, &file_stat), TAG, "Failed to get file stat", error_cleanup);
+  GOTO_CHECK(stat(path, &file_stat), TAG, "Failed to get file stat", error_cleanup);
   GOTO_CHECK(file_stat.st_size != chunk->total, TAG, "File size mismatch", error_cleanup);
+  GOTO_CHECK(load_light_schema_file(path), TAG, "Failed to cache lights schema frames", error_cleanup);
 
-  chunk->total = file_stat.st_size;
-
-  GOTO_CHECK(cache_light_schema_frames(), TAG, "Failed to cache lights schema frames", error_cleanup);
-
-  if (chunk->has_head && rename(lights_data.file_path, LIGHTS_CURRENT_FILE_PATH) == 0)
+  if (chunk->has_head && rename(path, LIGHTS_CURRENT_FILE_PATH) == 0)
   {
     ESP_LOGI(TAG, "Saved lights schema [%s]", LIGHTS_CURRENT_FILE_PATH);
     return;
   }
 
-  unlink(lights_data.file_path);
+  unlink(path);
   return;
 
 error_cleanup:
-  unlink(lights_data.file_path);
-  lights_data.status = LIGHTS_STATUS_NONE;
-  lights_data.cached_frame_count = 0;
-
+  unlink(path);
   ESP_LOGE(TAG, "Failed to process lights schema file [%s]", chunk->uid);
 }
 
@@ -559,6 +553,31 @@ error:
   return ESP_FAIL;
 }
 
+esp_err_t load_light_schema_file(const char *path)
+{
+  xSemaphoreTake(lights_schema_mutex, portMAX_DELAY);
+  lights_data.status = LIGHTS_STATUS_STOPPED;
+  strlcpy(lights_data.file_path, path, sizeof(lights_data.file_path));
+
+  esp_err_t err = cache_light_schema_frames();
+  if (err != ESP_OK)
+  {
+    lights_data.status = LIGHTS_STATUS_NONE;
+  }
+  xSemaphoreGive(lights_schema_mutex);
+
+  return err;
+}
+
+void load_saved_light_schema(void)
+{
+  struct stat file_stat = {0};
+  if (stat(LIGHTS_CURRENT_FILE_PATH, &file_stat) == 0 && load_light_schema_file(LIGHTS_CURRENT_FILE_PATH) != ESP_OK)
+  {
+    ESP_LOGW(TAG, "Failed to load saved lights schema [%s]", LIGHTS_CURRENT_FILE_PATH);
+  }
+}
+
 static uint32_t resolve_adjusted_frame_ticks(const frame_data_t *frame)
 {
   uint32_t ticks = (uint32_t)frame->duration_ticks * LIGHTS_ADJUST_SPEED_DEFAULT / lights_adjust.speed;
@@ -695,6 +714,9 @@ error:
 esp_err_t init_lights_loop(void)
 {
   ESP_LOGI(TAG, "Initializing lights loop");
+  lights_schema_mutex = xSemaphoreCreateMutex();
+  GOTO_CHECK(lights_schema_mutex == NULL, TAG, "Failed to create lights schema mutex", error);
+
   GOTO_CHECK(xTaskCreate(lights_loop_task_handler, "lights_loop", LIGHTS_LOOP_TASK_STACK_SIZE, NULL,
                          LIGHTS_LOOP_TASK_PRIORITY, &lights_loop_task) != pdPASS,
              TAG, "Failed to create lights loop task", error);
@@ -769,17 +791,6 @@ esp_err_t init_lights_events(void)
              "Failed to create lights adjust save timer", error);
 
   mkdir(LIGHTS_BASE_PATH, 0775);
-
-  struct stat file_stat = {0};
-  if (stat(LIGHTS_CURRENT_FILE_PATH, &file_stat) == 0)
-  {
-    strlcpy(lights_data.file_path, LIGHTS_CURRENT_FILE_PATH, sizeof(lights_data.file_path));
-
-    if (cache_light_schema_frames() != ESP_OK)
-    {
-      ESP_LOGW(TAG, "Failed to load saved lights schema [%s]", LIGHTS_CURRENT_FILE_PATH);
-    }
-  }
 
   return ESP_OK;
 error:

@@ -176,6 +176,7 @@ void app_main(void)
   ESP_ERROR_CHECK(init_lights_leds());
   ESP_ERROR_CHECK(init_lights_loop());
   ESP_ERROR_CHECK(init_lights_events());
+  load_saved_light_schema();
 
   vfs_invalidate_space_cache();
   vfs_size_t vfs_size = get_vfs_space_info();
