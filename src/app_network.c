@@ -8,6 +8,8 @@ static sta_state_t sta_state = STA_STATE_CONNECTING;
 static uint16_t sta_last_reason = 0;
 static uint32_t sta_drops = 0;
 static uint16_t sta_last_drop_reason = 0;
+static bool sta_is_attempting = false;
+static bool sta_is_leaving = false;
 
 // esp_wifi reads up to 32 SSID bytes without null terminator (802.11 max length)
 static size_t copy_ssid(uint8_t *destination, const char *source)
@@ -66,28 +68,34 @@ static void wifi_on_sta_disconnected_handler(const wifi_event_sta_disconnected_t
 {
   ESP_LOGI(TAG, "STA disconnected from AP, reason %u", event->reason);
 
-  // every reconnect starts with esp_wifi_disconnect, which must not hide the real failure
-  bool is_own_disconnect = event->reason == WIFI_REASON_ASSOC_LEAVE;
-
-  if (!is_own_disconnect)
+  if (sta_is_leaving)
   {
-    sta_last_reason = event->reason;
+    sta_is_leaving = false;
+    sta_state = STA_STATE_CONNECTING;
 
-    if (sta_state == STA_STATE_CONNECTED)
+    if (!esp_timer_is_active(sta_retry_timer))
     {
-      sta_drops++;
-      sta_last_drop_reason = event->reason;
+      start_sta_retry_timer(CONFIG_APP_STA_ATTEMPT_TIMEOUT);
     }
+
+    return;
+  }
+
+  sta_is_attempting = false;
+  sta_last_reason = event->reason;
+
+  if (sta_state == STA_STATE_CONNECTED)
+  {
+    sta_drops++;
+    sta_last_drop_reason = event->reason;
   }
 
   sta_state = STA_STATE_CONNECTING;
 
-  if (!has_sta_credentials() || (is_own_disconnect && esp_timer_is_active(sta_retry_timer)))
+  if (has_sta_credentials())
   {
-    return;
+    start_sta_retry_timer(get_sta_retry_delay());
   }
-
-  start_sta_retry_timer(is_own_disconnect ? CONFIG_APP_STA_ATTEMPT_TIMEOUT : get_sta_retry_delay());
 }
 
 static void wifi_on_sta_start_handler(void)
@@ -265,7 +273,12 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
 {
   ESP_LOGI(TAG, "Reconnecting STA");
 
-  GOTO_CHECK(esp_wifi_disconnect(), TAG, "Failed to disconnect WiFi", error);
+  // a disconnect here reports its own event, which must not hide the real failure
+  if (sta_is_attempting)
+  {
+    sta_is_leaving = true;
+    GOTO_CHECK(esp_wifi_disconnect(), TAG, "Failed to disconnect WiFi", error);
+  }
 
   if (wifi_credentials != NULL)
   {
@@ -288,6 +301,7 @@ esp_err_t reconnect_sta(const wifi_credentials_t *wifi_credentials)
     GOTO_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config), TAG, "Failed to set STA config", error);
   }
 
+  sta_is_attempting = true;
   GOTO_CHECK(esp_wifi_connect(), TAG, "Failed to connect WiFi", error);
 
   return ESP_OK;
