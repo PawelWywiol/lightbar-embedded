@@ -9,7 +9,7 @@ all:
 	@echo "  make clean    clean build artifacts"
 	@echo "  make format   clang-format src/ include/"
 	@echo "  make ui       lint, test, build device web UI into data/public_html"
-	@echo "  make presets  export presets from lightbar-web migrations"
+	@echo "  make presets  export presets from the Lightbar Web API"
 
 .PHONY: format
 format:

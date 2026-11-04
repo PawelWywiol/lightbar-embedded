@@ -6,7 +6,7 @@ A board with a user button plays preset schemes stored on the device. A click mo
 
 ## Decisions
 
-- Device list: presets from Lightbar Web migrations only. User schemes are out of scope.
+- Device list: presets from Lightbar Web only. User schemes are out of scope.
 - Each family contributes one version: the size closest to the strip length, as in the web gallery.
 - Storage: LittleFS, because Lightbar Web will later replace the list on the device.
 - The firmware has no size logic. Whoever writes the list chooses the versions: the build today, Lightbar Web later.
@@ -62,14 +62,14 @@ A board with a user button plays preset schemes stored on the device. A click mo
 
 ### List generation
 
-- `make presets` exports all preset rows from the `lightbar-web` migrations to `presets/<id without "preset-">.bin`, unchanged scheme bytes. These files are committed.
+- `make presets` exports all `preset-*` schemes from the public `GET /api/schemes` of Lightbar Web to `presets/<id without "preset-">.bin`, unchanged scheme bytes, removing older files. Admins edit presets in the app, so migrations are not the current list. These files are committed.
 - A PlatformIO extra script runs for `buildfs` and `uploadfs`. It stages `data/` plus the selected presets under `presets/` in the env build directory and points `PROJECT_DATA_DIR` at it.
 - Strip length comes from the generated `sdkconfig.<env>` when present, otherwise from the stacked `SDKCONFIG_DEFAULTS` of the env.
 - Selection follows `selectSchemesForLights` in `lightbar-web/components/schemesGallery/schemeFamilies.ts`:
   - a family member is named `<family> <N>` where `N` equals the color count of its first frame;
   - the member closest to the strip length wins; on a tie, the smaller one;
   - every other scheme is kept, so `Scanner` and `Scanner <N>` are both listed.
-- The current migrations give 102 presets: 30 without a size and 8 families of 9 sizes, so 38 files per board.
+- The list at implementation time gives 91 presets: 28 without a size and 7 families of 9 sizes, so 35 files per board.
 
 ## Docs
 
@@ -89,7 +89,7 @@ The repo has no firmware tests.
 Automated:
 
 - Build all environments.
-- Check the staged image of each environment holds 38 files with the expected versions (86 LEDs: size 64, 256 LEDs: size 256).
+- Check the staged image of each environment holds 35 files with the expected versions (86 LEDs: size 64, 256 LEDs: size 256).
 
 On a C3 Super Mini:
 
