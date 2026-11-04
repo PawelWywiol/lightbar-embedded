@@ -13,3 +13,4 @@ managed_components
 /sdkconfig.c3-super-mini-debug
 .playwright-mcp
 dependencies.lock
+__pycache__

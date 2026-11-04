@@ -22,6 +22,19 @@ Strip length, GPIO, color order and network defaults: `pio run -t menuconfig` â†
 
 Choosing controllers, strips and power supplies: [docs](docs/README.md).
 
+## Button
+
+Boards with a user button (`APP_BUTTON_GPIO`, set only on the C3 Super Mini: BOOT, GPIO 9) play presets stored on the device. Boards without one behave as if the feature did not exist.
+
+- Click: next preset, leaves auto cycling.
+- Hold 3 s: next preset, starts auto cycling.
+- A scheme sent from Lightbar Web leaves auto cycling. Brightness, speed and hue stay across all changes.
+- The last preset and auto cycling survive a reboot; a scheme saved from Lightbar Web replaces them.
+
+BOOT is a strapping pin: pressed during power-up or reset, the board enters download mode instead of the firmware.
+
+The list comes from the production Lightbar Web API, because admins edit presets in the app and migrations do not follow: `make presets` exports it to `presets/`, and `pio run -t uploadfs` stages the versions closest to the strip length of that environment, using the same rule as the web gallery. `uploadfs` overwrites the last scheme from Lightbar Web; WiFi credentials stay.
+
 ## Build and flash
 
 `make` lists targets. `make upload` flashes only the firmware; the device page lives in the LittleFS image, so flash it with `pio run -t uploadfs` on first flash and after `make ui`.

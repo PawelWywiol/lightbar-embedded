@@ -134,6 +134,8 @@ extern "C"
                                               connection_request_type_info_t chunk_type, void *context,
                                               size_t chunk_context_size);
   esp_err_t cache_light_schema_frames(void);
+  esp_err_t load_light_schema_file(const char *path);
+  void load_saved_light_schema(void);
   esp_err_t resolve_current_light_schema_frame(void);
   esp_err_t show_current_light_schema_frame(void);
 

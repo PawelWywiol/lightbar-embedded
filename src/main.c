@@ -1,10 +1,12 @@
 #include "esp_heap_caps.h"
 
+#include "app_button.h"
 #include "app_defines.h"
 #include "app_events.h"
 #include "app_lights.h"
 #include "app_network.h"
 #include "app_nvs.h"
+#include "app_presets.h"
 #include "app_server.h"
 #include "app_utils.h"
 #include "app_vfs.h"
@@ -176,6 +178,12 @@ void app_main(void)
   ESP_ERROR_CHECK(init_lights_leds());
   ESP_ERROR_CHECK(init_lights_loop());
   ESP_ERROR_CHECK(init_lights_events());
+  ESP_ERROR_CHECK(init_presets());
+  if (!restore_preset())
+  {
+    load_saved_light_schema();
+  }
+  ESP_ERROR_CHECK(init_button());
 
   vfs_invalidate_space_cache();
   vfs_size_t vfs_size = get_vfs_space_info();
