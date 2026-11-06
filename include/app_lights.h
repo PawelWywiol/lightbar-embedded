@@ -98,6 +98,9 @@ extern "C"
 #define LIGHTS_ADJUST_SAVE_DELAY_US (3 * 1000 * 1000)
 #define LIGHTS_BRIGHTNESS_GAMMA 2.2
 #define LIGHTS_BRIGHTNESS_SCALE_MAX 65535
+#define LIGHTS_POWER_FADE_STEP                                                                                         \
+  MAX(1, (uint32_t)((uint64_t)LIGHTS_BRIGHTNESS_SCALE_MAX * LIGHTS_LOOP_PERIOD /                                       \
+                    (CONFIG_APP_LIGHTS_POWER_FADE_MS * 1000ULL)))
 
   typedef struct lights_data
   {
@@ -125,6 +128,9 @@ extern "C"
 
   lights_adjust_t get_lights_adjust(void);
   esp_err_t set_lights_adjust(const void *data, size_t size);
+
+  bool is_lights_power_on(void);
+  void set_lights_power(bool on);
 
   uint32_t next_lights_request_sequence(void);
   bool is_latest_lights_request(uint32_t sequence);

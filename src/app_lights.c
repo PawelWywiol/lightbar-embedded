@@ -4,6 +4,7 @@
 #include "freertos/semphr.h"
 #include "soc/soc_caps.h"
 #include <math.h>
+#include <sys/param.h>
 
 static const char *TAG = "APP_LIGHTS";
 
@@ -35,8 +36,23 @@ static lights_adjust_t lights_adjust = {
   .hue = 0,
 };
 static uint32_t lights_brightness_scale = LIGHTS_BRIGHTNESS_SCALE_MAX;
+static volatile bool lights_power_on = true;
+static uint32_t lights_power_level = 0;
+static uint32_t lights_output_scale = 0;
+static bool lights_dark_shown = false;
 static esp_timer_handle_t lights_adjust_save_timer = NULL;
 static volatile uint32_t latest_lights_request_sequence = 0;
+
+static esp_err_t transmit_led_strip_pixels(void)
+{
+  GOTO_CHECK(rmt_transmit(led_channel, led_encoder, led_strip_pixels, sizeof(led_strip_pixels), &tx_config), TAG,
+             "Failed to transmit data", error);
+  GOTO_CHECK(rmt_tx_wait_all_done(led_channel, portMAX_DELAY), TAG, "Failed to wait for all data to be sent", error);
+
+  return ESP_OK;
+error:
+  return ESP_FAIL;
+}
 
 uint32_t next_lights_request_sequence(void)
 {
@@ -48,17 +64,69 @@ bool is_latest_lights_request(uint32_t sequence)
   return sequence == latest_lights_request_sequence;
 }
 
+static void update_lights_output_scale(void)
+{
+  double power = pow((double)lights_power_level / LIGHTS_BRIGHTNESS_SCALE_MAX, LIGHTS_BRIGHTNESS_GAMMA);
+  lights_output_scale = lround(lights_brightness_scale * power);
+}
+
 // eyes see LED output on a curve, so linear 75% looks almost like 100%
 static void apply_lights_adjust(const lights_adjust_t *adjust)
 {
   lights_adjust = *adjust;
   double level = (double)adjust->brightness / LIGHTS_ADJUST_BRIGHTNESS_MAX;
   lights_brightness_scale = lround(pow(level, LIGHTS_BRIGHTNESS_GAMMA) * LIGHTS_BRIGHTNESS_SCALE_MAX);
+  update_lights_output_scale();
 }
 
 static uint8_t scale_brightness(uint8_t value)
 {
-  return (value * lights_brightness_scale + LIGHTS_BRIGHTNESS_SCALE_MAX - 1) / LIGHTS_BRIGHTNESS_SCALE_MAX;
+  return (value * lights_output_scale + LIGHTS_BRIGHTNESS_SCALE_MAX - 1) / LIGHTS_BRIGHTNESS_SCALE_MAX;
+}
+
+static void step_lights_power(void)
+{
+  uint32_t target = lights_power_on ? LIGHTS_BRIGHTNESS_SCALE_MAX : 0;
+  if (lights_power_level == target)
+  {
+    return;
+  }
+
+  if (lights_power_level < target)
+  {
+    lights_power_level = MIN(lights_power_level + LIGHTS_POWER_FADE_STEP, target);
+  }
+  else
+  {
+    lights_power_level = lights_power_level > LIGHTS_POWER_FADE_STEP ? lights_power_level - LIGHTS_POWER_FADE_STEP : 0;
+  }
+  update_lights_output_scale();
+}
+
+bool is_lights_power_on(void)
+{
+  return lights_power_on;
+}
+
+void set_lights_power(bool on)
+{
+  if (on == lights_power_on)
+  {
+    return;
+  }
+
+  lights_power_on = on;
+  uint8_t value = on;
+  nvs_write_data(CONFIG_APP_NVS_LIGHTS_POWER_KEY, &value, sizeof(value));
+}
+
+static void load_lights_power(void)
+{
+  uint8_t value;
+  if (nvs_read_data(CONFIG_APP_NVS_LIGHTS_POWER_KEY, &value, sizeof(value)) == ESP_OK)
+  {
+    lights_power_on = value != 0;
+  }
 }
 
 static bool is_lights_adjust_valid(const lights_adjust_t *adjust)
@@ -203,6 +271,20 @@ static void lights_loop_task_handler(void *arg)
   {
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     xSemaphoreTake(lights_schema_mutex, portMAX_DELAY);
+    step_lights_power();
+
+    if (!lights_power_on && lights_power_level == 0)
+    {
+      if (!lights_dark_shown)
+      {
+        memset(led_strip_pixels, 0, sizeof(led_strip_pixels));
+        lights_dark_shown = transmit_led_strip_pixels() == ESP_OK;
+      }
+      xSemaphoreGive(lights_schema_mutex);
+      continue;
+    }
+    lights_dark_shown = false;
+
     resolve_current_light_schema_frame();
 
     if (lights_data.status == LIGHTS_STATUS_RUNNING)
@@ -231,6 +313,7 @@ static void on_init_light_schema_handler(void *handler_args, esp_event_base_t ba
   GOTO_CHECK(stat(path, &file_stat), TAG, "Failed to get file stat", error_cleanup);
   GOTO_CHECK(file_stat.st_size != chunk->total, TAG, "File size mismatch", error_cleanup);
   GOTO_CHECK(load_light_schema_file(path), TAG, "Failed to cache lights schema frames", error_cleanup);
+  set_lights_power(true);
   presets_on_lights_request(chunk->has_head);
 
   if (chunk->has_head && rename(path, LIGHTS_CURRENT_FILE_PATH) == 0)
@@ -704,13 +787,7 @@ esp_err_t show_current_light_schema_frame(void)
     limit_led_strip_current();
   }
 
-  GOTO_CHECK(rmt_transmit(led_channel, led_encoder, led_strip_pixels, sizeof(led_strip_pixels), &tx_config), TAG,
-             "Failed to transmit data", error);
-  GOTO_CHECK(rmt_tx_wait_all_done(led_channel, portMAX_DELAY), TAG, "Failed to wait for all data to be sent", error);
-
-  return ESP_OK;
-error:
-  return ESP_FAIL;
+  return transmit_led_strip_pixels();
 }
 
 esp_err_t init_lights_loop(void)
@@ -764,9 +841,7 @@ esp_err_t init_lights_leds(void)
   memset(led_strip_pixels, 0, sizeof(led_strip_pixels));
 
   ESP_LOGI(TAG, "Transmit led strip pixels");
-  GOTO_CHECK(rmt_transmit(led_channel, led_encoder, led_strip_pixels, sizeof(led_strip_pixels), &tx_config), TAG,
-             "Failed to transmit data", error);
-  GOTO_CHECK(rmt_tx_wait_all_done(led_channel, portMAX_DELAY), TAG, "Failed to wait for all data to be sent", error);
+  GOTO_CHECK(transmit_led_strip_pixels(), TAG, "Failed to transmit led strip pixels", error);
 
   return ESP_OK;
 error:
@@ -778,6 +853,7 @@ esp_err_t init_lights_events(void)
   ESP_LOGI(TAG, "Initializing lights events");
 
   load_lights_adjust();
+  load_lights_power();
 
   GOTO_CHECK(esp_event_handler_instance_register(APP_EVENTS, APP_EVENT_INIT_LIGHTS_SCHEMA, on_init_light_schema_handler,
                                                  NULL, NULL),
