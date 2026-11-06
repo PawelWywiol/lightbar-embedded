@@ -35,6 +35,20 @@ BOOT is a strapping pin: pressed during power-up or reset, the board enters down
 
 The list comes from the production Lightbar Web API, because admins edit presets in the app and migrations do not follow: `make presets` exports it to `presets/`, and `pio run -t uploadfs` stages the versions closest to the strip length of that environment, using the same rule as the web gallery. `uploadfs` overwrites the last scheme from Lightbar Web; WiFi credentials stay.
 
+## Remote
+
+Builds with `APP_REMOTE_ENABLED` accept any Gledopto GL-RC-001WL (WiZmote packet format) over ESP-NOW, without pairing, on whatever WiFi channel the board uses. `REMOTE=1` or `REMOTE=0` in the build command overrides the sdkconfig layers, e.g. `REMOTE=1 pio run -e c3-super-mini-debug -t upload`; without it the last layer setting the option decides, otherwise it is off. The value is written to the generated `sdkconfig.<env>` on every build, so it never sticks from a previous flash.
+
+| Button | Action |
+| --- | --- |
+| on / off | fade in and start, fade out and stop |
+| brighter / dimmer | brightness step, never below the minimum |
+| moon | speed ×1 → ×1.5 → ×2 → ×0.25 → ×0.5 |
+| S2 | hue +4, back to 0 after 16 presses |
+| S1 / S3 / S4 | auto cycling / previous / next preset |
+
+The remote sends nothing while a button is held, so there are no long presses. While off only `on` works, and the board button and auto cycling wait. The power state survives a reboot; a scheme from Lightbar Web turns the lights on.
+
 ## Build and flash
 
 `make` lists targets. `make upload` flashes only the firmware; the device page lives in the LittleFS image, so flash it with `pio run -t uploadfs` on first flash and after `make ui`.
