@@ -50,6 +50,12 @@ menu "App Config"
       help
         Key for the NVS to store the last preset and auto cycling.
 
+    config APP_NVS_LIGHTS_POWER_KEY
+      string "NVS Lights Power Key"
+      default "app_lights_pwr"
+      help
+        Key for the NVS to store whether the lights are on.
+
   endmenu
 
   menu "Network"
@@ -132,6 +138,13 @@ menu "App Config"
       help
         GPIO driven high to enable power on the lights output (board relay), -1 if the board has none.
 
+    config APP_LIGHTS_POWER_FADE_MS
+      int "Lights Power Fade (ms)"
+      range 1 10000
+      default 1000
+      help
+        Duration of fading the lights in on power on and out on power off.
+
     config APP_LIGHTS_MAX_CURRENT_MA
       int "Lights Max Current (mA)"
       range 0 65000
@@ -177,6 +190,30 @@ menu "App Config"
       default 30
       help
         Seconds between presets when auto cycling is on.
+
+  endmenu
+
+  menu "Remote"
+
+    config APP_REMOTE_ENABLED
+      bool "ESP-NOW Remote"
+      default n
+      help
+        Control the lights with a Gledopto GL-RC-001WL (WiZmote format) remote. The REMOTE=0/1 build variable overrides it.
+
+    config APP_REMOTE_BRIGHTNESS_STEP
+      int "Remote Brightness Step"
+      range 1 100
+      default 10
+      help
+        Brightness change of one brighter or dimmer press.
+
+    config APP_REMOTE_BRIGHTNESS_MIN
+      int "Remote Brightness Min"
+      range 1 100
+      default 5
+      help
+        Lowest brightness reachable with the dimmer button.
 
   endmenu
 

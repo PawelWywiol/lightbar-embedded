@@ -7,6 +7,7 @@
 #include "app_network.h"
 #include "app_nvs.h"
 #include "app_presets.h"
+#include "app_remote.h"
 #include "app_server.h"
 #include "app_utils.h"
 #include "app_vfs.h"
@@ -184,6 +185,7 @@ void app_main(void)
     load_saved_light_schema();
   }
   ESP_ERROR_CHECK(init_button());
+  ESP_ERROR_CHECK(init_remote());
 
   vfs_invalidate_space_cache();
   vfs_size_t vfs_size = get_vfs_space_info();

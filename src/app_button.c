@@ -21,14 +21,14 @@ static void on_button_poll(void *arg)
   {
     if (++pressed_polls == BUTTON_HOLD_POLLS)
     {
-      esp_event_post(APP_EVENTS, APP_EVENT_BUTTON_HOLD, NULL, 0, 0);
+      esp_event_post(APP_EVENTS, APP_EVENT_PRESETS_AUTO, NULL, 0, 0);
     }
     return;
   }
 
   if (pressed_polls >= BUTTON_MIN_PRESS_POLLS && pressed_polls < BUTTON_HOLD_POLLS)
   {
-    esp_event_post(APP_EVENTS, APP_EVENT_BUTTON_CLICK, NULL, 0, 0);
+    esp_event_post(APP_EVENTS, APP_EVENT_PRESETS_NEXT, NULL, 0, 0);
   }
   pressed_polls = 0;
 }
