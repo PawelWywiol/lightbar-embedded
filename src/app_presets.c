@@ -32,12 +32,13 @@ static esp_timer_handle_t auto_timer;
 static esp_timer_handle_t save_timer;
 
 // the system event task has a small stack, so path and name buffers stay static
-static bool find_next_preset(const char *after, char *next)
+static bool find_preset(const char *reference, char *found, bool forward)
 {
-  static char first[PRESETS_NAME_MAX_LENGTH];
-  static char greater[PRESETS_NAME_MAX_LENGTH];
-  first[0] = '\0';
-  greater[0] = '\0';
+  static char edge[PRESETS_NAME_MAX_LENGTH];
+  static char closest[PRESETS_NAME_MAX_LENGTH];
+  edge[0] = '\0';
+  closest[0] = '\0';
+  int direction = forward ? 1 : -1;
 
   DIR *dir = opendir(PRESETS_BASE_PATH);
   if (dir == NULL)
@@ -53,23 +54,23 @@ static bool find_next_preset(const char *after, char *next)
     {
       continue;
     }
-    if (first[0] == '\0' || strcmp(name, first) < 0)
+    if (edge[0] == '\0' || strcmp(name, edge) * direction < 0)
     {
-      strlcpy(first, name, sizeof(first));
+      strlcpy(edge, name, sizeof(edge));
     }
-    if (strcmp(name, after) > 0 && (greater[0] == '\0' || strcmp(name, greater) < 0))
+    if (strcmp(name, reference) * direction > 0 && (closest[0] == '\0' || strcmp(name, closest) * direction < 0))
     {
-      strlcpy(greater, name, sizeof(greater));
+      strlcpy(closest, name, sizeof(closest));
     }
   }
   closedir(dir);
 
-  if (first[0] == '\0')
+  if (edge[0] == '\0')
   {
     return false;
   }
 
-  strlcpy(next, greater[0] != '\0' ? greater : first, PRESETS_NAME_MAX_LENGTH);
+  strlcpy(found, closest[0] != '\0' ? closest : edge, PRESETS_NAME_MAX_LENGTH);
   return true;
 }
 
@@ -80,14 +81,14 @@ static esp_err_t load_preset(const char *name)
   return load_light_schema_file(path);
 }
 
-static bool play_next_preset(void)
+static bool play_preset(bool forward)
 {
   static char candidate[PRESETS_NAME_MAX_LENGTH];
   static char first_tried[PRESETS_NAME_MAX_LENGTH];
   strlcpy(candidate, last_preset, sizeof(candidate));
   first_tried[0] = '\0';
 
-  while (find_next_preset(candidate, candidate))
+  while (find_preset(candidate, candidate, forward))
   {
     if (strcmp(candidate, first_tried) == 0)
     {
@@ -160,22 +161,29 @@ static void on_presets_event(void *handler_args, esp_event_base_t base, int32_t 
 {
   switch (id)
   {
-  case APP_EVENT_BUTTON_CLICK:
-    next_lights_request_sequence();
-    stop_auto();
-    play_next_preset();
-    remember_user_choice(false);
+  case APP_EVENT_PRESETS_NEXT:
+  case APP_EVENT_PRESETS_PREVIOUS:
+    if (is_lights_power_on())
+    {
+      next_lights_request_sequence();
+      stop_auto();
+      play_preset(id == APP_EVENT_PRESETS_NEXT);
+      remember_user_choice(false);
+    }
     break;
-  case APP_EVENT_BUTTON_HOLD:
-    next_lights_request_sequence();
-    play_next_preset();
-    start_auto();
-    remember_user_choice(true);
+  case APP_EVENT_PRESETS_AUTO:
+    if (is_lights_power_on())
+    {
+      next_lights_request_sequence();
+      play_preset(true);
+      start_auto();
+      remember_user_choice(true);
+    }
     break;
   case APP_EVENT_PRESETS_AUTO_STEP:
-    if (state.auto_cycle)
+    if (state.auto_cycle && is_lights_power_on())
     {
-      play_next_preset();
+      play_preset(true);
     }
     break;
   case APP_EVENT_SAVE_PRESETS_STATE:
@@ -197,8 +205,8 @@ static void post_timer_event(void *arg)
 
 esp_err_t init_presets(void)
 {
-  const int32_t events[] = {APP_EVENT_BUTTON_CLICK, APP_EVENT_BUTTON_HOLD, APP_EVENT_PRESETS_AUTO_STEP,
-                            APP_EVENT_SAVE_PRESETS_STATE};
+  const int32_t events[] = {APP_EVENT_PRESETS_NEXT, APP_EVENT_PRESETS_PREVIOUS, APP_EVENT_PRESETS_AUTO,
+                            APP_EVENT_PRESETS_AUTO_STEP, APP_EVENT_SAVE_PRESETS_STATE};
   for (size_t i = 0; i < sizeof(events) / sizeof(events[0]); i++)
   {
     GOTO_CHECK(esp_event_handler_instance_register(APP_EVENTS, events[i], on_presets_event, NULL, NULL), TAG,
@@ -220,8 +228,11 @@ error:
 
 bool restore_preset(void)
 {
-  if (CONFIG_APP_BUTTON_GPIO < 0 ||
-      nvs_read_data(CONFIG_APP_NVS_PRESETS_STATE_KEY, &saved_state, sizeof(saved_state)) != ESP_OK)
+#if CONFIG_APP_BUTTON_GPIO < 0 && !CONFIG_APP_REMOTE_ENABLED
+  return false;
+#endif
+
+  if (nvs_read_data(CONFIG_APP_NVS_PRESETS_STATE_KEY, &saved_state, sizeof(saved_state)) != ESP_OK)
   {
     memset(&saved_state, 0, sizeof(saved_state));
     return false;
@@ -241,5 +252,5 @@ bool restore_preset(void)
     return false;
   }
 
-  return load_preset(state.name) == ESP_OK || play_next_preset();
+  return load_preset(state.name) == ESP_OK || play_preset(true);
 }
