@@ -11,16 +11,17 @@ def chunk(kind, payload):
 def scheme(name, colors):
     encoded = name.encode()
     head = bytes([1, len(encoded)]) + encoded
-    return chunk(b"daeh", head) + chunk(b"2mrf", bytes([0, 0, 60]) + bytes(colors))
+    return chunk(b"daeh", head) + chunk(b"3mrf", bytes([0, 0, 0, 60]) + bytes(colors))
 
 
 class ParseSchemeTest(unittest.TestCase):
     def test_reads_name_and_first_frame_size(self):
         self.assertEqual(parse_scheme(scheme("Comet 16", [1] * 16)), ("Comet 16", 16))
 
-    def test_reads_legacy_frame_size(self):
-        data = chunk(b"daeh", bytes([1, 1]) + b"A") + chunk(b"marf", bytes([0, 60, 1, 2]))
-        self.assertEqual(parse_scheme(data), ("A", 2))
+    def test_rejects_old_frame_types(self):
+        data = chunk(b"daeh", bytes([1, 1]) + b"A") + chunk(b"2mrf", bytes([0, 0, 60, 1, 2]))
+        with self.assertRaises(ValueError):
+            parse_scheme(data)
 
 
 class SelectPresetsTest(unittest.TestCase):
