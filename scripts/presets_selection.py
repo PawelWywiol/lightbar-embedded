@@ -2,7 +2,8 @@ import re
 import struct
 
 HEAD = b"daeh"
-FRAME_HEADER_SIZES = {b"marf": 2, b"2mrf": 3}
+FRAME = b"3mrf"
+FRAME_HEADER_SIZE = 4
 SIZED_NAME = re.compile(r"^(.+) (\d+)$")
 
 
@@ -15,8 +16,8 @@ def parse_scheme(data):
         payload = data[offset + 8 : offset + 8 + size]
         if kind == HEAD:
             name = payload[2 : 2 + payload[1]].decode()
-        elif kind in FRAME_HEADER_SIZES:
-            return name, size - FRAME_HEADER_SIZES[kind]
+        elif kind == FRAME:
+            return name, size - FRAME_HEADER_SIZE
         offset += 12 + size
     raise ValueError("scheme has no frames")
 

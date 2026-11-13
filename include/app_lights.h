@@ -32,8 +32,7 @@ extern "C"
 #define LIGHTS_TICKS_PER_MINUTE (LIGHTS_LOOP_FPS * 60)
 #define LIGHTS_TEMPO_BPM_MAX 240
 #define LIGHTS_TEMPO_RESERVED 255
-#define LIGHTS_FRAME_HEADER_SIZE 2
-#define LIGHTS_FRAME_V2_HEADER_SIZE 3
+#define LIGHTS_FRAME_HEADER_SIZE 4
 #define LIGHTS_FRAME_COLORS_MAX 720
 #define LIGHTS_FRAME_FLAG_FADE (1 << 0)
 #define LIGHTS_FRAME_FLAG_SHUFFLE (1 << 1)
@@ -80,6 +79,7 @@ extern "C"
   {
     uint8_t flags;
     uint8_t tempo;
+    uint8_t repeat;
     uint16_t colors_size;
     int8_t hue_shift;
     int8_t pixel_shift;
@@ -111,6 +111,7 @@ extern "C"
     uint8_t *cached_colors;
     uint32_t cached_frame_count;
     uint32_t current_frame_index;
+    uint8_t current_frame_repeat;
     uint8_t current_colors[CONFIG_APP_LIGHTS_COUNT];
     uint8_t next_colors[CONFIG_APP_LIGHTS_COUNT];
     uint8_t hue_offset;
@@ -136,8 +137,7 @@ extern "C"
   bool is_latest_lights_request(uint32_t sequence);
 
   uint16_t calculate_frame_ticks(uint8_t tempo);
-  esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, uint8_t *colors,
-                                              connection_request_type_info_t chunk_type, void *context,
+  esp_err_t resolve_lights_frame_from_context(frame_data_t *frame, uint8_t *colors, void *context,
                                               size_t chunk_context_size);
   esp_err_t cache_light_schema_frames(void);
   esp_err_t load_light_schema_file(const char *path);

@@ -88,11 +88,11 @@ Contract shared with Lightbar Web.
 |---|---|
 | `wifi` | `ssid[33]`, `password[65]` (zero-terminated) |
 | `head` | `[version=1, nameLength, name…]` (ignored by firmware, marks the scheme to be saved) |
-| `fram` | `[flags, tempo, colors…]` (legacy) |
-| `frm2` | `[flags, pixelShift (int8), tempo, colors…]` |
+| `frm3` | `[flags, pixelShift (int8), repeat (0–255 extra plays), tempo, colors…]` |
 | `ctrl` | `[brightness (0–100), speed (25–200, % of tempo), hue (int8, −32..31)]`, applied at once and kept across schemes and reboots (saved 3 s after the last change); brightness follows a gamma 2.2 curve; invalid values are ignored |
 
 - flags: bit 0 fade, bit 1 shuffle, bits 2–7 hue shift (signed, −32..31)
+- repeat plays a frame repeat + 1 times, each play adds its hue and pixel shift
 - tempo: 1–240 BPM, 241–254 = 255 − value ticks at 60 FPS, 255 = 1 tick
 - color: bits 6–7 lightness, bits 0–5 hue (0–62); hue 63 achromatic (`0x3f` off, `0xff` white)
 - frames shorter than the strip repeat along it; shuffle permutes each repeated segment
