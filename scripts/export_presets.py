@@ -7,7 +7,7 @@ import urllib.request
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PRESETS = ROOT / "presets"
 SCHEMES_URL = "https://lightbar.wywiol.eu/api/schemes"
-SCHEMES_LIMIT = 200
+SCHEMES_LIMIT = 500
 ID_PREFIX = "preset-"
 
 request = urllib.request.Request(SCHEMES_URL, headers={"User-Agent": "lightbar-embedded-export"})
