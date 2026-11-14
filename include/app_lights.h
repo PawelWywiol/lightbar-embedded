@@ -129,6 +129,7 @@ extern "C"
 
   lights_adjust_t get_lights_adjust(void);
   esp_err_t set_lights_adjust(const void *data, size_t size);
+  void reset_lights_adjust_effects(void);
 
   bool is_lights_power_on(void);
   void set_lights_power(bool on);

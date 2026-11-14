@@ -168,6 +168,14 @@ esp_err_t set_lights_adjust(const void *data, size_t size)
            : esp_timer_start_once(lights_adjust_save_timer, LIGHTS_ADJUST_SAVE_DELAY_US);
 }
 
+void reset_lights_adjust_effects(void)
+{
+  lights_adjust_t next = lights_adjust;
+  next.speed = LIGHTS_ADJUST_SPEED_DEFAULT;
+  next.hue = 0;
+  set_lights_adjust(&next, sizeof(next));
+}
+
 static void on_lights_adjust_save_timer(void *arg)
 {
   esp_event_post(APP_EVENTS, APP_EVENT_SAVE_LIGHTS_ADJUST, NULL, 0, 0);
