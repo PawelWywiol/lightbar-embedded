@@ -113,6 +113,10 @@ static void on_remote_button(void *handler_args, esp_event_base_t base, int32_t 
 
   if (button == REMOTE_BUTTON_ON)
   {
+    if (!is_lights_power_on())
+    {
+      reset_lights_adjust_effects();
+    }
     set_lights_power(true);
     return;
   }

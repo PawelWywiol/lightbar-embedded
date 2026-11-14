@@ -167,6 +167,7 @@ static void on_presets_event(void *handler_args, esp_event_base_t base, int32_t 
     {
       next_lights_request_sequence();
       stop_auto();
+      reset_lights_adjust_effects();
       play_preset(id == APP_EVENT_PRESETS_NEXT);
       remember_user_choice(false);
     }
@@ -175,6 +176,7 @@ static void on_presets_event(void *handler_args, esp_event_base_t base, int32_t 
     if (is_lights_power_on())
     {
       next_lights_request_sequence();
+      reset_lights_adjust_effects();
       play_preset(true);
       start_auto();
       remember_user_choice(true);
